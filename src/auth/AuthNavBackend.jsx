@@ -14,18 +14,12 @@ export default function AuthNavBackend() {
       .catch(() => {})
   }, [])
 
-  const logout = async () => {
-    try {
-      await fetch(apiUrl('/auth/logout'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: { Accept: 'application/json' },
-      })
-    } catch (_) {
-      /* still navigate */
-    }
-    setUser(null)
-    window.location.replace('/')
+  /**
+   * Must be top-level navigation to Core — Chrome often ignores Set-Cookie clearing
+   * on cross-origin fetch(), so POST logout left the session cookie; /auth/me still OK → "stuck signed in".
+   */
+  const logout = () => {
+    window.location.href = apiUrl('/auth/logout')
   }
 
   if (!user) return null
