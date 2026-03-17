@@ -10,3 +10,7 @@ dist
 # Logs
 *.log
 npm-debug.log*
+
+# Env (Azure SSO secrets)
+.env
+.env.local

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
+import RequireAuth from './auth/RequireAuth'
 import HomePageTailwind from './pages/HomePageTailwind'
 import SkyportHome from './pages/SkyportHome'
 import SkyportCare from './pages/SkyportCare'
@@ -18,8 +19,9 @@ import ImagePage from './pages/ImagePage'
 
 export default function App() {
   return (
-    <Layout>
-      <Routes>
+    <RequireAuth>
+      <Layout>
+        <Routes>
         <Route path="/" element={<HomePageTailwind />} />
         <Route path="/demos" element={<Demos />} />
         <Route path="/demos/annotated" element={<DemosAnnotated />} />
@@ -38,7 +40,8 @@ export default function App() {
         <Route path="/strategy/operating/lifecycle-growth" element={<LifecycleGrowth />} />
         <Route path="/strategy/operating/reference" element={<Reference />} />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Layout>
+        </Routes>
+      </Layout>
+    </RequireAuth>
   )
 }

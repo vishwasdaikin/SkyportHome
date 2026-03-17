@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { isAzureAuthEnabled } from '../auth/authConfig'
+import AuthNav from '../auth/AuthNav'
 import './Layout.css'
 
 const APPS_BASE = '/apps'
@@ -93,6 +95,7 @@ export default function Layout({ children }) {
           <NavLink to="/image" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
             Image
           </NavLink>
+          {isAzureAuthEnabled && <AuthNav />}
         </nav>
       </header>
       {isOperatingPlaybook && (
