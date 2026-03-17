@@ -2,6 +2,8 @@
 
 This app supports optional **Microsoft Single Sign-On (SSO)** using Azure AD (Microsoft Entra ID). When configured, users see **Sign in with Microsoft** in the header and can sign out.
 
+**Server-side OAuth (Web client + secret)** is documented in [BACKEND_AUTH.md](./BACKEND_AUTH.md) (Skyport-Core + `VITE_USE_BACKEND_AUTH=1`).
+
 ## 1. Register the app in Azure Portal
 
 1. Go to [Azure Portal](https://portal.azure.com) → **Microsoft Entra ID** (or Azure Active Directory) → **App registrations** → **New registration**.
@@ -45,6 +47,8 @@ When you deploy, add your production URL as a **SPA** redirect URI:
 - Do not rely on a **client secret** for this frontend; the SPA uses PKCE.
 
 ## Troubleshooting
+
+- **AADSTS9002326 (Cross-origin token redemption / SPA only):** Your redirect URI must be registered under **Single-page application**, not only under **Web**. In the app registration → **Authentication** → **Single-page application** → **Add URI** → e.g. `http://localhost:5173` → **Save**. This app uses PKCE (browser); “Web” + client secret is a different flow.
 
 - **AADSTS90013 (Invalid input):** Often fixed by (1) **SPA** redirect URI matching the exact origin (e.g. `http://localhost:5173`, no path unless you registered one), (2) **no quotes or spaces** around values in `.env.local`, (3) **User.Read** delegated permission + consent, (4) correct **Application (client) ID** and issuer URL.
 - **Redirect URI mismatch:** The SPA redirect URI in Azure must exactly match `window.location.origin` (including port).

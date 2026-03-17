@@ -90,3 +90,38 @@
   color: var(--text-secondary, #64748b);
   font-size: 0.75rem;
 }
+
+.require-auth-fix-spa {
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  border-radius: var(--radius, 4px);
+  text-align: left;
+}
+
+.require-auth-fix-spa-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.require-auth-fix-spa-steps {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-primary, #111);
+}
+
+.require-auth-fix-spa-steps li {
+  margin-bottom: 0.5rem;
+}
+
+.require-auth-fix-spa-steps code {
+  font-size: 0.8125rem;
+  padding: 0.15rem 0.35rem;
+  background: #fff;
+  border-radius: 4px;
+}

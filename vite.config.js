@@ -18,8 +18,12 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
         env.VITE_API_BASE_URL ?? process.env.VITE_API_BASE_URL ?? ''
       ),
+      'import.meta.env.VITE_USE_BACKEND_AUTH': JSON.stringify(
+        env.VITE_USE_BACKEND_AUTH ?? process.env.VITE_USE_BACKEND_AUTH ?? ''
+      ),
     },
     server: {
+      strictPort: true,
       proxy: {
         '/api': {
           target: coreApiOrigin,

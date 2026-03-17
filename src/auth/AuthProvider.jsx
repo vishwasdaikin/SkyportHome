@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import { MsalProvider } from '@azure/msal-react'
 import { PublicClientApplication } from '@azure/msal-browser'
-import { msalConfig, isAzureAuthEnabled, getEntraConfigurationError } from './authConfig'
+import {
+  msalConfig,
+  isAzureAuthEnabled,
+  getEntraConfigurationError,
+  isBackendAuthEnabled,
+} from './authConfig'
 import './AuthProvider.css'
 
 const entraConfigError = isAzureAuthEnabled ? getEntraConfigurationError() : null
@@ -19,7 +24,7 @@ function formatInitError(e) {
 /**
  * MSAL must finish initialize() before handleRedirectPromise / loginRedirect.
  */
-export default function AuthProvider({ children }) {
+function AuthProviderMsal({ children }) {
   const [msalReady, setMsalReady] = useState(
     !isAzureAuthEnabled || !msalInstance || Boolean(entraConfigError)
   )
@@ -48,10 +53,6 @@ export default function AuthProvider({ children }) {
       cancelled = true
     }
   }, [isAzureAuthEnabled, initAttempt])
-
-  if (!isAzureAuthEnabled) {
-    return children
-  }
 
   if (entraConfigError) {
     return (
@@ -108,4 +109,14 @@ export default function AuthProvider({ children }) {
   }
 
   return <MsalProvider instance={msalInstance}>{children}</MsalProvider>
+}
+
+export default function AuthProvider({ children }) {
+  if (isBackendAuthEnabled()) {
+    return children
+  }
+  if (!isAzureAuthEnabled) {
+    return children
+  }
+  return <AuthProviderMsal>{children}</AuthProviderMsal>
 }

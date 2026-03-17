@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMsal, useIsAuthenticated } from '@azure/msal-react'
 import { InteractionStatus } from '@azure/msal-browser'
-import { isAzureAuthEnabled } from './authConfig'
+import { isAzureAuthEnabled, isBackendAuthEnabled } from './authConfig'
 import { loginRequest } from './authConfig'
 import { parseOAuthErrorFromUrl, stripOAuthErrorFromBrowserUrl } from './oauthErrorUtils'
+import RequireAuthBackend from './RequireAuthBackend'
 import './RequireAuth.css'
 
 const RETURN_KEY = 'skyport_auth_return_path'
@@ -15,6 +16,9 @@ const REDIRECT_LOCK = 'skyport_msal_login_redirect'
  * Preserves the URL they tried to open and sends them back after login.
  */
 export default function RequireAuth({ children }) {
+  if (isBackendAuthEnabled()) {
+    return <RequireAuthBackend>{children}</RequireAuthBackend>
+  }
   if (!isAzureAuthEnabled) {
     return children
   }
@@ -124,6 +128,26 @@ function RequireAuthMsal({ children }) {
               If you use <code>127.0.0.1</code> in the browser, register that URI too—not only <code>localhost</code>.
             </span>
           </p>
+          {(signInError.includes('9002326') ||
+            signInError.toLowerCase().includes('cross-origin token redemption')) && (
+            <div className="require-auth-fix-spa" role="region" aria-label="Fix for AADSTS9002326">
+              <p className="require-auth-fix-spa-title">Fix: register this URL as a SPA (not only “Web”)</p>
+              <ol className="require-auth-fix-spa-steps">
+                <li>
+                  Azure Portal → <strong>Microsoft Entra ID</strong> → <strong>App registrations</strong> → your app →{' '}
+                  <strong>Authentication</strong>.
+                </li>
+                <li>
+                  Under <strong>Single-page application</strong>, click <strong>Add URI</strong> and add exactly:{' '}
+                  <code>{typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173'}</code>
+                </li>
+                <li>
+                  If that URL appears only under <strong>Web</strong> redirect URIs, add the same URI under{' '}
+                  <strong>Single-page application</strong> (PKCE requires the SPA platform). Save.
+                </li>
+              </ol>
+            </div>
+          )}
           <pre className="require-auth-error" role="alert">
             {signInError}
           </pre>

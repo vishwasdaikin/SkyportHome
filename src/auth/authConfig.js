@@ -28,6 +28,11 @@ const authority = entraIssuer
 
 export const isAzureAuthEnabled = Boolean(entraId)
 
+/** Skyport-Core handles OAuth (Web client); Vite proxies /api → Core so session cookie is same-site. */
+export const isBackendAuthEnabled = () =>
+  import.meta.env.VITE_USE_BACKEND_AUTH === '1' ||
+  import.meta.env.VITE_USE_BACKEND_AUTH === 'true'
+
 /**
  * Bad values (e.g. literal <tenant-id> from docs) → AADSTS90013 / CorrelationId all zeros.
  */
