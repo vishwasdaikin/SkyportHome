@@ -1,0 +1,33 @@
+.metrics-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .metrics-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+.ds-section-single {
+  margin-top: 0;
+}
+
+.metrics-page .ds-section-title-single {
+  margin: 0 0 1rem 0;
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Future: line — only "Future:" bold; rest black */
+.metrics-page .ds-content p.ds-future-line {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+/* Sub-bullets under Future: */
+.metrics-page .ds-content p.ds-bullet-indent {
+  margin-left: 2.5rem;
+  padding-left: 1rem;
+}

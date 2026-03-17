@@ -1,0 +1,45 @@
+.skyport-care-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.skyport-care-header h1 {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.skyport-care-tagline {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.skyport-care-section {
+  margin-top: 2.5rem;
+  scroll-margin-top: 2rem;
+}
+
+.skyport-care-section-title {
+  margin: 0 0 0.35rem 0;
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.skyport-care-section-desc {
+  margin: 0 0 1rem 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+  .skyport-care-page {
+    padding: 2.5rem 2rem;
+  }
+}

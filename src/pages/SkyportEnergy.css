@@ -1,0 +1,202 @@
+.skyport-energy-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.skyport-energy-header h1 {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.skyport-energy-tagline {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Sections */
+.skyport-energy-section {
+  margin-top: 2.5rem;
+}
+
+.skyport-energy-section-title {
+  margin: 0 0 0.75rem 0;
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.skyport-energy-section-desc {
+  margin: 0 0 1rem 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Definition */
+.skyport-energy-definition-text {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+  padding: 1rem 1.25rem;
+  background: var(--daikin-blue-light);
+  border-left: 4px solid var(--daikin-blue);
+  border-radius: 6px;
+}
+
+/* Legend */
+.skyport-energy-legend-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.skyport-energy-legend-item {
+  padding: 0.35rem 0.75rem;
+  font-size: var(--text-sm);
+  background: var(--daikin-blue-light);
+  color: var(--daikin-blue);
+  border-radius: var(--radius);
+  font-weight: 500;
+}
+
+/* Flow diagram */
+.skyport-energy-flow-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 0.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: var(--daikin-blue-light);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 151, 224, 0.2);
+}
+
+.skyport-energy-flow-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skyport-energy-flow-node {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 5rem;
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+  border: 2px solid var(--daikin-blue);
+  border-radius: 6px;
+  color: var(--daikin-blue);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+
+.skyport-energy-flow-node:hover {
+  background: var(--daikin-blue);
+  color: #fff;
+}
+
+.skyport-energy-flow-num {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.85;
+  margin-bottom: 0.15rem;
+}
+
+.skyport-energy-flow-name {
+  display: block;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.skyport-energy-flow-arrow {
+  color: var(--daikin-blue);
+  font-size: 1.25rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+@media (max-width: 639px) {
+  .skyport-energy-flow-diagram {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .skyport-energy-flow-wrap {
+    flex-direction: column;
+    align-items: center;
+  }
+  .skyport-energy-flow-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+/* Process / Phases */
+.skyport-energy-phases {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.skyport-energy-phase {
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.skyport-energy-phase-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--daikin-blue);
+}
+
+.skyport-energy-phase-goal {
+  margin: 0 0 1rem 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.skyport-energy-phase-steps {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.skyport-energy-step {
+  margin-bottom: 0.35rem;
+}
+
+.skyport-energy-step:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .skyport-energy-page {
+    padding: 2.5rem 2rem;
+  }
+
+  .skyport-energy-phase {
+    padding: 1.5rem 2rem;
+  }
+}

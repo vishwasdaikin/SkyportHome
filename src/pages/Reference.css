@@ -1,0 +1,74 @@
+.reference-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .reference-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+.reference-breadcrumb {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.reference-breadcrumb a {
+  color: var(--daikin-blue);
+  text-decoration: none;
+}
+
+.reference-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.reference-breadcrumb-sep {
+  margin: 0 0.35rem;
+}
+
+.reference-breadcrumb-current {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.reference-divider {
+  border: 0;
+  border-top: 1px solid var(--nav-border);
+  margin: 1.25rem 0;
+}
+
+.reference-header {
+  margin-bottom: 0.5rem;
+}
+
+.reference-title {
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.reference-subtitle {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.reference-body {
+  margin-top: 1.5rem;
+}
+
+.reference-box {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--nav-border);
+}
+
+.reference-page .ds-content p.reference-what-we-see-today-line {
+  margin-top: 1.25rem;
+  font-weight: 400;
+}

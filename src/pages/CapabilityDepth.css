@@ -1,0 +1,137 @@
+.capability-depth-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .capability-depth-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+.capability-depth-back {
+  margin: 0 0 1rem 0;
+  font-size: var(--text-base);
+}
+
+.capability-depth-back-link {
+  color: var(--daikin-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.capability-depth-back-link:hover {
+  text-decoration: underline;
+}
+
+.capability-depth-breadcrumb {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.capability-depth-breadcrumb a {
+  color: var(--daikin-blue);
+  text-decoration: none;
+}
+
+.capability-depth-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.capability-depth-breadcrumb-sep {
+  margin: 0 0.35rem;
+}
+
+.capability-depth-breadcrumb-current {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.capability-depth-divider {
+  border: 0;
+  border-top: 1px solid var(--nav-border);
+  margin: 1.25rem 0;
+}
+
+.capability-depth-header {
+  margin-bottom: 0.5rem;
+}
+
+.capability-depth-title {
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.capability-depth-body {
+  margin-top: 1.5rem;
+}
+
+.capability-depth-boxes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .capability-depth-boxes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.capability-depth-section {
+  margin-bottom: 0;
+}
+
+.capability-depth-box {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--nav-border);
+}
+
+.capability-depth-box .ds-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.capability-depth-section-title {
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.capability-depth-body .ds-content {
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.capability-depth-body .ds-content p.ds-purpose-line {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.capability-depth-body .ds-content p.ds-subheading {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.capability-depth-body .ds-content p.ds-takeaway {
+  margin-top: auto;
+  margin-bottom: 0;
+  padding: 1rem 1.25rem;
+  background: var(--daikin-blue-light);
+  font-weight: 400;
+  color: var(--text-primary);
+  border-radius: var(--radius);
+}
