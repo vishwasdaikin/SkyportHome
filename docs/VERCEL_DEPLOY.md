@@ -12,7 +12,7 @@ In **Vercel → Project → Settings → Environment Variables**:
 |----------|---------|
 | `AUTH_MICROSOFT_ENTRA_ID_ID` | App registration client ID |
 | `AUTH_MICROSOFT_ENTRA_ID_SECRET` | Client secret |
-| `AUTH_MICROSOFT_ENTRA_ID_TENANT` | Tenant GUID |
+| `AUTH_MICROSOFT_ENTRA_ID_TENANT` | **GUID only** (e.g. `307cdf1f-...`) — not `https://login.../v2.0` |
 | `OAUTH_REDIRECT_URI` | `https://skyport-core.vercel.app/oauth/callback` |
 | `FRONTEND_ORIGIN` | `https://skyport-home.vercel.app` |
 | `FRONTEND_ORIGINS` | Optional: extra preview URLs, comma-separated |
