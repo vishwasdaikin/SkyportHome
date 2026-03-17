@@ -37,3 +37,5 @@ SKYPORT_CORE_URL=http://localhost:3001
 You can omit `AUTH_MICROSOFT_ENTRA_ID_*` in the frontend when using backend-only auth; MSAL is not loaded.
 
 For **SPA mode** (no Core), see [SSO_SETUP.md](./SSO_SETUP.md).
+
+**Vercel (Web + Core on different URLs):** [VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md).

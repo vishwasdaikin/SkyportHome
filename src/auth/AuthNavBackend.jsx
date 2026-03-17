@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../lib/api'
 import '../components/Layout.css'
 
 export default function AuthNavBackend() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    fetch('/api/auth/me', { credentials: 'include' })
+    fetch(apiUrl('/auth/me'), { credentials: 'include' })
       .then((r) => r.json())
       .then((d) => {
         if (d.authenticated && d.user) setUser(d.user)
@@ -15,7 +16,7 @@ export default function AuthNavBackend() {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      await fetch(apiUrl('/auth/logout'), {
         method: 'POST',
         credentials: 'include',
         headers: { Accept: 'application/json' },

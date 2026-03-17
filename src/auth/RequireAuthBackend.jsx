@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiUrl } from '../lib/api'
 import './RequireAuth.css'
 
 function readUrlError() {
@@ -39,7 +40,7 @@ export default function RequireAuthBackend({ children }) {
     const ctrl = new AbortController()
     const t = setTimeout(() => ctrl.abort(), 12000)
 
-    fetch('/api/auth/me', { credentials: 'include', signal: ctrl.signal })
+    fetch(apiUrl('/auth/me'), { credentials: 'include', signal: ctrl.signal })
       .then(async (r) => {
         clearTimeout(t)
         const text = await r.text()
@@ -50,7 +51,7 @@ export default function RequireAuthBackend({ children }) {
           throw new Error(
             r.status >= 500 || r.status === 502
               ? 'Skyport-Core returned an invalid response. Is it running on port 3001?'
-              : 'Unexpected response from /api/auth/me.'
+              : 'Unexpected response from auth/me.'
           )
         }
         if (data.authenticated) {
@@ -60,7 +61,7 @@ export default function RequireAuthBackend({ children }) {
         if (r.status === 401 || data.authenticated === false) {
           const returnTo =
             window.location.pathname + (window.location.search || '') || '/'
-          window.location.href = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`
+          window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent(returnTo)}`
           return
         }
         throw new Error(`Auth check failed (${r.status}).`)
@@ -69,7 +70,9 @@ export default function RequireAuthBackend({ children }) {
         clearTimeout(t)
         if (e.name === 'AbortError') {
           setLoadError(
-            'No response from Skyport-Core (timeout). Start it: cd Skyport-Core && npm run dev — default port 3001 must match SKYPORT_CORE_URL in .env.local.'
+            import.meta.env.VITE_API_BASE_URL
+              ? 'No response from Skyport-Core (timeout). Check that the API is deployed and VITE_API_BASE_URL is correct.'
+              : 'No response from Skyport-Core (timeout). Run Core on port 3001 (SKYPORT_CORE_URL in .env.local).'
           )
         } else {
           setLoadError(e.message || 'Cannot reach Skyport-Core. Start the API on port 3001.')
@@ -98,12 +101,22 @@ export default function RequireAuthBackend({ children }) {
             {message}
           </pre>
           <p className="require-auth-sub" style={{ marginTop: '1rem' }}>
-            <strong>Checklist:</strong> Terminal 1 —{' '}
-            <code style={{ fontSize: '0.8rem' }}>cd Skyport-Core && npm run dev</code>
-            <br />
-            Terminal 2 — <code style={{ fontSize: '0.8rem' }}>npm run dev</code> in Skyport-Web
-            <br />
-            Open <strong>http://localhost:5173</strong> (not a file:// URL).
+            {import.meta.env.VITE_API_BASE_URL ? (
+              <>
+                <strong>Production:</strong> Core at{' '}
+                <code style={{ fontSize: '0.8rem' }}>{import.meta.env.VITE_API_BASE_URL}</code> — check
+                Vercel env (CORS + secrets). See <code>docs/VERCEL_DEPLOY.md</code>.
+              </>
+            ) : (
+              <>
+                <strong>Local:</strong> Terminal 1 —{' '}
+                <code style={{ fontSize: '0.8rem' }}>cd Skyport-Core && npm run dev</code>
+                <br />
+                Terminal 2 — <code style={{ fontSize: '0.8rem' }}>npm run dev</code> in Skyport-Web
+                <br />
+                Open <strong>http://localhost:5173</strong>
+              </>
+            )}
           </p>
           <button
             type="button"
@@ -119,7 +132,7 @@ export default function RequireAuthBackend({ children }) {
               className="require-auth-retry"
               style={{ marginTop: '0.5rem', marginLeft: '0.5rem' }}
               onClick={() => {
-                window.location.href = `/api/auth/login?returnTo=${encodeURIComponent('/')}`
+                window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent('/')}`
               }}
             >
               Try Microsoft sign-in
