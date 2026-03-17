@@ -14,24 +14,19 @@ export default function AuthNavBackend() {
       .catch(() => {})
   }, [])
 
-  /**
-   * Must be top-level navigation to Core — Chrome often ignores Set-Cookie clearing
-   * on cross-origin fetch(), so POST logout left the session cookie; /auth/me still OK → "stuck signed in".
-   */
-  const logout = () => {
-    window.location.href = apiUrl('/auth/logout')
-  }
-
   if (!user) return null
 
   const label = user.name || user.email || 'Signed in'
+  const logoutAction = apiUrl('/auth/logout')
 
   return (
     <span className="app-auth-nav">
       <span className="app-auth-user">{label}</span>
-      <button type="button" className="app-auth-btn" onClick={logout}>
-        Sign out
-      </button>
+      <form method="POST" action={logoutAction} style={{ display: 'inline' }}>
+        <button type="submit" className="app-auth-btn">
+          Sign out
+        </button>
+      </form>
     </span>
   )
 }
