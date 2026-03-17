@@ -1,5 +1,7 @@
 # Deploy Skyport-Web + [SkyportCore](https://github.com/vishwasdaikin/SkyportCore) on Vercel
 
+**Your live URLs:** [VERCEL_URLS.md](./VERCEL_URLS.md) — production + preview Core hosts, Azure redirect list, copy-paste env.
+
 ## 1. SkyportCore (API)
 
 Repo: **https://github.com/vishwasdaikin/SkyportCore**
@@ -11,8 +13,8 @@ In **Vercel → Project → Settings → Environment Variables**:
 | `AUTH_MICROSOFT_ENTRA_ID_ID` | App registration client ID |
 | `AUTH_MICROSOFT_ENTRA_ID_SECRET` | Client secret |
 | `AUTH_MICROSOFT_ENTRA_ID_TENANT` | Tenant GUID |
-| `OAUTH_REDIRECT_URI` | `https://skyport-core.vercel.app/oauth/callback` (use your real Core URL) |
-| `FRONTEND_ORIGIN` | Your Skyport-Web URL, e.g. `https://skyport-home.vercel.app` |
+| `OAUTH_REDIRECT_URI` | `https://skyport-core.vercel.app/oauth/callback` |
+| `FRONTEND_ORIGIN` | `https://skyport-home.vercel.app` |
 | `FRONTEND_ORIGINS` | Optional: extra preview URLs, comma-separated |
 | `SESSION_SECRET` | `openssl rand -hex 32` |
 
@@ -29,7 +31,7 @@ Redeploy Core after changing env. On boot, logs should show `crossSiteSession=tr
 | Variable | Value |
 |----------|--------|
 | `VITE_USE_BACKEND_AUTH` | `1` |
-| `VITE_API_BASE_URL` | `https://skyport-core.vercel.app` (your Core URL, no trailing slash) |
+| `VITE_API_BASE_URL` | `https://skyport-core.vercel.app` |
 
 Do **not** set `VITE_API_BASE_URL` for local dev (leave empty; Vite proxies `/api` to Core).
 
