@@ -43,4 +43,4 @@ Rebuild/redeploy the frontend after env changes.
 2. If not logged in → redirect to **Core** `/auth/login` → Microsoft → callback on **Core** → session cookie on Core’s domain (`SameSite=None; Secure`).
 3. User returns to **Web**; `fetch` to Core includes the cookie (cross-origin).
 
-See also [BACKEND_AUTH.md](./BACKEND_AUTH.md).
+See also [BACKEND_AUTH.md](./BACKEND_AUTH.md). **Stuck at Microsoft sign-in?** [TROUBLESHOOTING_SIGNIN.md](./TROUBLESHOOTING_SIGNIN.md).
