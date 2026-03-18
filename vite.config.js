@@ -22,6 +22,12 @@ export default defineConfig(({ mode }) => {
         env.VITE_USE_BACKEND_AUTH ?? process.env.VITE_USE_BACKEND_AUTH ?? ''
       ),
     },
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: ['./src/test/setup.js'],
+      include: ['src/**/*.{test,spec}.{js,jsx}'],
+    },
     server: {
       strictPort: true,
       proxy: {
