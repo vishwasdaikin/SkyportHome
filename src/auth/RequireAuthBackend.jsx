@@ -28,6 +28,23 @@ export default function RequireAuthBackend({ children }) {
   const [loadError, setLoadError] = useState(null)
 
   useEffect(() => {
+    const sp = new URLSearchParams(window.location.search)
+    if (sp.get('signed_out') === '1') {
+      window.history.replaceState({}, '', window.location.pathname)
+      setStatus('checking_signed_out')
+      fetch(apiUrl('/auth/me'), { credentials: 'include' })
+        .then(async (r) => {
+          const d = await r.json().catch(() => ({}))
+          if (d.authenticated) {
+            setStatus('ok')
+            return
+          }
+          setStatus('signed_out')
+        })
+        .catch(() => setStatus('signed_out'))
+      return
+    }
+
     const fromUrl = readUrlError()
     if (fromUrl) {
       setUrlError(fromUrl)
@@ -82,6 +99,52 @@ export default function RequireAuthBackend({ children }) {
   }, [])
 
   if (status === 'ok') return children
+
+  if (status === 'checking_signed_out') {
+    return (
+      <div className="require-auth-gate">
+        <div className="require-auth-card">
+          <p className="require-auth-title">Signing out…</p>
+          <p className="require-auth-sub">Clearing your session.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'signed_out') {
+    return (
+      <div className="require-auth-gate">
+        <div className="require-auth-card require-auth-card-wide">
+          <p className="require-auth-title">You’re signed out</p>
+          <p className="require-auth-sub">
+            Your Skyport session was cleared. Sign in again when you’re ready. If Microsoft shows an error while
+            you still look &quot;signed in&quot; there, use <strong>Sign in (fresh)</strong> so it asks for your
+            password again.
+          </p>
+          <button
+            type="button"
+            className="require-auth-retry"
+            style={{ marginTop: '1rem' }}
+            onClick={() => {
+              window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent('/')}`
+            }}
+          >
+            Sign in with Microsoft
+          </button>
+          <button
+            type="button"
+            className="require-auth-retry require-auth-retry-secondary"
+            style={{ marginTop: '0.75rem' }}
+            onClick={() => {
+              window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent('/')}&prompt=login`
+            }}
+          >
+            Sign in (fresh)
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   if (status === 'error' && (urlError || loadError)) {
     const message = urlError?.message || loadError
