@@ -188,19 +188,12 @@ export default function Layout({ children }) {
                   className="app-nav-dropdown-item"
                   onClick={() => setStrategyOpen(false)}
                 >
-                  Digital Operating Playbook
+                  Operating Playbook
                 </NavLink>
               </div>
             )}
           </div>
 
-          <NavLink to="/demos" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
-            Demos
-          </NavLink>
-
-          <NavLink to="/image" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
-            Image
-          </NavLink>
         </nav>
         <div className="app-header-auth">
           {isBackendAuthEnabled() && <AuthNavBackend />}
@@ -208,7 +201,7 @@ export default function Layout({ children }) {
         </div>
       </header>
       {isOperatingPlaybook && (
-        <nav className="app-playbook-nav" aria-label="Digital Operating Playbook">
+        <nav className="app-playbook-nav" aria-label="Operating Playbook">
           <NavLink to={`${STRATEGY_OPERATING_BASE}/overview`} className={({ isActive }) => `app-playbook-nav-link ${isActive ? 'active' : ''}`} end>
             Overview
           </NavLink>
@@ -236,7 +229,7 @@ export default function Layout({ children }) {
           ))}
         </nav>
       )}
-      <main className={`app-main ${location.pathname === '/demos' ? 'app-main--full-bleed' : ''}`}>
+      <main className={`app-main ${location.pathname === '/demos' || location.pathname === '/demos/care' ? 'app-main--full-bleed' : ''}`}>
         {children}
       </main>
       {showBackToTop && (

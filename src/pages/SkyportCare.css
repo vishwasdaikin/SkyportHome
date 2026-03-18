@@ -48,28 +48,6 @@
   }
 }
 
-.skyport-care-useful {
-  margin-top: 1.75rem;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.skyport-care-useful-title {
-  margin: 0 0 0.5rem 0;
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.skyport-care-useful-coming-soon {
-  margin: 0;
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
 .skyport-care-section {
   margin-top: 2.5rem;
   scroll-margin-top: 2rem;
@@ -87,6 +65,39 @@
   font-size: var(--text-base);
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+/* Demo section: concept demo CTA */
+.skyport-care-section-demo .skyport-care-section-desc {
+  margin-bottom: 1.25rem;
+}
+
+.skyport-care-demo-cta-wrap {
+  margin: 0;
+}
+
+.skyport-care-demo-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  background: var(--daikin-blue, #0097e0);
+  border-radius: var(--radius);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.skyport-care-demo-cta:hover {
+  background: var(--daikin-blue-dark, #0077b6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 151, 224, 0.35);
+}
+
+.skyport-care-demo-cta:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
 }
 
 @media (min-width: 640px) {

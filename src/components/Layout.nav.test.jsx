@@ -26,8 +26,6 @@ describe('Layout top nav', () => {
 
     expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
     expect(within(nav).getByRole('button', { name: /app suite/i })).toBeInTheDocument()
-    expect(within(nav).getByRole('link', { name: 'Demos' })).toHaveAttribute('href', '/demos')
-    expect(within(nav).getByRole('link', { name: 'Image' })).toHaveAttribute('href', '/image')
   })
 
   it('opens App Suite menu with Apps Overview and product links', async () => {
@@ -52,7 +50,7 @@ describe('Layout top nav', () => {
 
     expect(screen.getByRole('link', { name: 'All strategy' })).toHaveAttribute('href', '/strategy')
     expect(screen.getByRole('link', { name: 'FY26' })).toHaveAttribute('href', '/strategy/fy26')
-    expect(screen.getByRole('link', { name: 'Digital Operating Playbook' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Operating Playbook' })).toHaveAttribute(
       'href',
       '/strategy/operating/overview'
     )

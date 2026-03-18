@@ -133,13 +133,8 @@ export default function SkyportCare() {
         </figure>
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
+          <a href="#demo">Concept Demo</a>
         </nav>
-        <section className="skyport-care-useful" aria-labelledby="skyport-care-useful-title">
-          <h2 id="skyport-care-useful-title" className="skyport-care-useful-title">
-            Useful links
-          </h2>
-          <p className="skyport-care-useful-coming-soon">More coming soon.</p>
-        </section>
       </header>
 
       <section id="roadmap" className="skyport-care-section skyport-care-section-features">
@@ -322,6 +317,25 @@ export default function SkyportCare() {
             </table>
           </div>
         )}
+      </section>
+
+      <section id="demo" className="skyport-care-section skyport-care-section-demo" aria-labelledby="skyport-care-demo-title">
+        <h2 id="skyport-care-demo-title" className="skyport-care-section-title">
+          SkyportCare – Concept Demo
+        </h2>
+        <p className="skyport-care-section-desc">
+          Interactive prototype illustrating the intended dealer experience and care operating model.
+        </p>
+        <p className="skyport-care-demo-cta-wrap">
+          <a
+            href={`${(import.meta.env.BASE_URL || '/').replace(/\/+$/, '')}/demos/care`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="skyport-care-demo-cta"
+          >
+            Open interactive demo ↗
+          </a>
+        </p>
       </section>
     </article>
   )

@@ -15,6 +15,7 @@ import Reference from './pages/Reference'
 import CapabilityDepth from './pages/CapabilityDepth'
 import Demos from './pages/Demos'
 import DemosAnnotated from './pages/DemosAnnotated'
+import DemosCare from './pages/DemosCare'
 import ImagePage from './pages/ImagePage'
 import AppsPage from './pages/AppsPage'
 import StrategyPage from './pages/StrategyPage'
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/" element={<HomePageTailwind />} />
         <Route path="/demos" element={<Demos />} />
         <Route path="/demos/annotated" element={<DemosAnnotated />} />
+        <Route path="/demos/care" element={<DemosCare />} />
         <Route path="/image" element={<ImagePage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/apps/skyport-home" element={<SkyportHome />} />

@@ -93,6 +93,39 @@
   line-height: 1.5;
 }
 
+/* Demo section: concept demo CTA */
+.skyport-home-section-demo .skyport-home-section-desc {
+  margin-bottom: 1.25rem;
+}
+
+.skyport-home-demo-cta-wrap {
+  margin: 0;
+}
+
+.skyport-home-demo-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  background: var(--daikin-blue, #0097e0);
+  border-radius: var(--radius);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.skyport-home-demo-cta:hover {
+  background: var(--daikin-blue-dark, #0077b6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 151, 224, 0.35);
+}
+
+.skyport-home-demo-cta:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
 /* Features toolbar: search + view toggle */
 .features-toolbar {
   display: flex;

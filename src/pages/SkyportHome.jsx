@@ -120,6 +120,7 @@ export default function SkyportHome() {
         </figure>
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
+          <a href="#demo">Concept Demo</a>
         </nav>
       </header>
 
@@ -303,6 +304,25 @@ export default function SkyportHome() {
             </table>
           </div>
         )}
+      </section>
+
+      <section id="demo" className="skyport-home-section skyport-home-section-demo" aria-labelledby="skyport-home-demo-title">
+        <h2 id="skyport-home-demo-title" className="skyport-home-section-title">
+          SkyportHome – Concept Demo
+        </h2>
+        <p className="skyport-home-section-desc">
+          Interactive prototype illustrating the intended homeowner experience and engagement model.
+        </p>
+        <p className="skyport-home-demo-cta-wrap">
+          <a
+            href={`${(import.meta.env.BASE_URL || '/').replace(/\/+$/, '')}/demos`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="skyport-home-demo-cta"
+          >
+            Open interactive demo ↗
+          </a>
+        </p>
       </section>
     </article>
   )

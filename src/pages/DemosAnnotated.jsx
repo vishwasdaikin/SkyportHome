@@ -95,7 +95,10 @@ export default function DemosAnnotated() {
   return (
     <article className="demos-annotated-page">
       <div className="demos-annotated-toolbar">
-        <Link to="/demos" className="demos-annotated-back">← Back to Demos</Link>
+        <div className="demos-annotated-toolbar-links">
+          <Link to="/apps/skyport-home" className="demos-annotated-back">← SkyportHome</Link>
+          <Link to="/demos" className="demos-annotated-back">← Back to Demos</Link>
+        </div>
         <h1 className="demos-annotated-heading">SkyportHome — AI-Powered Climate Control (with callouts)</h1>
       </div>
       <div ref={wrapRef} className="demos-annotated-wrap demos-annotated-wrap--with-arrows">

@@ -117,9 +117,9 @@ function RequireAuthMsal({ children }) {
       return (
         <div className="require-auth-gate">
           <div className="require-auth-card require-auth-card-access">
-            <p className="require-auth-title">You do not have access</p>
+            <p className="require-auth-title">Access not assigned</p>
             <p className="require-auth-sub">
-              You do not have access to this application. If you require access, please reach out to the admin.
+              Your account is not assigned to Skyport. To get access, contact your administrator or the person who manages your team’s app access.
             </p>
             <button type="button" className="require-auth-retry" onClick={handleRetrySignIn}>
               Try again

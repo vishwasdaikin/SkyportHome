@@ -37,10 +37,10 @@ export default function HomePageTailwind() {
             App Suite
           </Link>
           <Link
-            to="/strategy/operating/overview"
+            to="/strategy"
             className="inline-flex items-center justify-center px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold text-daikin-blue bg-white border-2 border-daikin-blue hover:bg-daikin-blue-light transition-colors"
           >
-            Digital Operating Playbook
+            All Strategy
           </Link>
           <button
             type="button"
@@ -55,11 +55,7 @@ export default function HomePageTailwind() {
       {/* Overview */}
       <section id="overview" className="pt-2 pb-14 sm:pt-3 sm:pb-20 bg-white scroll-mt-20">
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">What you’ll find</h2>
-        <p className="mt-4 text-lg text-gray-600">
-          Skyport is structured as a living hub — not a single app, but a collection of entry
-          points and curated content.
-        </p>
-        <ul className="mt-8 space-y-4 text-lg text-gray-600">
+        <ul className="mt-4 space-y-4 text-lg text-gray-600">
           <li className="flex items-start gap-3">
             <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
             <span>

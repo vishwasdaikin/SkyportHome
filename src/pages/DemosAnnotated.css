@@ -18,6 +18,13 @@
   flex-wrap: wrap;
 }
 
+.demos-annotated-toolbar-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .demos-annotated-back {
   font-size: var(--text-sm);
   font-weight: 600;
