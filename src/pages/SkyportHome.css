@@ -58,20 +58,23 @@
 }
 
 .skyport-home-nav a {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--daikin-blue);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
   text-decoration: none;
   padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  background: var(--daikin-blue-light);
-  transition: background 0.2s, color 0.2s;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  box-shadow: 0 0 16px rgba(0, 151, 224, 0.28), 0 2px 8px rgba(0, 151, 224, 0.2);
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 
 .skyport-home-nav a:hover {
-  color: var(--daikin-blue-dark);
-  background: rgba(0, 151, 224, 0.18);
+  color: var(--daikin-blue);
+  background: rgba(0, 151, 224, 0.06);
   text-decoration: none;
+  box-shadow: 0 0 24px rgba(0, 151, 224, 0.4), 0 2px 12px rgba(0, 151, 224, 0.35);
 }
 
 .skyport-home-section {

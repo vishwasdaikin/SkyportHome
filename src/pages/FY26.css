@@ -1,15 +1,114 @@
 .fy26-page {
   width: 100%;
-  padding-top: 2.5rem;
+  padding: 2rem 1.5rem;
+  /*
+   * Card typography: change --fy26-card-title / --fy26-card-body to retune all playbook cards.
+   * Title = h5/h4-style headers inside cards (Goals, Takeaway, chart titles, initiative titles…).
+   * Body = paragraphs, lists, table copy, funnel/bars, Fusion30 bullets.
+   */
+  --fy26-card-title: var(--text-base);
+  --fy26-card-body: var(--text-sm);
+}
+
+/* Uniform card body + card title sizes on FY26 Playbook */
+.fy26-page .fy25-visual,
+.fy26-page .fy25-monthly-chart-wrap,
+.fy26-page .fy25-planned-card,
+.fy26-page .fy25-takeaway,
+.fy26-page .fy25-feature-item,
+.fy26-page .fy26-plan-cards .fy26-mini-card {
+  font-size: var(--fy26-card-body);
+}
+
+/* Fusion30 section: 15px, black (separate from card-body token) */
+.fy26-page .fy26-fusion30-content {
+  font-size: 15px;
+  color: #000;
+}
+
+.fy26-page .fy25-visual-title,
+.fy26-page .fy25-planned-card-title,
+.fy26-page .fy25-takeaway-title,
+.fy26-page .fy25-feature-title,
+.fy26-page .fy25-section-title,
+.fy26-page .fy25-col-title,
+.fy26-page .fy26-plan-cards .fy26-mini-card-title,
+.fy26-page .fy26-outcomes-heading-anchor {
+  font-size: var(--fy26-card-title);
 }
 
 .fy26-page .ds-header {
   margin-top: 0.75rem;
+  text-align: left;
+}
+
+/* Title + in-page nav: left-aligned */
+.fy26-header-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem 1.25rem;
+}
+
+.fy26-header-title-row h1 {
+  flex: 0 1 auto;
+  margin: 0;
+  min-width: 0;
+  text-align: left;
+}
+
+/* Single-column layout: no left sidebar */
+.fy26-page .fy26-layout {
+  display: block;
+}
+
+/* In-page nav buttons — left-aligned */
+.fy26-inpage-nav {
+  margin-top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem 0.75rem;
+  flex: 0 1 auto;
+}
+
+/* Same glow as SkyportHome .skyport-home-nav a (Roadmap / Concept Demo) */
+.fy26-inpage-nav a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  box-shadow: 0 0 16px rgba(0, 151, 224, 0.28), 0 2px 8px rgba(0, 151, 224, 0.2);
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.fy26-inpage-nav a:hover {
+  color: var(--daikin-blue);
+  background: rgba(0, 151, 224, 0.06);
+  text-decoration: none;
+  box-shadow: 0 0 24px rgba(0, 151, 224, 0.4), 0 2px 12px rgba(0, 151, 224, 0.35);
+}
+
+@media (max-width: 639px) {
+  .fy26-header-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fy26-inpage-nav {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 @media (min-width: 640px) {
   .fy26-page {
-    padding-top: 3rem;
+    padding: 2.5rem 2rem;
   }
   .fy26-page .ds-header {
     margin-top: 1rem;
@@ -43,13 +142,134 @@
   margin-top: 0;
 }
 
+/* Non–Digital Platform routes: FY25-like plain sections (no blue accents, simple nav) */
+.fy26-page--simple .ds-section-badge {
+  background: var(--text-secondary);
+  color: #fff;
+}
+
+.fy26-page--simple .ds-section-title.ds-section-title-single,
+.fy26-page--simple .ds-section-title {
+  color: var(--text-primary);
+  border-bottom-color: var(--border);
+}
+
+.fy26-page--simple .fy26-inpage-nav a {
+  box-shadow: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.fy26-page--simple .fy26-inpage-nav a:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: none;
+  text-decoration: none;
+}
+
+/* Simple FY26 Plan A–D: breathing room below section title and between lines */
+.fy26-plan-simple-list {
+  margin-top: 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.fy26-plan-simple-list > p.ds-subheading {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.fy26-plan-simple-list > p.ds-subheading + p.ds-subheading {
+  margin-top: 1.35rem;
+}
+
+/* Fusion30: tighter gap below section title → first line */
+#fusion30-summary .ds-section-header {
+  margin-bottom: 0.45rem;
+}
+
+.fy26-page:not(.fy26-page--simple) #fusion30-summary .ds-section-title.ds-section-title-single {
+  color: var(--daikin-blue);
+  border-bottom-color: var(--daikin-blue-light);
+}
+
+.fy26-page:not(.fy26-page--simple) #fy26-plan .ds-section-title.ds-section-title-single {
+  color: var(--daikin-blue);
+  border-bottom-color: var(--daikin-blue-light);
+}
+
+.fy26-page .fy26-fusion30-content p.ds-subheading,
+.fy26-page .fy26-fusion30-content p.ds-subheading strong {
+  color: #000;
+  font-weight: 600;
+}
+
+.fy26-page .fy26-fusion30-content > p.ds-subheading:first-of-type,
+.fy26-page .fy26-fusion30-content > p.ds-subheading:first-of-type strong,
+.fy26-page .fy26-fusion30-content p.fy26-fusion30-how-heading,
+.fy26-page .fy26-fusion30-content p.fy26-fusion30-how-heading strong {
+  font-size: 18px;
+}
+
+.fy26-page .fy26-fusion30-content strong {
+  color: #000;
+  font-size: 15px;
+}
+
+.fy26-page .fy26-fusion30-content p.fy26-fusion30-aims-intro {
+  font-size: 15px;
+  color: #000;
+}
+
+.fy26-page .fy26-fusion30-content .fy26-fusion30-aims-list,
+.fy26-page .fy26-fusion30-content .fy26-fusion30-how-list {
+  font-size: 15px;
+  color: #000;
+}
+
+/* Fusion30 — Digital Platform: What we aim to accomplish */
+.fy26-fusion30-aims-intro {
+  margin: 0 0 1rem 0;
+  line-height: 1.55;
+}
+
+.fy26-fusion30-aims-list {
+  margin: 0 0 1.25rem 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+  list-style-position: outside;
+  line-height: 1.55;
+}
+
+.fy26-fusion30-aims-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.fy26-fusion30-aims-list li:last-child {
+  margin-bottom: 0;
+}
+
+.fy26-fusion30-aims-list li::marker,
+.fy26-fusion30-how-list li::marker {
+  color: #000;
+}
+
+.fy26-fusion30-how-heading {
+  margin-top: 1.5rem;
+}
+
+.fy26-fusion30-how-list {
+  margin-bottom: 0;
+}
+
 /* FY25 Review card — SkyportHome & SkyportCare */
 .fy25-review-body {
   --fy25-gap: 2rem;
   display: flex;
   flex-direction: column;
   gap: var(--fy25-gap);
-  font-size: var(--text-base);
   color: var(--text-primary);
   line-height: 1.5;
 }
@@ -67,13 +287,13 @@
 
 .fy25-subhead {
   margin: 0;
+  font-size: var(--fy26-card-body);
   color: var(--text-secondary);
 }
 
 .fy25-opportunity {
   margin: 0 0 1rem 0;
   color: var(--text-secondary);
-  font-size: var(--text-sm);
 }
 
 .fy25-two-col {
@@ -173,7 +393,6 @@
 
 .fy25-chart-annotation {
   margin: 0.25rem 0 0 0;
-  font-size: var(--text-sm);
   color: var(--text-secondary);
   font-style: italic;
   line-height: 1.4;
@@ -208,7 +427,6 @@
 }
 
 .fy25-planned-card-title {
-  font-size: var(--text-base);
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: var(--daikin-blue);
@@ -218,7 +436,6 @@
   display: inline-block;
   margin: 0 0 0.5rem 0;
   padding: 0.25rem 0;
-  font-size: var(--text-sm);
   color: var(--daikin-blue);
   background: none;
   border: none;
@@ -244,14 +461,12 @@
 
 .fy25-planned-summary {
   margin: 0;
-  font-size: var(--text-sm);
   color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .fy25-planned-context {
   margin: 0 0 1rem 0;
-  font-size: var(--text-sm);
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -262,7 +477,6 @@
   background: var(--daikin-blue-light);
   border-radius: var(--radius);
   border-left: 4px solid var(--daikin-blue);
-  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.5;
@@ -279,38 +493,41 @@
 
 .fy25-takeaway-title {
   margin: 0 0 0.75rem 0;
-  font-size: var(--text-base);
   font-weight: 600;
   color: var(--daikin-blue);
 }
 
 .fy25-takeaway-list {
   margin: 0;
-  padding-left: 1.25rem;
-  font-size: var(--text-sm);
+  padding-left: 1.5rem;
+  list-style-type: disc;
+  list-style-position: outside;
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .fy25-takeaway-list li {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.65rem;
+  padding-left: 0.25rem;
 }
 
 .fy25-takeaway-list li:last-child {
   margin-bottom: 0;
 }
 
+.fy25-takeaway-list li::marker {
+  color: var(--text-primary);
+}
+
 .fy25-takeaway-bottomline {
-  display: block;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
+  margin: 1rem 0 0 0;
+  padding-top: 0.85rem;
   border-top: 1px solid rgba(0, 151, 224, 0.25);
-  font-size: var(--text-sm);
+  line-height: 1.55;
   color: var(--text-primary);
 }
 
 .fy25-section-title {
-  font-size: var(--text-base);
   font-weight: 600;
   margin: 0 0 0.75rem 0;
   color: var(--daikin-blue);
@@ -322,7 +539,6 @@
 }
 
 .fy25-col-title {
-  font-size: var(--text-base);
   font-weight: 600;
   margin: 0 0 0.75rem 0;
   color: var(--daikin-blue);
@@ -341,7 +557,6 @@
 }
 
 .fy25-visual-title {
-  font-size: var(--text-sm);
   font-weight: 600;
   margin: 0 0 0.75rem 0;
   color: var(--text-primary);
@@ -361,12 +576,10 @@
 }
 
 .fy25-funnel-label {
-  font-size: var(--text-sm);
   color: var(--text-primary);
 }
 
 .fy25-funnel-value {
-  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--daikin-blue);
 }
@@ -378,13 +591,11 @@
 
 .fy25-funnel-abs {
   color: var(--text-secondary);
-  font-size: 0.8125rem;
   font-weight: 500;
 }
 
 .fy25-funnel-abs-only {
   color: var(--text-secondary);
-  font-size: 0.8125rem;
   font-weight: 500;
 }
 
@@ -423,9 +634,6 @@
   margin-bottom: 0.5rem;
 }
 
-.fy25-bar-label {
-  font-size: var(--text-sm);
-}
 
 .fy25-bar-track {
   height: 10px;
@@ -446,13 +654,11 @@
 }
 
 .fy25-bar-value {
-  font-size: var(--text-sm);
   font-weight: 600;
 }
 
 .fy25-caption {
   margin: 0.75rem 0 0 0;
-  font-size: var(--text-xs);
   font-style: italic;
   color: var(--text-secondary);
 }
@@ -718,14 +924,12 @@
 }
 
 .fy25-feature-title {
-  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .fy25-feature-desc {
   margin: 0 0 0.35rem 0;
-  font-size: var(--text-sm);
   line-height: 1.5;
 }
 
@@ -740,7 +944,6 @@ ul.fy25-feature-desc li {
 
 .fy25-feature-meta {
   margin: 0;
-  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -779,6 +982,8 @@ ul.fy25-feature-desc li {
   grid-template-columns: 1fr;
   gap: 1.25rem;
   margin-bottom: 2rem;
+  /* Match bullet spacing: [B] Strategic Themes ↔ [A] Goals expanded lists */
+  --fy26-plan-bullet-gap: 0.65rem;
 }
 
 .fy26-mini-card {
@@ -793,6 +998,13 @@ ul.fy25-feature-desc li {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--daikin-blue);
+}
+
+/* Match theme row titles (e.g. Activation & Onboarding): larger section headers in FY26 Plan */
+.fy26-plan-cards .fy26-mini-card-title {
+  font-size: var(--fy26-card-title);
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .fy26-mini-card-text {
@@ -828,25 +1040,614 @@ ul.fy25-feature-desc li {
   margin: 0;
 }
 
-.fy26-bottomline {
-  margin-top: 0;
-  padding: 1.25rem 1.5rem;
-  background: var(--daikin-blue-light);
-  border-radius: var(--radius);
-  border-left: 4px solid var(--daikin-blue);
+/* [C] Execution Plan */
+.fy26-execution-plan-principle {
+  margin: 0.5rem 0 0.5rem 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
 }
 
-.fy26-bottomline-title {
-  margin: 0 0 0.75rem 0;
-  font-size: var(--text-base);
+.fy26-execution-plan-principle-label {
+  font-weight: 400;
+  color: #000;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.fy26-execution-plan-ownership {
+  margin: 0 0 1rem 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
+}
+
+.fy26-execution-plan-table-wrap {
+  overflow-x: auto;
+  margin-top: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fy26-execution-plan-footnote {
+  margin: 1rem 0 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
+}
+
+.fy26-execution-plan-product-link {
+  color: var(--daikin-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: inherit;
+}
+
+.fy26-execution-plan-product-link:hover {
+  color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-execution-plan-product-link:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.fy26-execution-plan-product-link strong {
+  font-weight: 700;
+}
+
+.fy26-execution-plan-table {
+  width: 100%;
+  min-width: 58rem;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.fy26-execution-plan-table th,
+.fy26-execution-plan-table td {
+  border: 1px solid var(--border);
+  padding: 0.65rem 0.75rem;
+  vertical-align: top;
+  text-align: left;
+  color: #000;
+}
+
+.fy26-execution-plan-table td strong {
+  color: #000;
+}
+
+.fy26-execution-plan-table th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #000;
+}
+
+.fy26-execution-plan-table td.fy26-execution-plan-theme-name {
   font-weight: 600;
+  color: #000;
+  width: 18%;
+  min-width: 9rem;
+}
+
+.fy26-execution-plan-table th.fy26-execution-plan-th-pic,
+.fy26-execution-plan-table td.fy26-execution-plan-pic {
+  min-width: 12rem;
+  max-width: 14rem;
+}
+
+.fy26-execution-plan-table td:nth-child(4) {
+  min-width: 11rem;
+}
+
+.fy26-execution-plan-table ul {
+  margin: 0;
+  padding-left: 1.35rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.fy26-execution-plan-table li {
+  display: list-item;
+  margin-bottom: 0.35rem;
+  line-height: 1.5;
+}
+
+.fy26-execution-plan-table li:last-child {
+  margin-bottom: 0;
+}
+
+.fy26-execution-plan-table li::marker {
+  color: inherit;
+}
+
+/* Digital Platform: Outcomes box with 4 nested goal mini cards */
+.fy26-outcomes-box#fy26-outcomes {
+  scroll-margin-top: 1rem;
+}
+
+.fy26-outcomes-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.fy26-outcomes-header .fy26-mini-card-title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: min(100%, 12rem);
+}
+
+.fy26-strategic-themes-bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.fy26-strategic-themes-bulk-btn {
+  padding: 0.15rem 0.1rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--daikin-blue);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.fy26-strategic-themes-bulk-btn:hover {
+  color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-strategic-themes-bulk-btn:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
+/* [A] Outcomes title: real in-page anchor + letter badge */
+.fy26-outcomes-heading-anchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--daikin-blue);
+  text-decoration: none;
+  font-size: var(--fy26-card-title);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.fy26-outcomes-heading-anchor:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-outcomes-heading-anchor:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Section A: Goals row title — black (anchor still in-page link) */
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcomes-heading-anchor {
+  color: #000;
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcomes-heading-anchor:hover {
+  color: #000;
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcomes-heading-anchor:focus-visible {
+  outline-color: #000;
+}
+
+/* Goals (A): four goal rows — link-style blue; chevron matches */
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-title {
+  color: var(--daikin-blue);
+  font-weight: 700;
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-chevron {
   color: var(--daikin-blue);
 }
 
-.fy26-bottomline-text {
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-trigger:hover .fy26-outcome-collapse-title {
+  color: var(--daikin-blue-dark, #0077b8);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-trigger:hover .fy26-outcome-chevron {
+  color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-strategic-themes-bulk-btn {
+  color: var(--daikin-blue);
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-strategic-themes-bulk-btn:hover {
+  color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-strategic-themes-bulk-btn:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-trigger:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-trigger:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
+/* A–D letter in circle — smaller than section ds-section-badge (2rem) */
+.fy26-plan-cards .fy26-mini-card-title--letter-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.fy26-plan-letter-badge {
+  flex-shrink: 0;
+  width: 1.375rem;
+  height: 1.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--daikin-blue);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border-radius: 50%;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.fy26-outcomes-goals-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fy26-outcome-row {
+  padding: 0 0 0.2rem;
+}
+
+.fy26-outcome-collapse-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.12rem 0;
+  text-align: left;
+  font: inherit;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.fy26-outcome-collapse-trigger:hover {
+  background: rgba(0, 151, 224, 0.06);
+}
+
+.fy26-outcome-collapse-trigger:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
+.fy26-outcome-chevron {
+  flex-shrink: 0;
+  width: 1.35rem;
+  min-width: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  line-height: 1;
+  color: var(--daikin-blue);
+  font-weight: 700;
+  transform: translateY(0.04em);
+}
+
+.fy26-outcome-collapse-title {
+  flex: 1;
+  font-size: inherit;
+  font-weight: 400;
+  color: var(--daikin-blue);
+  line-height: 1.45;
+}
+
+.fy26-outcome-expanded {
+  margin-top: 0.2rem;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+  padding-left: calc(1.35rem + 0.5rem);
+  /* 14px body for Goal / Target / Business Impact / KPI lines (expanded accordion) */
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.fy26-plan-cards .fy26-outcome-expanded .fy26-outcome-detail-list {
+  font-size: 0.875rem;
+}
+
+.fy26-plan-cards .fy26-outcome-expanded .fy26-outcome-detail-item,
+.fy26-plan-cards .fy26-outcome-expanded .fy26-goal-colon-label,
+.fy26-plan-cards .fy26-outcome-expanded .fy26-goal-colon-value,
+.fy26-plan-cards .fy26-outcome-expanded strong {
+  font-size: inherit;
+}
+
+.fy26-outcome-detail-list {
+  margin: 0;
+  padding-left: 1.35rem;
+  list-style-type: disc;
+  list-style-position: outside;
+  color: #000;
+}
+
+.fy26-plan-cards .fy26-strategic-themes-list li {
+  margin-bottom: var(--fy26-plan-bullet-gap);
+  padding-left: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
+}
+
+.fy26-plan-cards .fy26-strategic-themes-list li:last-child {
+  margin-bottom: 0;
+}
+
+.fy26-plan-cards .fy26-strategic-themes-list li::marker {
+  color: #000;
+  font-size: 0.95em;
+}
+
+.fy26-plan-cards .fy26-outcome-detail-item {
+  margin-bottom: var(--fy26-plan-bullet-gap);
+  padding-left: 0;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: #000;
+}
+
+.fy26-plan-cards .fy26-outcome-detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.fy26-plan-cards .fy26-outcome-detail-item::marker {
+  color: #000;
+  font-size: 0.95em;
+}
+
+.fy26-outcome-detail-item .fy26-goal-colon-label {
+  font-weight: 400;
+  color: #000;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.fy26-outcome-detail-item .fy26-goal-colon-value {
+  font-weight: 400;
+  color: #000;
+}
+
+.fy26-strategic-themes-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.fy26-strategic-themes-header .fy26-mini-card-title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: min(100%, 12rem);
+}
+
+.fy26-strategic-themes-list {
+  margin: 0;
+  padding-left: 1.35rem;
+  list-style-type: disc;
+  list-style-position: outside;
+  color: #000;
+}
+
+.fy26-strategic-themes-list .fy26-strategic-themes-lead {
+  color: #000;
+  font-weight: 400;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.fy26-operating-model-list {
+  margin: 0;
+  padding-left: 1.35rem;
+  list-style-type: disc;
+  list-style-position: outside;
+  color: #000;
+  font-size: 15px;
+}
+
+.fy26-operating-model-list li {
+  margin-bottom: var(--fy26-plan-bullet-gap, 0.65rem);
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
+}
+
+.fy26-operating-model-list li:last-child {
+  margin-bottom: 0;
+}
+
+.fy26-operating-model-list li::marker {
+  color: #000;
+  font-size: 0.95em;
+}
+
+/* Section B: Strategic Themes row title — black */
+.fy26-plan-cards .fy26-mini-card.fy26-strategic-themes-box h4.fy26-mini-card-title--letter-badge {
+  color: #000;
+}
+
+/* Section C: Execution Plan row title — black */
+.fy26-plan-cards .fy26-mini-card:has(.fy26-execution-plan-table-wrap) h4.fy26-mini-card-title--letter-badge {
+  color: #000;
+}
+
+/* Section D: Interaction & Alignment title black (rest of plan cards keep blue titles) */
+.fy26-plan-cards .fy26-mini-card:has(.fy26-operating-model-list) h4.fy26-mini-card-title--letter-badge {
+  margin-bottom: 0.85rem;
+  color: #000;
+}
+
+.fy26-mini-card .fy26-mini-card-title + .fy26-operating-model-list {
+  margin-top: 1.35rem;
+}
+
+.fy26-operating-model-list strong {
+  color: #000;
+  font-weight: 700;
+  font-size: inherit;
+}
+
+.fy26-theme-execution-text {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.fy26-goal-mini-card {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--bg-page, #f8fafc);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.fy26-goal-mini-title {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--daikin-blue);
+  margin-bottom: 0.35rem;
+}
+
+.fy26-goal-mini-text {
+  margin: 0;
+  font-size: var(--text-xs, 0.8125rem);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.fy26-goal-mini-card--detailed {
+  grid-column: 1 / -1;
+  padding: 1rem 1.15rem;
+}
+
+/* Letter inline on first line of headline; smaller than section badges */
+.fy26-goal-mini-header {
+  display: block;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--daikin-blue-light);
+  font-size: var(--text-base);
+  line-height: 1.45;
+}
+
+.fy26-goal-letter-badge.ds-section-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  min-width: 1.125rem;
+  min-height: 1.125rem;
+  margin-right: 0.4rem;
+  vertical-align: 0.2em;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.fy26-goal-letter-badge.fy26-theme-badge-wide.ds-section-badge {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  font-size: 0.5rem;
+}
+
+.fy26-goal-mini-header .fy26-goal-mini-title {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: inherit;
+  color: var(--daikin-blue);
+  padding: 0;
+  border: none;
+}
+
+.fy26-goal-title-lead,
+.fy26-goal-title-sep,
+.fy26-goal-mini-title--lead-only {
+  font-weight: 700;
+  color: var(--daikin-blue);
+}
+
+.fy26-goal-title-rest {
+  font-weight: 400;
+  color: #000;
+}
+
+.fy26-goal-colon-section {
+  margin-top: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.fy26-goal-colon-line {
+  margin: 0 0 0.65rem 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.fy26-goal-colon-line:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .fy26-goal-colon-line--kpi {
+    white-space: nowrap;
+  }
+}
+
+.fy26-goal-colon-label {
+  font-weight: 700;
+  color: var(--daikin-blue);
+}
+
+.fy26-goal-colon-value {
+  font-weight: 400;
+  color: #000;
 }
 

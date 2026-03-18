@@ -1,13 +1,13 @@
-/* Same horizontal padding + content width as SkyportCare (.skyport-care-page) */
+/* Top/side padding matches SkyportHome (.skyport-home-page) */
 .home-repository-page {
   width: 100%;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.5rem 2rem;
   box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
   .home-repository-page {
-    padding: 2.5rem 2rem;
+    padding: 2.5rem 2rem 2.5rem;
   }
 }
 
@@ -31,7 +31,7 @@
   line-height: 1.5;
 }
 
-/* Hero image: same strip height as SkyportCare */
+/* Hero image: match height of SkyportHome hero */
 .home-repository-hero {
   margin: 1.5rem 0 0 0;
   padding: 0;
@@ -49,11 +49,40 @@
   height: auto;
   object-fit: cover;
   max-height: min(26.25vh, 200px);
-  object-position: center center;
+  object-position: center 35%;
 }
 
 @media (min-width: 768px) {
   .home-repository-hero img {
     max-height: min(30vh, 238px);
   }
+}
+
+/* App Suite & All Strategy: same size and glow as Roadmap on SkyportHome */
+.home-repository-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.home-repository-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  color: var(--text-primary, #1a1a1a);
+  box-shadow: 0 0 16px rgba(0, 151, 224, 0.28), 0 2px 8px rgba(0, 151, 224, 0.2);
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.home-repository-btn:hover {
+  color: var(--daikin-blue, #0097e0);
+  background: rgba(0, 151, 224, 0.06);
+  box-shadow: 0 0 24px rgba(0, 151, 224, 0.4), 0 2px 12px rgba(0, 151, 224, 0.35);
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, Navigate, Link } from 'react-router-dom'
 import {
   ComposedChart,
   Bar,
@@ -136,33 +136,36 @@ const FY25_PLANNED_VS_ACTUAL_FEATURES = [
 export default function FY26() {
   const { sectionId } = useParams()
   const [showPlannedDetails, setShowPlannedDetails] = useState(false)
-  const [showExecutionPlan, setShowExecutionPlan] = useState(false)
+  const [outcomeExpanded, setOutcomeExpanded] = useState({
+    a: false,
+    b: false,
+    c: false,
+    d: false,
+  })
+  const outcomesAllExpanded =
+    outcomeExpanded.a &&
+    outcomeExpanded.b &&
+    outcomeExpanded.c &&
+    outcomeExpanded.d
   const isValid = FY26_TOP_NAV_IDS.includes(sectionId)
   if (!isValid) return <Navigate to={`${FY26_BASE}/res-solutions`} replace />
 
+  const isDigitalPlatform = sectionId === 'digital-platform'
+
   return (
-    <article className="fy26-page">
-      <header className="ds-header">
-        <h1>FY26 Playbook</h1>
+    <article className={`fy26-page${isDigitalPlatform ? '' : ' fy26-page--simple'}`}>
+      <header className="ds-header fy26-header">
+        <div className="fy26-header-title-row">
+          <h1>FY26 Playbook</h1>
+          <nav className="fy26-inpage-nav" aria-label="Page sections">
+            <a href="#fy25-review">FY25 Review</a>
+            <a href="#fy26-plan">FY26 Plan</a>
+            <a href="#fusion30-summary">Fusion30 Summary</a>
+          </nav>
+        </div>
         <p className="ds-tagline">{FY26_TOP_NAV_TITLES[sectionId]}</p>
       </header>
-      <div className="ds-layout">
-        <nav className="ds-nav" aria-label="Section navigation">
-          <p className="ds-nav-title">SECTIONS</p>
-          <ol className="ds-nav-list">
-            {FY26_CARD_SECTIONS.map((sec, i) => (
-              <li key={sec.id}>
-                <a
-                  href={`#${sec.id}`}
-                  className="ds-nav-link"
-                >
-                  <span className="ds-nav-num">{String(i + 1).padStart(2, '0')}</span>
-                  {sec.title}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
+      <div className="ds-layout fy26-layout">
         <div className="ds-sections">
           <section id="fy25-review" className="ds-section ds-section-single">
             <div className="ds-section-header">
@@ -239,13 +242,15 @@ export default function FY26() {
                         if (!viewBox || viewBox.height == null) return null
                         const cx = viewBox.x + viewBox.width - 20
                         const cy = viewBox.y + viewBox.height / 2
-                        const lines = ['Connected systems and Active SkyportCare', 'licenses (units)']
                         const lineHeight = 20
                         return (
                           <text transform={`rotate(-90, ${cx}, ${cy})`} x={cx} y={cy} textAnchor="middle" fontSize={14} fill="#6b7280">
-                            {lines.map((line, i) => (
-                              <tspan key={i} x={cx} dy={i === 0 ? 0 : lineHeight}>{line}</tspan>
-                            ))}
+                            <tspan x={cx} dy={0}>
+                              Connected systems and Active <tspan fontWeight={700}>SkyportCare</tspan>
+                            </tspan>
+                            <tspan x={cx} dy={lineHeight}>
+                              licenses (units)
+                            </tspan>
                           </text>
                         )
                       }}
@@ -353,13 +358,23 @@ export default function FY26() {
                 <h4 className="fy25-takeaway-title">Takeaway</h4>
                 <ul className="fy25-takeaway-list">
                   <li>Hardware demand was strong, but digital activation and engagement did not scale.</li>
-                  <li>The activation gap persisted throughout FY25, indicating a systemic execution issue rather than seasonality.</li>
-                  <li>Most planned software initiatives did not operationalize at scale, limiting downstream monetization.</li>
                   <li>
-                  Closing the activation gap represents the largest near‑term growth opportunity without incremental hardware volume.
-                  <span className="fy25-takeaway-bottomline"><strong>Bottom-line:</strong> Strategy was not the constraint. Execution ownership, prioritization, and throughput were.</span>
-                </li>
+                    The activation gap persisted throughout FY25, indicating a systemic execution issue rather
+                    than seasonality.
+                  </li>
+                  <li>
+                    Most planned software initiatives did not operationalize at scale, limiting downstream
+                    monetization.
+                  </li>
+                  <li>
+                    Closing the activation gap represents the largest near‑term growth opportunity without
+                    incremental hardware volume.
+                  </li>
                 </ul>
+                <p className="fy25-takeaway-bottomline">
+                  <strong>Bottom-line:</strong> Strategy was not the constraint. Execution ownership,
+                  prioritization, and throughput were.
+                </p>
               </div>
             </div>
             ) : (
@@ -375,45 +390,585 @@ export default function FY26() {
               <span className="ds-section-badge">2</span>
               <h2 className="ds-section-title ds-section-title-single">FY26 Plan – Operating Focus</h2>
             </div>
-            <div className="fy26-plan-cards">
-              <div className="fy26-mini-card">
-                <h4 className="fy26-mini-card-title">[A] FY26 Outcomes (metrics)</h4>
-                <p className="fy26-mini-card-text">Goals and metrics aligned to FY26 DCBU budget objectives.</p>
-              </div>
-              <div className="fy26-mini-card">
-                <h4 className="fy26-mini-card-title">[B] Strategic Themes (focus areas)</h4>
-                <p className="fy26-mini-card-text">Specific themes to support achieving the DCBU budget objectives.</p>
-              </div>
-              <div className="fy26-mini-card">
-                <h4 className="fy26-mini-card-title">[C] Execution Plan</h4>
-                <button type="button" className="fy26-mini-card-toggle" onClick={() => setShowExecutionPlan((v) => !v)} aria-expanded={showExecutionPlan}>
-                  {showExecutionPlan ? 'Hide details (−)' : 'View details (+)'}
-                </button>
-                {showExecutionPlan && (
-                  <div className="fy26-mini-card-expanded">
-                    <p className="fy26-mini-card-text">Clear action items with start/finish dates, PIC and dependencies. Clarity on interaction and alignment with other stakeholders / teams.</p>
+            {isDigitalPlatform ? (
+              <div className="fy26-plan-cards">
+                <>
+                  <div className="fy26-mini-card fy26-outcomes-box" id="fy26-outcomes">
+                    <div className="fy26-outcomes-header">
+                      <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
+                        <a href="#fy26-outcomes" className="fy26-outcomes-heading-anchor">
+                          <span className="fy26-plan-letter-badge">A</span>
+                          <span>Goals</span>
+                        </a>
+                      </h4>
+                      <div className="fy26-strategic-themes-bulk-actions">
+                        <button
+                          type="button"
+                          className="fy26-strategic-themes-bulk-btn"
+                          onClick={() =>
+                            outcomesAllExpanded
+                              ? setOutcomeExpanded({
+                                  a: false,
+                                  b: false,
+                                  c: false,
+                                  d: false,
+                                })
+                              : setOutcomeExpanded({
+                                  a: true,
+                                  b: true,
+                                  c: true,
+                                  d: true,
+                                })
+                          }
+                          aria-expanded={outcomesAllExpanded}
+                        >
+                          {outcomesAllExpanded ? 'Collapse all' : 'Expand all'}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="fy26-outcomes-goals-grid" role="list">
+                      <div className="fy26-outcome-row" role="listitem">
+                        <button
+                          type="button"
+                          className="fy26-outcome-collapse-trigger"
+                          onClick={() =>
+                            setOutcomeExpanded((s) => ({ ...s, b: !s.b }))
+                          }
+                          aria-expanded={outcomeExpanded.b}
+                          id="fy26-outcome-trigger-b"
+                          aria-controls="fy26-outcome-panel-b"
+                        >
+                          <span
+                            className={`fy26-outcome-chevron ${outcomeExpanded.b ? 'is-open' : ''}`}
+                            aria-hidden
+                          >
+                            {outcomeExpanded.b ? '▾' : '▸'}
+                          </span>
+                          <span className="fy26-outcome-collapse-title">
+                            Increase Ongoing Homeowner Engagement
+                          </span>
+                        </button>
+                        {outcomeExpanded.b && (
+                          <div
+                            className="fy26-outcome-expanded"
+                            id="fy26-outcome-panel-b"
+                            role="region"
+                            aria-labelledby="fy26-outcome-trigger-b"
+                          >
+                            <ul className="fy26-outcome-detail-list">
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Goal: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Increase repeat, value‑driven homeowner engagement through{' '}
+                                  <strong>SkyportHome</strong>.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Target: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Establish consistent monthly engagement across a meaningful share of connected
+                                  homeowners.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Business Impact: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Engagement is the leading indicator for renewal, upsell, and long-term
+                                  retention; without it, digital revenue does not scale.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Primary KPI(s): </span>
+                                <span className="fy26-goal-colon-value">
+                                  Monthly active users (MAU), % of connected systems with ≥1 meaningful monthly
+                                  action, insight / report interaction rate
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                      <div className="fy26-outcome-row" role="listitem">
+                        <button
+                          type="button"
+                          className="fy26-outcome-collapse-trigger"
+                          onClick={() =>
+                            setOutcomeExpanded((s) => ({ ...s, a: !s.a }))
+                          }
+                          aria-expanded={outcomeExpanded.a}
+                          id="fy26-outcome-trigger-a"
+                          aria-controls="fy26-outcome-panel-a"
+                        >
+                          <span
+                            className={`fy26-outcome-chevron ${outcomeExpanded.a ? 'is-open' : ''}`}
+                            aria-hidden
+                          >
+                            {outcomeExpanded.a ? '▾' : '▸'}
+                          </span>
+                          <span className="fy26-outcome-collapse-title">
+                            Increase Dealer‑Led Digital Adoption
+                          </span>
+                        </button>
+                        {outcomeExpanded.a && (
+                          <div
+                            className="fy26-outcome-expanded"
+                            id="fy26-outcome-panel-a"
+                            role="region"
+                            aria-labelledby="fy26-outcome-trigger-a"
+                          >
+                            <ul className="fy26-outcome-detail-list">
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Goal: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Increase active <strong>SkyportCare</strong> licenses as a percentage of
+                                  connected systems.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Target: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Increase active license penetration from ~1% today to low double‑digit levels
+                                  (~10–12%) across connected systems.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Business Impact: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Converts existing hardware volume into recurring, high‑margin digital value
+                                  without incremental equipment sales.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Primary KPI(s): </span>
+                                <span className="fy26-goal-colon-value">
+                                  Active license penetration (% of connected systems), Net new active licenses
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                      <div className="fy26-outcome-row" role="listitem">
+                        <button
+                          type="button"
+                          className="fy26-outcome-collapse-trigger"
+                          onClick={() =>
+                            setOutcomeExpanded((s) => ({ ...s, c: !s.c }))
+                          }
+                          aria-expanded={outcomeExpanded.c}
+                          id="fy26-outcome-trigger-c"
+                          aria-controls="fy26-outcome-panel-c"
+                        >
+                          <span
+                            className={`fy26-outcome-chevron ${outcomeExpanded.c ? 'is-open' : ''}`}
+                            aria-hidden
+                          >
+                            {outcomeExpanded.c ? '▾' : '▸'}
+                          </span>
+                          <span className="fy26-outcome-collapse-title">
+                            Grow Predictable Recurring Digital Revenue
+                          </span>
+                        </button>
+                        {outcomeExpanded.c && (
+                          <div
+                            className="fy26-outcome-expanded"
+                            id="fy26-outcome-panel-c"
+                            role="region"
+                            aria-labelledby="fy26-outcome-trigger-c"
+                          >
+                            <ul className="fy26-outcome-detail-list">
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Goal: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Grow predictable, recurring digital revenue from <strong>SkyportCare</strong>{' '}
+                                  licenses and platform services.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Target: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Achieve first‑year scale in digital recurring revenue through licensing and
+                                  services.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Business Impact: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Creates a scalable revenue layer that funds digital investment without margin
+                                  dilution in the hardware business.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Primary KPI(s): </span>
+                                <span className="fy26-goal-colon-value">
+                                  Digital ARR, License renewal rate, Revenue per connected system
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                      <div className="fy26-outcome-row" role="listitem">
+                        <button
+                          type="button"
+                          className="fy26-outcome-collapse-trigger"
+                          onClick={() =>
+                            setOutcomeExpanded((s) => ({ ...s, d: !s.d }))
+                          }
+                          aria-expanded={outcomeExpanded.d}
+                          id="fy26-outcome-trigger-d"
+                          aria-controls="fy26-outcome-panel-d"
+                        >
+                          <span
+                            className={`fy26-outcome-chevron ${outcomeExpanded.d ? 'is-open' : ''}`}
+                            aria-hidden
+                          >
+                            {outcomeExpanded.d ? '▾' : '▸'}
+                          </span>
+                          <span className="fy26-outcome-collapse-title">
+                            Increase Lifetime Value per Installed System
+                          </span>
+                        </button>
+                        {outcomeExpanded.d && (
+                          <div
+                            className="fy26-outcome-expanded"
+                            id="fy26-outcome-panel-d"
+                            role="region"
+                            aria-labelledby="fy26-outcome-trigger-d"
+                          >
+                            <ul className="fy26-outcome-detail-list">
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Goal: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Increase lifetime value (LTV) per installed system through platform‑led
+                                  services.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Target: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Begin shifting value capture from one‑time install economics toward multi‑year,
+                                  per‑home value.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Business Impact: </span>
+                                <span className="fy26-goal-colon-value">
+                                  Maximizes return on the installed base while strengthening dealer loyalty
+                                  through differentiated, data‑backed services.
+                                </span>
+                              </li>
+                              <li className="fy26-outcome-detail-item">
+                                <span className="fy26-goal-colon-label">Primary KPI(s): </span>
+                                <span className="fy26-goal-colon-value">
+                                  LTV per connected system, Multi‑service attachment rate, Retention / churn rate
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
+                  <div className="fy26-mini-card fy26-strategic-themes-box">
+                    <div className="fy26-strategic-themes-header">
+                      <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
+                        <span className="fy26-plan-letter-badge">B</span>
+                        <span>Strategic Themes</span>
+                      </h4>
+                    </div>
+                    <ul className="fy26-strategic-themes-list">
+                      <li>
+                        <span className="fy26-strategic-themes-lead">Activation &amp; Onboarding:</span> Moves
+                        systems from connected to activated, directly driving active license adoption and recurring
+                        digital revenue.
+                      </li>
+                      <li>
+                        <span className="fy26-strategic-themes-lead">Engagement &amp; Action:</span> Sustained
+                        homeowner and dealer engagement that enables renewals, upsell, and lifecycle monetization.
+                      </li>
+                      <li>
+                        <span className="fy26-strategic-themes-lead">Monetization &amp; Packaging:</span>{' '}
+                        Predictable, scalable digital revenue aligned to FY26 DCBU budget objectives.
+                      </li>
+                      <li>
+                        <span className="fy26-strategic-themes-lead">Platform &amp; Integration:</span> Consistent
+                        execution at scale by eliminating fragmented tools and manual workarounds.
+                      </li>
+                      <li>
+                        <span className="fy26-strategic-themes-lead">Operating Cadence &amp; Ownership:</span>{' '}
+                        Execution throughput required to meet modeled FY26 growth assumptions.
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="fy26-mini-card">
+                    <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
+                      <span className="fy26-plan-letter-badge">C</span>
+                      <span>Execution Plan</span>
+                    </h4>
+                    <p className="fy26-execution-plan-principle">
+                      <span className="fy26-execution-plan-principle-label">UX Principle:</span> All FY26
+                      execution prioritizes simple, consistent, and outcome-driven user experiences across{' '}
+                      <strong>SkyportHome</strong> and <strong>SkyportCare</strong>.
+                    </p>
+                    <p className="fy26-execution-plan-ownership">
+                      Execution is led through product‑level ownership, with development capacity augmented
+                      through external partners.
+                    </p>
+                    <div className="fy26-execution-plan-table-wrap">
+                      <table className="fy26-execution-plan-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Strategic Theme</th>
+                            <th scope="col">Key Actions</th>
+                            <th scope="col" className="fy26-execution-plan-th-pic">
+                              PIC
+                            </th>
+                            <th scope="col">Key Dependencies</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="fy26-execution-plan-theme-name">Activation &amp; Onboarding</td>
+                            <td>
+                              <ul>
+                                <li>Simplify dealer and homeowner activation flows</li>
+                                <li>
+                                  Standardize activation at install and commissioning (Quality Install as default
+                                  path)
+                                </li>
+                                <li>Reduce friction from install → first value</li>
+                              </ul>
+                            </td>
+                            <td className="fy26-execution-plan-pic">SkyportCare Product Management</td>
+                            <td>
+                              <ul>
+                                <li>Platform services</li>
+                                <li>UX design standards</li>
+                                <li>Dealer processes</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fy26-execution-plan-theme-name">Engagement &amp; Action</td>
+                            <td>
+                              <ul>
+                                <li>
+                                  Shift from passive monitoring to actionable insights (reports, alerts,
+                                  recommended actions)
+                                </li>
+                                <li>
+                                  Establish recurring engagement loops across <strong>SkyportHome</strong> and{' '}
+                                  <strong>SkyportCare</strong>
+                                </li>
+                                <li>
+                                  Surface dealer-initiated actions through consistent homeowner experiences
+                                </li>
+                              </ul>
+                            </td>
+                            <td className="fy26-execution-plan-pic">SkyportHome Product Management</td>
+                            <td>
+                              <ul>
+                                <li>Data &amp; analytics</li>
+                                <li>Notifications</li>
+                                <li>UX design standards</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fy26-execution-plan-theme-name">Monetization &amp; Packaging</td>
+                            <td>
+                              <ul>
+                                <li>Simplify license packaging (bundles, defaults, renewal paths)</li>
+                                <li>
+                                  Align pricing and packaging to dealer workflows and per-home value models
+                                </li>
+                                <li>
+                                  Reduce cognitive and transactional friction to purchase and renew
+                                </li>
+                              </ul>
+                            </td>
+                            <td className="fy26-execution-plan-pic">
+                              Platform / Monetization Product Management
+                            </td>
+                            <td>
+                              <ul>
+                                <li>Finance &amp; pricing governance</li>
+                                <li>Billing systems</li>
+                                <li>Legal</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fy26-execution-plan-theme-name">Platform &amp; Integration</td>
+                            <td>
+                              <ul>
+                                <li>
+                                  Establish <strong>SkyportCare</strong> as the primary dealer front door with
+                                  backend integrations
+                                </li>
+                                <li>
+                                  Reduce dependency on emails, tribal knowledge, and disconnected tools
+                                </li>
+                                <li>
+                                  Enable feature reuse across <strong>SkyportHome</strong> and{' '}
+                                  <strong>SkyportCare</strong> through shared platform services
+                                </li>
+                              </ul>
+                            </td>
+                            <td className="fy26-execution-plan-pic">
+                              Platform Architecture / Product Management
+                            </td>
+                            <td>
+                              <ul>
+                                <li>Digital tool integrations</li>
+                                <li>Security</li>
+                                <li>Legacy tools</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="fy26-execution-plan-theme-name">Operating Cadence &amp; Ownership</td>
+                            <td>
+                              <ul>
+                                <li>Establish clear end-to-end product ownership per theme</li>
+                                <li>
+                                  Increase release cadence aligned to engagement and monetization goals
+                                </li>
+                                <li>Shift from project-based delivery to outcome-based execution</li>
+                              </ul>
+                            </td>
+                            <td className="fy26-execution-plan-pic">Digital Leadership</td>
+                            <td>
+                              <ul>
+                                <li>Org design</li>
+                                <li>Funding</li>
+                                <li>Partner capacity</li>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="fy26-execution-plan-footnote">
+                      Detailed{' '}
+                      <Link to="/apps/skyport-home" className="fy26-execution-plan-product-link">
+                        <strong>SkyportHome</strong>
+                      </Link>{' '}
+                      and{' '}
+                      <Link to="/apps/skyport-care" className="fy26-execution-plan-product-link">
+                        <strong>SkyportCare</strong>
+                      </Link>{' '}
+                      features and capabilities are documented on the product pages and are not repeated here.
+                    </p>
+                  </div>
+                  <div className="fy26-mini-card">
+                    <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
+                      <span className="fy26-plan-letter-badge">D</span>
+                      <span>Interaction &amp; Alignment with Other Teams</span>
+                    </h4>
+                    <ul className="fy26-operating-model-list">
+                      <li>
+                        Digital Platforms owns end‑to‑end definition, prioritization, and orchestration of digital
+                        experiences across <strong>SkyportHome</strong> and <strong>SkyportCare</strong>.
+                      </li>
+                      <li>
+                        Controls Engineering owns hardware behavior, commissioning logic, and system‑level data
+                        generation; digital teams consume and operationalize this data.
+                      </li>
+                      <li>
+                        Sales &amp; Dealer Enablement partner on dealer workflows, onboarding, and adoption
+                        feedback; digital teams define and scale standardized experiences.
+                      </li>
+                      <li>
+                        IT / Platform Services support shared services (identity, security, infrastructure);
+                        digital teams own product logic and user experience.
+                      </li>
+                      <li>
+                        External software partners augment delivery capacity under Digital Platforms direction and
+                        roadmap governance.
+                      </li>
+                    </ul>
+                  </div>
+                </>
               </div>
-              <div className="fy26-mini-card">
-                <h4 className="fy26-mini-card-title">[D] Operating Model Shift</h4>
-                <p className="fy26-mini-card-text">How we will operate to deliver on FY26 outcomes and themes.</p>
+            ) : (
+              <div className="ds-content fy26-plan-simple-list">
+                <p className="ds-subheading">
+                  <strong>A.</strong> Goals aligned to FY26 DCBU budget objectives.
+                </p>
+                <p className="ds-subheading">
+                  <strong>B.</strong> Specific Themes to support achieving the DCBU budget objectives.
+                </p>
+                <p className="ds-subheading">
+                  <strong>C.</strong> Clear action items with start/finish dates, PIC and dependencies.
+                </p>
+                <p className="ds-subheading">
+                  <strong>D.</strong> Clarity on interaction and alignment with other stakeholders / teams of your
+                  designated themes/initiatives.
+                </p>
               </div>
-            </div>
-            <div className="fy26-bottomline">
-              <h4 className="fy26-bottomline-title">FY26 Bottom‑line</h4>
-              <p className="fy26-bottomline-text">Placeholder: Add key FY26 plan summary and bottom-line message here.</p>
-            </div>
+            )}
           </section>
           <section id="fusion30-summary" className="ds-section ds-section-single">
             <div className="ds-section-header">
               <span className="ds-section-badge">3</span>
               <h2 className="ds-section-title ds-section-title-single">Fusion30 Summary - Strategic Horizon</h2>
             </div>
-            <div className="ds-content">
-              <p className="ds-subheading"><strong>What you want to accomplish with Fusion30 (QAP Quantitative Goals)</strong></p>
-              <p className="ds-subheading"><strong>How you will accomplish (Qualitative Actions, 5W/2H)</strong></p>
-            </div>
+            {isDigitalPlatform ? (
+              <div className="ds-content fy26-fusion30-content">
+                <p className="ds-subheading">
+                  <strong>What we aim to accomplish</strong>
+                </p>
+                <p className="fy26-fusion30-aims-intro">
+                  By the Fusion30 horizon, digital platforms become a core growth engine that compounds value
+                  across Daikin&apos;s installed base.
+                </p>
+                <ul className="fy26-fusion30-aims-list">
+                  <li>
+                    Reach 2M+ engaged homeowners across <strong>SkyportHome</strong>
+                  </li>
+                  <li>Achieve broad, sustained digital service adoption across connected systems</li>
+                  <li>Build a meaningful recurring digital revenue stream</li>
+                  <li>
+                    Shift value capture from one‑time installs to multi‑year, per‑home value
+                  </li>
+                  <li>
+                    Establish a scalable foundation for energy, electrification, and whole‑home services
+                  </li>
+                </ul>
+                <p className="ds-subheading fy26-fusion30-how-heading">
+                  <strong>How we will accomplish this</strong>
+                </p>
+                <ul className="fy26-fusion30-aims-list fy26-fusion30-how-list">
+                  <li>
+                    Execute across the full lifecycle: install → operate → service → replace
+                  </li>
+                  <li>
+                    Use <strong>SkyportHome</strong> for homeowner engagement and <strong>SkyportCare</strong> for
+                    dealer execution
+                  </li>
+                  <li>
+                    Operate with product‑led ownership and outcome‑based prioritization
+                  </li>
+                  <li>
+                    Convert connectivity into activation, engagement, and monetization
+                  </li>
+                  <li>
+                    Reduce fragmentation through shared platform services and UX‑first execution
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <div className="ds-content">
+                <p className="ds-subheading">
+                  <strong>What you want to accomplish with Fusion30 (QAP Quantitative Goals)</strong>
+                </p>
+                <p className="ds-subheading">
+                  <strong>How you will accomplish (Qualitative Actions, 5W/2H)</strong>
+                </p>
+              </div>
+            )}
           </section>
         </div>
       </div>
