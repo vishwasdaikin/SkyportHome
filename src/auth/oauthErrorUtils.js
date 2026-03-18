@@ -1,3 +1,15 @@
+/** True if the error is "user not assigned to app" (AADSTS50105). */
+export function isAssignmentRequiredError(errorMessage) {
+  if (!errorMessage || typeof errorMessage !== 'string') return false
+  const s = errorMessage.toLowerCase()
+  return (
+    s.includes('50105') ||
+    s.includes('not assigned') ||
+    s.includes('blocked because they are not') ||
+    s.includes('assign access to this application')
+  )
+}
+
 /** Parse OAuth error from hash (#error=...) or query (?error=...) after redirect from Entra. */
 export function parseOAuthErrorFromUrl() {
   if (typeof window === 'undefined') return null

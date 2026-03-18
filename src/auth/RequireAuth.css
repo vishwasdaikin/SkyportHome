@@ -17,6 +17,15 @@
   text-align: left;
 }
 
+.require-auth-card-access {
+  max-width: 28rem;
+  text-align: center;
+}
+
+.require-auth-card-access .require-auth-retry {
+  margin-top: 1rem;
+}
+
 .require-auth-title {
   margin: 0;
   font-size: 1.125rem;

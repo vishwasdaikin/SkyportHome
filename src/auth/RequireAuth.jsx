@@ -4,7 +4,7 @@ import { useMsal, useIsAuthenticated } from '@azure/msal-react'
 import { InteractionStatus } from '@azure/msal-browser'
 import { isAzureAuthEnabled, isBackendAuthEnabled } from './authConfig'
 import { loginRequest } from './authConfig'
-import { parseOAuthErrorFromUrl, stripOAuthErrorFromBrowserUrl } from './oauthErrorUtils'
+import { parseOAuthErrorFromUrl, stripOAuthErrorFromBrowserUrl, isAssignmentRequiredError } from './oauthErrorUtils'
 import RequireAuthBackend from './RequireAuthBackend'
 import './RequireAuth.css'
 
@@ -111,6 +111,24 @@ function RequireAuthMsal({ children }) {
   }
 
   if (signInError) {
+    const isAccessNotAssigned = isAssignmentRequiredError(signInError)
+
+    if (isAccessNotAssigned) {
+      return (
+        <div className="require-auth-gate">
+          <div className="require-auth-card require-auth-card-access">
+            <p className="require-auth-title">You do not have access</p>
+            <p className="require-auth-sub">
+              You do not have access to this application. If you require access, please reach out to the admin.
+            </p>
+            <button type="button" className="require-auth-retry" onClick={handleRetrySignIn}>
+              Try again
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="require-auth-gate">
         <div className="require-auth-card require-auth-card-wide">
