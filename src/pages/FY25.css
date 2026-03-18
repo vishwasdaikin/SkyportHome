@@ -1,3 +1,11 @@
+.fy25-page-simple {
+  min-height: 50vh;
+}
+
+.fy25-simple-actions {
+  margin: 1.25rem 0 0 0;
+}
+
 .fy25-page {
   width: 100%;
   max-width: 72rem;

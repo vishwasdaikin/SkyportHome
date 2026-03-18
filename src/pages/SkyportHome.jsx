@@ -108,6 +108,16 @@ export default function SkyportHome() {
         <p className="skyport-home-tagline">
           Always‑on homeowner engagement — features and product capabilities.
         </p>
+        <figure className="skyport-home-hero">
+          <img
+            src={`${import.meta.env.BASE_URL}images/skyport-home-hero.png`}
+            alt="Homeowner using the Daikin thermostat app on a phone"
+            width={1024}
+            height={682}
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
         </nav>

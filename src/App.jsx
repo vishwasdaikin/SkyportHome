@@ -16,7 +16,8 @@ import CapabilityDepth from './pages/CapabilityDepth'
 import Demos from './pages/Demos'
 import DemosAnnotated from './pages/DemosAnnotated'
 import ImagePage from './pages/ImagePage'
-import TestPage from './pages/TestPage'
+import AppsPage from './pages/AppsPage'
+import StrategyPage from './pages/StrategyPage'
 
 export default function App() {
   return (
@@ -25,9 +26,9 @@ export default function App() {
         <Routes>
         <Route path="/" element={<HomePageTailwind />} />
         <Route path="/demos" element={<Demos />} />
-        <Route path="/test" element={<TestPage />} />
         <Route path="/demos/annotated" element={<DemosAnnotated />} />
         <Route path="/image" element={<ImagePage />} />
+        <Route path="/apps" element={<AppsPage />} />
         <Route path="/apps/skyport-home" element={<SkyportHome />} />
         <Route path="/apps/skyport-care" element={<SkyportCare />} />
         <Route path="/apps/skyport-energy" element={<SkyportEnergy />} />
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/strategy/operating/experiences/capability-depth" element={<CapabilityDepth />} />
         <Route path="/strategy/operating/lifecycle-growth" element={<LifecycleGrowth />} />
         <Route path="/strategy/operating/reference" element={<Reference />} />
+        <Route path="/strategy" element={<StrategyPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

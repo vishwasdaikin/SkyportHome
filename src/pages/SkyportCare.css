@@ -19,6 +19,57 @@
   line-height: 1.5;
 }
 
+/* Match SkyportHome hero: full width, same max-height caps */
+.skyport-care-hero {
+  margin: 1.5rem 0 0 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(0, 151, 224, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.skyport-care-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: min(26.25vh, 200px);
+  /* Anchor on upper area so the visible strip shows the technician’s face */
+  object-position: center 18%;
+}
+
+@media (min-width: 768px) {
+  .skyport-care-hero img {
+    max-height: min(30vh, 238px);
+    object-position: center 20%;
+  }
+}
+
+.skyport-care-useful {
+  margin-top: 1.75rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.skyport-care-useful-title {
+  margin: 0 0 0.5rem 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.skyport-care-useful-coming-soon {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 .skyport-care-section {
   margin-top: 2.5rem;
   scroll-margin-top: 2rem;

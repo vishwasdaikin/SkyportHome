@@ -23,7 +23,9 @@ const FY26_NAV_ITEMS = [
 export default function Layout({ children }) {
   const [showBackToTop, setShowBackToTop] = useState(false)
   const [strategyOpen, setStrategyOpen] = useState(false)
+  const [appsOpen, setAppsOpen] = useState(false)
   const strategyRef = useRef(null)
+  const appsRef = useRef(null)
   const location = useLocation()
   const isOperatingPlaybook = location.pathname.startsWith(STRATEGY_OPERATING_BASE)
   const isFY26 = location.pathname.startsWith(STRATEGY_FY26_BASE)
@@ -38,11 +40,13 @@ export default function Layout({ children }) {
 
   useEffect(() => {
     setStrategyOpen(false)
+    setAppsOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (strategyRef.current && !strategyRef.current.contains(e.target)) setStrategyOpen(false)
+      if (appsRef.current && !appsRef.current.contains(e.target)) setAppsOpen(false)
     }
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
@@ -55,20 +59,102 @@ export default function Layout({ children }) {
   return (
     <div className={`app-layout ${isOperatingPlaybook ? 'app-layout--playbook' : ''} ${isFY26 ? 'app-layout--fy26' : ''}`}>
       <header className="app-header">
-        <nav className="app-nav" aria-label="Main">
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) => `app-nav-logo ${isActive ? 'active' : ''}`}
+          aria-label="Skyport home"
+        >
+          <span className="app-nav-logo-inner" aria-hidden>
+            <svg
+              className="app-nav-logo-svg"
+              width="28"
+              height="28"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="appNavBrandOrb" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#00b4ff" />
+                  <stop offset="1" stopColor="#0097e0" />
+                </linearGradient>
+                <linearGradient id="appNavBrandGlow" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#0097e0" stopOpacity="0.25" />
+                  <stop offset="1" stopColor="#0077b6" stopOpacity="0.08" />
+                </linearGradient>
+              </defs>
+              <circle cx="16" cy="16" r="14" fill="url(#appNavBrandGlow)" />
+              <ellipse
+                cx="16"
+                cy="16"
+                rx="12"
+                ry="5"
+                stroke="url(#appNavBrandOrb)"
+                strokeWidth="1.2"
+                strokeOpacity="0.45"
+                transform="rotate(-28 16 16)"
+              />
+              <ellipse
+                cx="16"
+                cy="16"
+                rx="12"
+                ry="5"
+                stroke="url(#appNavBrandOrb)"
+                strokeWidth="1.2"
+                strokeOpacity="0.35"
+                transform="rotate(32 16 16)"
+              />
+              <circle cx="16" cy="16" r="6.5" fill="url(#appNavBrandOrb)" />
+              <circle cx="16" cy="16" r="3" fill="#fff" fillOpacity="0.35" />
+              <circle cx="23.5" cy="9" r="2.75" fill="url(#appNavBrandOrb)" stroke="#fff" strokeWidth="0.75" strokeOpacity="0.5" />
+            </svg>
+          </span>
+        </NavLink>
+        <nav className="app-nav app-nav--centered" aria-label="Main">
           <NavLink to="/" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`} end>
             Home
           </NavLink>
 
-          <NavLink to={`${APPS_BASE}/skyport-home`} className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
-            SkyportHome
-          </NavLink>
-          <NavLink to={`${APPS_BASE}/skyport-care`} className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
-            SkyportCare
-          </NavLink>
-          <NavLink to={`${APPS_BASE}/skyport-energy`} className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
-            SkyportEnergy
-          </NavLink>
+          <div className="app-nav-dropdown" ref={appsRef}>
+            <button
+              type="button"
+              className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith(APPS_BASE) ? 'active' : ''}`}
+              onClick={() => setAppsOpen((o) => !o)}
+              aria-expanded={appsOpen}
+              aria-haspopup="true"
+            >
+              App Suite ▾
+            </button>
+            {appsOpen && (
+              <div className="app-nav-dropdown-menu">
+                <NavLink to={APPS_BASE} end className="app-nav-dropdown-item" onClick={() => setAppsOpen(false)}>
+                  Apps Overview
+                </NavLink>
+                <NavLink
+                  to={`${APPS_BASE}/skyport-home`}
+                  className="app-nav-dropdown-item"
+                  onClick={() => setAppsOpen(false)}
+                >
+                  SkyportHome
+                </NavLink>
+                <NavLink
+                  to={`${APPS_BASE}/skyport-care`}
+                  className="app-nav-dropdown-item"
+                  onClick={() => setAppsOpen(false)}
+                >
+                  SkyportCare
+                </NavLink>
+                <NavLink
+                  to={`${APPS_BASE}/skyport-energy`}
+                  className="app-nav-dropdown-item"
+                  onClick={() => setAppsOpen(false)}
+                >
+                  SkyportEnergy
+                </NavLink>
+              </div>
+            )}
+          </div>
 
           <div className="app-nav-dropdown" ref={strategyRef}>
             <button
@@ -82,9 +168,28 @@ export default function Layout({ children }) {
             </button>
             {strategyOpen && (
               <div className="app-nav-dropdown-menu">
-                <NavLink to="/strategy/fy25" className="app-nav-dropdown-item">FY25</NavLink>
-                <NavLink to="/strategy/fy26" className="app-nav-dropdown-item">FY26</NavLink>
-                <NavLink to={`${STRATEGY_OPERATING_BASE}/overview`} className="app-nav-dropdown-item">Operating Playbook</NavLink>
+                <NavLink
+                  to="/strategy"
+                  end
+                  className="app-nav-dropdown-item"
+                  onClick={() => setStrategyOpen(false)}
+                >
+                  All strategy
+                </NavLink>
+                <NavLink
+                  to="/strategy/fy26"
+                  className="app-nav-dropdown-item"
+                  onClick={() => setStrategyOpen(false)}
+                >
+                  FY26
+                </NavLink>
+                <NavLink
+                  to={`${STRATEGY_OPERATING_BASE}/overview`}
+                  className="app-nav-dropdown-item"
+                  onClick={() => setStrategyOpen(false)}
+                >
+                  Digital Operating Playbook
+                </NavLink>
               </div>
             )}
           </div>
@@ -92,19 +197,18 @@ export default function Layout({ children }) {
           <NavLink to="/demos" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
             Demos
           </NavLink>
-          <NavLink to="/test" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
-            Test
-          </NavLink>
 
           <NavLink to="/image" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}>
             Image
           </NavLink>
+        </nav>
+        <div className="app-header-auth">
           {isBackendAuthEnabled() && <AuthNavBackend />}
           {!isBackendAuthEnabled() && isAzureAuthEnabled && <AuthNav />}
-        </nav>
+        </div>
       </header>
       {isOperatingPlaybook && (
-        <nav className="app-playbook-nav" aria-label="Operating Playbook">
+        <nav className="app-playbook-nav" aria-label="Digital Operating Playbook">
           <NavLink to={`${STRATEGY_OPERATING_BASE}/overview`} className={({ isActive }) => `app-playbook-nav-link ${isActive ? 'active' : ''}`} end>
             Overview
           </NavLink>

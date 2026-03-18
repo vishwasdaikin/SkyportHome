@@ -1,0 +1,138 @@
+.apps-page {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.apps-page-header {
+  margin-bottom: 2rem;
+}
+
+.apps-page-header h1 {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.apps-page-intro {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 40rem;
+}
+
+.apps-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .apps-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .apps-tiles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.apps-tile-wrap {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+.apps-tile {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--daikin-blue);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.apps-tile:hover {
+  border-left-color: var(--daikin-blue-dark, #0077b6);
+  box-shadow: 0 6px 20px rgba(0, 151, 224, 0.15);
+  transform: translateY(-2px);
+}
+
+.apps-tile:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
+.apps-tile-image-wrap {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--daikin-blue-light);
+}
+
+.apps-tile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* SkyportCare hero is face-focused in full pages; center works for tile thumb */
+.apps-page--suite .apps-tile-wrap:nth-child(2) .apps-tile-image {
+  object-position: center 22%;
+}
+
+.apps-tile-body {
+  padding: 1.15rem 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.apps-tile-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--daikin-blue);
+}
+
+.apps-tile-desc {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.apps-tile-cta {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--daikin-blue);
+  margin-top: 0.25rem;
+}
+
+.apps-tile:hover .apps-tile-cta {
+  color: var(--daikin-blue-dark, #0077b6);
+}
+
+@media (min-width: 640px) {
+  .apps-page {
+    padding: 2.5rem 2rem 3.5rem;
+  }
+}

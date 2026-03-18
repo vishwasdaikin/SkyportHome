@@ -121,9 +121,25 @@ export default function SkyportCare() {
         <p className="skyport-care-tagline">
           Dealer execution at scale — the dealer operating layer across the full lifecycle.
         </p>
+        <figure className="skyport-care-hero">
+          <img
+            src={`${import.meta.env.BASE_URL}images/skyport-care-hero.png`}
+            alt="Daikin service technician with Daikin service van"
+            width={1024}
+            height={532}
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
         </nav>
+        <section className="skyport-care-useful" aria-labelledby="skyport-care-useful-title">
+          <h2 id="skyport-care-useful-title" className="skyport-care-useful-title">
+            Useful links
+          </h2>
+          <p className="skyport-care-useful-coming-soon">More coming soon.</p>
+        </section>
       </header>
 
       <section id="roadmap" className="skyport-care-section skyport-care-section-features">

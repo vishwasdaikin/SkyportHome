@@ -20,26 +20,27 @@ describe('Layout top nav', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
   })
 
-  it('includes primary app links with correct targets', () => {
+  it('includes App Suite menu and main links', () => {
     renderNav()
     const nav = screen.getByRole('navigation', { name: 'Main' })
 
     expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
-    expect(within(nav).getByRole('link', { name: 'SkyportHome' })).toHaveAttribute(
-      'href',
-      '/apps/skyport-home'
-    )
-    expect(within(nav).getByRole('link', { name: 'SkyportCare' })).toHaveAttribute(
-      'href',
-      '/apps/skyport-care'
-    )
-    expect(within(nav).getByRole('link', { name: 'SkyportEnergy' })).toHaveAttribute(
-      'href',
-      '/apps/skyport-energy'
-    )
+    expect(within(nav).getByRole('button', { name: /app suite/i })).toBeInTheDocument()
     expect(within(nav).getByRole('link', { name: 'Demos' })).toHaveAttribute('href', '/demos')
-    expect(within(nav).getByRole('link', { name: 'Test' })).toHaveAttribute('href', '/test')
     expect(within(nav).getByRole('link', { name: 'Image' })).toHaveAttribute('href', '/image')
+  })
+
+  it('opens App Suite menu with Apps Overview and product links', async () => {
+    const user = userEvent.setup()
+    renderNav()
+    const nav = screen.getByRole('navigation', { name: 'Main' })
+
+    await user.click(within(nav).getByRole('button', { name: /app suite/i }))
+
+    expect(screen.getByRole('link', { name: 'Apps Overview' })).toHaveAttribute('href', '/apps')
+    expect(screen.getByRole('link', { name: 'SkyportHome' })).toHaveAttribute('href', '/apps/skyport-home')
+    expect(screen.getByRole('link', { name: 'SkyportCare' })).toHaveAttribute('href', '/apps/skyport-care')
+    expect(screen.getByRole('link', { name: 'SkyportEnergy' })).toHaveAttribute('href', '/apps/skyport-energy')
   })
 
   it('opens Strategy menu and lists section links', async () => {
@@ -49,9 +50,9 @@ describe('Layout top nav', () => {
 
     await user.click(within(nav).getByRole('button', { name: /strategy/i }))
 
-    expect(screen.getByRole('link', { name: 'FY25' })).toHaveAttribute('href', '/strategy/fy25')
+    expect(screen.getByRole('link', { name: 'All strategy' })).toHaveAttribute('href', '/strategy')
     expect(screen.getByRole('link', { name: 'FY26' })).toHaveAttribute('href', '/strategy/fy26')
-    expect(screen.getByRole('link', { name: 'Operating Playbook' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Digital Operating Playbook' })).toHaveAttribute(
       'href',
       '/strategy/operating/overview'
     )

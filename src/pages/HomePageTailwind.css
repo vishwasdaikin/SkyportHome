@@ -1,0 +1,59 @@
+/* Same horizontal padding + content width as SkyportCare (.skyport-care-page) */
+.home-repository-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .home-repository-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* Above hero — same pattern as SkyportHome (h1 + tagline, then figure) */
+.home-repository-header {
+  margin: 0;
+}
+
+.home-repository-header h1 {
+  margin: 0;
+  font-size: var(--heading-1, 1.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  line-height: 1.2;
+}
+
+.home-repository-tagline {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base, 1rem);
+  color: var(--text-secondary, #5c5c5c);
+  line-height: 1.5;
+}
+
+/* Hero image: same strip height as SkyportCare */
+.home-repository-hero {
+  margin: 1.5rem 0 0 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--radius, 8px);
+  overflow: hidden;
+  border: 1px solid rgba(0, 151, 224, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.home-repository-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: min(26.25vh, 200px);
+  object-position: center center;
+}
+
+@media (min-width: 768px) {
+  .home-repository-hero img {
+    max-height: min(30vh, 238px);
+  }
+}

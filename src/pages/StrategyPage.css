@@ -1,0 +1,43 @@
+/* Strategy intro: full width of page column; one line on wide screens */
+.strategy-page-intro {
+  max-width: none;
+  width: 100%;
+}
+
+@media (min-width: 1100px) {
+  .strategy-page-intro {
+    white-space: nowrap;
+  }
+}
+
+/* FY25 card: not a navigable tile — PDF opens in new tab */
+.apps-tile--static {
+  cursor: default;
+}
+
+.apps-tile--static:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-left-color: var(--daikin-blue);
+}
+
+/* FY25 mind-map image — keep central lightbulb / marketing hub in frame */
+.apps-tile-fy25-image {
+  object-position: center center;
+}
+
+/* FY25: same “Open →” text treatment as FY26 tile CTA */
+a.apps-tile-cta--external {
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+a.apps-tile-cta--external:hover {
+  color: var(--daikin-blue-dark, #0077b6);
+}
+
+a.apps-tile-cta--external:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

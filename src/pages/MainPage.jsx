@@ -10,9 +10,8 @@ export default function MainPage() {
         <div className="main-playbook-cta">
           <p className="main-playbook-label">Go to playbook</p>
           <div className="main-playbook-links">
-            <Link to="/playbook/fy25" className="main-playbook-link">FY25</Link>
             <Link to="/strategy/fy26" className="main-playbook-link">FY26</Link>
-            <Link to="/playbook/operating/overview" className="main-playbook-link main-playbook-link-primary">Operating Playbook</Link>
+            <Link to="/playbook/operating/overview" className="main-playbook-link main-playbook-link-primary">Digital Operating Playbook</Link>
           </div>
         </div>
       </div>
