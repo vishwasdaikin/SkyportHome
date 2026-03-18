@@ -17,16 +17,21 @@ export default function AuthNavBackend() {
   if (!user) return null
 
   const label = user.name || user.email || 'Signed in'
-  const logoutAction = apiUrl('/auth/logout')
 
   return (
     <span className="app-auth-nav">
       <span className="app-auth-user">{label}</span>
-      <form method="POST" action={logoutAction} style={{ display: 'inline' }}>
-        <button type="submit" className="app-auth-btn">
-          Sign out
-        </button>
-      </form>
+      <button
+        type="button"
+        className="app-auth-btn"
+        onClick={() => {
+          const u = apiUrl('/auth/logout')
+          const sep = u.includes('?') ? '&' : '?'
+          window.location.href = `${u}${sep}_=${Date.now()}`
+        }}
+      >
+        Sign out
+      </button>
     </span>
   )
 }

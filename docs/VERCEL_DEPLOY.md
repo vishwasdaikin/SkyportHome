@@ -31,7 +31,7 @@ Redeploy Core after changing env. On boot, logs should show `crossSiteSession=tr
 | Variable | Value |
 |----------|--------|
 | `VITE_USE_BACKEND_AUTH` | `1` |
-| `VITE_API_BASE_URL` | `https://skyport-core.vercel.app` |
+| `VITE_API_BASE_URL` | `https://skyport-core.vercel.app` (**required** unless hostname is `skyport-home.vercel.app`, which has a code fallback) |
 
 Do **not** set `VITE_API_BASE_URL` for local dev (leave empty; Vite proxies `/api` to Core).
 

@@ -9,9 +9,13 @@
  */
 export function apiUrl(path) {
   const p = path.startsWith('/') ? path : `/${path}`
-  const base = import.meta.env.VITE_API_BASE_URL
-  if (base && String(base).trim()) {
-    return `${String(base).replace(/\/$/, '')}${p}`
+  const envBase = import.meta.env.VITE_API_BASE_URL && String(import.meta.env.VITE_API_BASE_URL).trim()
+  if (envBase) {
+    return `${envBase.replace(/\/$/, '')}${p}`
+  }
+  // Prod: if VITE_* was missing at build, /api/* hits static hosting (404) — never reaches Core.
+  if (typeof window !== 'undefined' && window.location.hostname === 'skyport-home.vercel.app') {
+    return `https://skyport-core.vercel.app${p}`
   }
   return `/api${p}`
 }
