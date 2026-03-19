@@ -42,13 +42,11 @@ export default function SitePasswordGate({ children }) {
   }
 
   return (
-    <div className="require-auth-gate">
-      <div className="require-auth-card">
-        <p className="require-auth-title">Enter site password</p>
-        <p className="require-auth-sub" style={{ marginBottom: '1rem' }}>
-          This site is protected. Enter the password to continue.
-        </p>
-        <form onSubmit={handleSubmit}>
+    <div className="site-password-gate">
+      <div className="site-password-card">
+        <h1 className="site-password-title">Daikin Digital World</h1>
+        <p className="site-password-sub">Enter your password to continue.</p>
+        <form onSubmit={handleSubmit} className="site-password-form">
           <input
             type="password"
             value={password}
@@ -57,15 +55,15 @@ export default function SitePasswordGate({ children }) {
             autoFocus
             autoComplete="current-password"
             className="site-password-input"
-            aria-label="Site password"
+            aria-label="Password"
           />
           {error && (
-            <p className="require-auth-sub" style={{ color: '#b91c1c', marginTop: '0.5rem' }} role="alert">
+            <p className="site-password-error" role="alert">
               {error}
             </p>
           )}
-          <button type="submit" className="require-auth-retry" style={{ marginTop: '1rem', width: '100%' }}>
-            Continue
+          <button type="submit" className="site-password-btn">
+            Enter
           </button>
         </form>
       </div>
