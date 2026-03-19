@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import RequireAuth from './auth/RequireAuth'
+import SitePasswordGate from './auth/SitePasswordGate'
 import HomePageTailwind from './pages/HomePageTailwind'
 import SkyportHome from './pages/SkyportHome'
 import SkyportCare from './pages/SkyportCare'
@@ -22,8 +23,9 @@ import StrategyPage from './pages/StrategyPage'
 
 export default function App() {
   return (
-    <RequireAuth>
-      <Layout>
+    <SitePasswordGate>
+      <RequireAuth>
+        <Layout>
         <Routes>
         <Route path="/" element={<HomePageTailwind />} />
         <Route path="/demos" element={<Demos />} />
@@ -48,6 +50,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
-    </RequireAuth>
+      </RequireAuth>
+    </SitePasswordGate>
   )
 }

@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_SKIP_AUTH': JSON.stringify(
         env.VITE_SKIP_AUTH ?? process.env.VITE_SKIP_AUTH ?? ''
       ),
+      'import.meta.env.VITE_SITE_PASSWORD': JSON.stringify(
+        env.VITE_SITE_PASSWORD ?? process.env.VITE_SITE_PASSWORD ?? ''
+      ),
     },
     test: {
       environment: 'jsdom',
