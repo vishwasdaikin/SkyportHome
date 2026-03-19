@@ -180,10 +180,6 @@ export default function FY26() {
             </div>
             {sectionId === 'digital-platform' ? (
             <div className="fy25-review-body">
-              <div className="fy25-review-intro">
-                <p className="fy25-headline">Strong installed base. Low activation. Limited engagement.</p>
-                <p className="fy25-subhead">FY25 showed clear demand signals — but software execution did not convert into sustained value.</p>
-              </div>
               <div className="fy25-graphs-row fy25-two-col">
                 <div className="fy25-graph-left">
                   <div className="fy25-visual fy25-funnel">
@@ -293,7 +289,21 @@ export default function FY26() {
 
               <div className="fy25-planned-full">
                 <div className="fy25-planned-card">
-                  <h4 className="fy25-planned-card-title">Planned vs Actual initiatives</h4>
+                  <div className="fy25-planned-header">
+                    <h4 className="fy25-planned-card-title">Planned vs Actual initiatives</h4>
+                    <div className="fy25-planned-bulk-actions">
+                      <button
+                        type="button"
+                        className="fy26-strategic-themes-bulk-btn"
+                        onClick={() => setShowPlannedDetails((v) => !v)}
+                        aria-expanded={showPlannedDetails}
+                      >
+                        {showPlannedDetails
+                          ? 'Collapse initiative details'
+                          : 'Expand to view initiative details'}
+                      </button>
+                    </div>
+                  </div>
                   {!showPlannedDetails && (() => {
                     const order = [0, 5, 1, 6, 2, 7, 3, 8, 4, 9]
                     let notStarted = 0, partial = 0, completed = 0
@@ -310,17 +320,11 @@ export default function FY26() {
                           {' '}<span className="fy25-summary-dot fy25-summary-partial" aria-hidden>🟡</span> Partially Completed ({partial})
                           {' '}<span className="fy25-summary-dot fy25-summary-completed" aria-hidden>✅</span> Completed ({completed})
                         </p>
-                        <button type="button" className="fy25-planned-toggle" onClick={() => setShowPlannedDetails((v) => !v)} aria-expanded={false}>
-                          View initiative details (+)
-                        </button>
                       </div>
                     )
                   })()}
                   {showPlannedDetails && (
                   <>
-                  <button type="button" className="fy25-planned-toggle" onClick={() => setShowPlannedDetails((v) => !v)} aria-expanded={true}>
-                    Hide initiative details (−)
-                  </button>
                   <p className="fy25-planned-context">The majority of FY25 software initiatives were planned but not operationalized at scale.</p>
                   <div className="fy25-feature-cols">
                           {[0, 5, 1, 6, 2, 7, 3, 8, 4, 9].map((i) => {

@@ -4,6 +4,8 @@ This app supports optional **Microsoft Single Sign-On (SSO)** using Azure AD (Mi
 
 **Server-side OAuth (Web client + secret)** is documented in [BACKEND_AUTH.md](./BACKEND_AUTH.md) (Skyport-Core + `VITE_USE_BACKEND_AUTH=1`).
 
+**Safari / iPhone sign-in issues** → [SAFARI_SIGNIN.md](./SAFARI_SIGNIN.md).
+
 ## 1. Register the app in Azure Portal
 
 1. Go to [Azure Portal](https://portal.azure.com) → **Microsoft Entra ID** (or Azure Active Directory) → **App registrations** → **New registration**.

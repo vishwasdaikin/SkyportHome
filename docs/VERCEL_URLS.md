@@ -16,15 +16,15 @@
 | Variable | Value |
 |----------|--------|
 | `VITE_USE_BACKEND_AUTH` | `1` |
-| `VITE_API_BASE_URL` | `https://skyport-core.vercel.app` |
+| `VITE_API_BASE_URL` | *(empty for prod Web — uses `/api` proxy; Safari-safe)* |
 
-No trailing slash. Redeploy after saving.
+Redeploy after saving.
 
 ### Skyport-Core → Vercel env (Production)
 
 | Variable | Value |
 |----------|--------|
-| `OAUTH_REDIRECT_URI` | `https://skyport-core.vercel.app/oauth/callback` |
+| `OAUTH_REDIRECT_URI` | **`https://skyport-home.vercel.app/api/oauth/callback`** |
 | `FRONTEND_ORIGIN` | `https://skyport-home.vercel.app` |
 | `FRONTEND_ORIGINS` | *(optional)* Add preview web URLs only if you use them, e.g. `https://skyport-home-git-main-xxx.vercel.app` |
 
@@ -32,11 +32,9 @@ Redeploy Core after saving.
 
 ### Azure Portal → App registration → Authentication → Web
 
-Add **every** Core host you use for login (each is a separate redirect URI):
-
-1. `https://skyport-core.vercel.app/oauth/callback` ← **required for production**
-2. `https://skyport-core-git-main-digital-experience2.vercel.app/oauth/callback` ← **if you test login on that preview**
-3. `https://skyport-core-odpmx5l99-digital-experience2.vercel.app/oauth/callback` ← only until that deploy expires; **prefer the branch URL (#2)** for stable previews
+1. **`https://skyport-home.vercel.app/api/oauth/callback`** ← **required** for users on the Web app (incl. Safari)
+2. Optional: `https://skyport-core.vercel.app/oauth/callback` if you test login on Core’s URL directly
+3. Preview Core hosts: `https://<preview-core>/oauth/callback` only if you log in via that host
 
 ---
 
@@ -54,9 +52,9 @@ If you open **preview Web** and want it to hit **preview Core**, set that Web de
 
 ## Quick checklist
 
-- [ ] Web prod: `VITE_API_BASE_URL` = `https://skyport-core.vercel.app`
-- [ ] Core prod: `OAUTH_REDIRECT_URI` + `FRONTEND_ORIGIN` = table above
-- [ ] Azure: Web redirect URIs for each Core host you use
+- [ ] Web prod: same-origin `/api` (no `VITE_API_BASE_URL` for skyport-home)
+- [ ] Core prod: `OAUTH_REDIRECT_URI` = `https://skyport-home.vercel.app/api/oauth/callback`, `FRONTEND_ORIGIN` = skyport-home
+- [ ] Azure: includes that `/api/oauth/callback` URI
 - [ ] Redeploy Web and Core after env changes
 
 See [VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md) for full context.

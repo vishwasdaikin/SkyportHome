@@ -59,7 +59,8 @@ function RequireAuthMsal({ children }) {
   useEffect(() => {
     if (!isAuthenticated || !redirectReady) return
     const saved = sessionStorage.getItem(RETURN_KEY)
-    if (saved && saved !== location.pathname + location.search) {
+    const current = location.pathname + location.search + location.hash
+    if (saved && saved !== current) {
       sessionStorage.removeItem(RETURN_KEY)
       navigate(saved, { replace: true })
     } else if (saved) {
@@ -74,7 +75,8 @@ function RequireAuthMsal({ children }) {
     if (inProgress !== InteractionStatus.None) return
     if (isAuthenticated) return
     if (sessionStorage.getItem(REDIRECT_LOCK) === '1') return
-    const path = location.pathname + location.search
+    const path =
+      location.pathname + location.search + (location.hash && !location.hash.startsWith('#/') ? location.hash : '')
     if (path && path !== '/') {
       sessionStorage.setItem(RETURN_KEY, path)
     }

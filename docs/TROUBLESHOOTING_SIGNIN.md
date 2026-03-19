@@ -12,13 +12,11 @@ The failure on **Microsoft’s** “Pick an account” / “We couldn’t sign y
 
 **Option B — Force password prompt (bypasses broken “already signed in” SSO)**
 
-Open this **once** in the same browser (uses production Core):
+Open this **once** in the same browser (same-origin login; works on Safari):
 
-`https://skyport-core.vercel.app/auth/login?returnTo=/&prompt=login`
+`https://skyport-home.vercel.app/api/auth/login?returnTo=/&prompt=login`
 
-After you complete Microsoft sign-in, you should land back on the home app.
-
-*(If your Core URL is not `skyport-core.vercel.app`, swap the host.)*
+After Microsoft sign-in, you should land back on the home app. See [SAFARI_BACKEND_AUTH.md](./SAFARI_BACKEND_AUTH.md) if login still fails on iPhone.
 
 ## 2. Clear site data (cache / cookies artifacts)
 

@@ -444,6 +444,34 @@
   color: var(--daikin-blue);
 }
 
+.fy25-planned-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.64rem;
+}
+
+.fy25-planned-header .fy25-planned-card-title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: min(100%, 12rem);
+}
+
+.fy25-planned-bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.fy25-planned-header .fy26-strategic-themes-bulk-btn {
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .fy25-planned-toggle {
   display: inline-block;
   margin: 0 0 0.425rem 0;
@@ -461,10 +489,6 @@
 
 .fy25-planned-collapsed {
   margin-top: 0.25rem;
-}
-
-.fy25-planned-collapsed .fy25-planned-toggle {
-  margin-top: 0.5rem;
 }
 
 .fy25-planned-collapsed .fy25-planned-context {

@@ -26,6 +26,25 @@ const authority = entraIssuer
   ? entraIssuer.replace(/\/v2\.0\/?$/i, '').replace(/\/+$/, '')
   : 'https://login.microsoftonline.com/common'
 
+/**
+ * Safari (desktop) and Mobile Safari lose or partition sessionStorage across the
+ * login.microsoftonline.com redirect. MSAL needs localStorage + auth state in
+ * cookies for redirect flows to complete. Chrome/Firefox on iOS use a different UA.
+ * @see https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki/Known-issues-on-Safari
+ */
+function msalUseSafariFriendlyCache() {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  if (/iP(ad|hone|od)/.test(ua)) {
+    return !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua)
+  }
+  const looksLikeSafari = /Safari/i.test(ua)
+  const looksLikeChromium = /Chrome|Chromium|Edg\/|OPR\/|Brave/i.test(ua)
+  return looksLikeSafari && !looksLikeChromium
+}
+
+const safariFriendlyCache = msalUseSafariFriendlyCache()
+
 export const isAzureAuthEnabled = Boolean(entraId)
 
 /** Skyport-Core handles OAuth (Web client); Vite proxies /api → Core so session cookie is same-site. */
@@ -96,8 +115,8 @@ export const msalConfig = {
     navigateToLoginRequestUrl: true,
   },
   cache: {
-    cacheLocation: 'sessionStorage',
-    storeAuthStateInCookie: false,
+    cacheLocation: safariFriendlyCache ? 'localStorage' : 'sessionStorage',
+    storeAuthStateInCookie: safariFriendlyCache,
   },
 }
 
