@@ -859,9 +859,9 @@ export default function FY26() {
                             <td className="fy26-execution-plan-pic">Digital Leadership</td>
                             <td>
                               <ul>
-                                <li>Org design</li>
-                                <li>Funding</li>
-                                <li>Partner capacity</li>
+                                <li>Dedicated SkyportHome &amp; SkyportCare PM ownership</li>
+                                <li>Org alignment to product model</li>
+                                <li>Partner delivery capacity</li>
                               </ul>
                             </td>
                           </tr>
