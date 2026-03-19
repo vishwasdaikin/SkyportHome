@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useParams, Navigate, Link } from 'react-router-dom'
+import { useState, useLayoutEffect } from 'react'
+import { useParams, Navigate, Link, useLocation } from 'react-router-dom'
 import {
   ComposedChart,
   Bar,
@@ -13,20 +13,19 @@ import {
 import './DigitalStrategy.css'
 import './FY26.css'
 
-/** FY2025 by month: thermostats sold (from chart); connected = 10% of sold; active licenses = 1% of sold */
+/** FY2025 chart: sold = bars; active licenses = purple line (Apr'25–Feb'26) */
 const FY25_MONTHLY_CHART_DATA = [
-  { month: "Apr'25", sold: 15439, connected: 1544, activeLicenses: 154 },
-  { month: "May'25", sold: 18909, connected: 1891, activeLicenses: 189 },
-  { month: "Jun'25", sold: 21066, connected: 2107, activeLicenses: 211 },
-  { month: "Jul'25", sold: 20739, connected: 2074, activeLicenses: 207 },
-  { month: "Aug'25", sold: 15453, connected: 1545, activeLicenses: 155 },
-  { month: "Sep'25", sold: 12025, connected: 1203, activeLicenses: 120 },
-  { month: "Oct'25", sold: 12748, connected: 1275, activeLicenses: 127 },
-  { month: "Nov'25", sold: 9042, connected: 904, activeLicenses: 90 },
-  { month: "Dec'25", sold: 13399, connected: 1340, activeLicenses: 134 },
-  { month: "Jan'26", sold: 11424, connected: 1142, activeLicenses: 114 },
-  { month: "Feb'26", sold: 12064, connected: 1206, activeLicenses: 121 },
-  { month: "Mar'26", sold: 12064, connected: 1206, activeLicenses: 121 },
+  { month: "Apr'25", sold: 15439, activeLicenses: 680 },
+  { month: "May'25", sold: 18909, activeLicenses: 730 },
+  { month: "Jun'25", sold: 21066, activeLicenses: 827 },
+  { month: "Jul'25", sold: 20739, activeLicenses: 954 },
+  { month: "Aug'25", sold: 15453, activeLicenses: 856 },
+  { month: "Sep'25", sold: 12025, activeLicenses: 707 },
+  { month: "Oct'25", sold: 12748, activeLicenses: 847 },
+  { month: "Nov'25", sold: 9042, activeLicenses: 873 },
+  { month: "Dec'25", sold: 13399, activeLicenses: 977 },
+  { month: "Jan'26", sold: 11424, activeLicenses: 962 },
+  { month: "Feb'26", sold: 12064, activeLicenses: 1014 },
 ]
 
 const FY26_TOP_NAV_IDS = [
@@ -53,11 +52,7 @@ const FY26_TOP_NAV_TITLES = {
 
 const FY26_BASE = '/strategy/fy26'
 
-const FY26_CARD_SECTIONS = [
-  { id: 'fy25-review', title: 'FY25 Review — Execution Reality' },
-  { id: 'fy26-plan', title: 'FY26 Plan – Operating Focus' },
-  { id: 'fusion30-summary', title: 'Fusion30 Summary - Strategic Horizon' },
-]
+const FY26_INPAGE_HASH_IDS = ['fy25-review', 'fy26-plan', 'fusion30-summary']
 
 /** Feature detail template: num, title, description, targetDate, actual (status) */
 const FY25_PLANNED_VS_ACTUAL_FEATURES = [
@@ -135,6 +130,7 @@ const FY25_PLANNED_VS_ACTUAL_FEATURES = [
 
 export default function FY26() {
   const { sectionId } = useParams()
+  const location = useLocation()
   const [showPlannedDetails, setShowPlannedDetails] = useState(false)
   const [outcomeExpanded, setOutcomeExpanded] = useState({
     a: false,
@@ -152,6 +148,14 @@ export default function FY26() {
 
   const isDigitalPlatform = sectionId === 'digital-platform'
 
+  useLayoutEffect(() => {
+    const id = location.hash.replace(/^#/, '')
+    if (!FY26_INPAGE_HASH_IDS.includes(id)) return
+    const el = document.getElementById(id)
+    if (!el) return
+    el.scrollIntoView({ block: 'start', behavior: 'auto' })
+  }, [location.hash])
+
   return (
     <article className={`fy26-page${isDigitalPlatform ? '' : ' fy26-page--simple'}`}>
       <header className="ds-header fy26-header">
@@ -167,8 +171,8 @@ export default function FY26() {
       </header>
       <div className="ds-layout fy26-layout">
         <div className="ds-sections">
-          <section id="fy25-review" className="ds-section ds-section-single">
-            <div className="ds-section-header">
+          <section className="ds-section ds-section-single">
+            <div className="ds-section-header" id="fy25-review">
               <span className="ds-section-badge">1</span>
               <h2 className="ds-section-title ds-section-title-single">
                 {sectionId === 'digital-platform' ? 'FY25 Review — Execution Reality' : 'FY25 Review'}
@@ -183,7 +187,10 @@ export default function FY26() {
               <div className="fy25-graphs-row fy25-two-col">
                 <div className="fy25-graph-left">
                   <div className="fy25-visual fy25-funnel">
-                    <h5 className="fy25-visual-title">Installed Base Activation Funnel (All‑Time)</h5>
+                    <h5 className="fy25-visual-title">
+                      Installed Base Activation Funnel{' '}
+                      <span className="fy25-funnel-title-scope">(All‑Time)</span>
+                    </h5>
                     <div className="fy25-funnel-steps">
                       <div className="fy25-funnel-row">
                         <span className="fy25-funnel-label">Thermostats sold (all‑time)</span>
@@ -199,27 +206,31 @@ export default function FY26() {
                         <span className="fy25-funnel-value fy25-funnel-value-pct"><span className="fy25-funnel-pct fy25-funnel-pct-bold">3.5%</span> <span className="fy25-funnel-abs">(~12K)</span></span>
                         <div className="fy25-funnel-bar" style={{ width: '3.5%' }} />
                       </div>
-                      <div className="fy25-funnel-row">
-                        <span className="fy25-funnel-label">Loyalty dealers with Cloud Services activated</span>
-                        <span className="fy25-funnel-value fy25-funnel-value-pct"><span className="fy25-funnel-pct">~11%</span></span>
-                        <div className="fy25-funnel-bar" style={{ width: '11%' }} />
-                      </div>
                     </div>
                   </div>
                 </div>
                 <div className="fy25-graph-right">
-                  <div className="fy25-visual fy25-bars">
-                    <h5 className="fy25-visual-title">Engagement Gap</h5>
-                    <div className="fy25-bar-item">
-                      <span className="fy25-bar-label">% dealers in loyalty programs</span>
-                      <div className="fy25-bar-track"><div className="fy25-bar-fill" style={{ width: '40%' }} /></div>
+                  <div className="fy25-visual fy25-funnel">
+                    <h5 className="fy25-visual-title">
+                      Installed Base Activation Funnel{' '}
+                      <span className="fy25-funnel-title-scope">(FY25)</span>
+                    </h5>
+                    <div className="fy25-funnel-steps">
+                      <div className="fy25-funnel-row">
+                        <span className="fy25-funnel-label">Thermostats sold (FY25)</span>
+                        <span className="fy25-funnel-value fy25-funnel-abs-only">162,308</span>
+                      </div>
+                      <div className="fy25-funnel-row">
+                        <span className="fy25-funnel-label">Connected to Cloud / App</span>
+                        <span className="fy25-funnel-value fy25-funnel-value-pct"><span className="fy25-funnel-pct">44%</span> <span className="fy25-funnel-abs">(~72K)</span></span>
+                        <div className="fy25-funnel-bar" style={{ width: '44%' }} />
+                      </div>
+                      <div className="fy25-funnel-row">
+                        <span className="fy25-funnel-label">Active Cloud Services licenses</span>
+                        <span className="fy25-funnel-value fy25-funnel-value-pct"><span className="fy25-funnel-pct fy25-funnel-pct-bold">1.3%</span> <span className="fy25-funnel-abs">(~9.5K)</span></span>
+                        <div className="fy25-funnel-bar" style={{ width: '1.3%' }} />
+                      </div>
                     </div>
-                    <div className="fy25-bar-item">
-                      <span className="fy25-bar-label">% dealers with Cloud Services accounts activated</span>
-                      <div className="fy25-bar-track"><div className="fy25-bar-fill fy25-bar-fill-low" style={{ width: '11%' }} /></div>
-                      <span className="fy25-bar-value">11%</span>
-                    </div>
-                    <p className="fy25-caption">“Dealer engagement never reached escape velocity.”</p>
                   </div>
                 </div>
               </div>
@@ -228,49 +239,39 @@ export default function FY26() {
                 <h5 className="fy25-visual-title fy25-chart-title">FY25: Thermostat Sales vs. Digital Adoption Outcomes</h5>
                 <p className="fy25-opportunity"><strong>Opportunity:</strong> Closing the activation gap converts existing hardware volume into recurring digital value.</p>
                 <ResponsiveContainer width="100%" height={494}>
-                  <ComposedChart data={FY25_MONTHLY_CHART_DATA} margin={{ top: 8, right: 140, left: 56, bottom: 36 }} {...{ overflow: 'visible' }}>
+                  <ComposedChart data={FY25_MONTHLY_CHART_DATA} margin={{ top: 8, right: 20, left: 72, bottom: 36 }} {...{ overflow: 'visible' }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
                     <XAxis dataKey="month" tick={{ fontSize: 14 }} />
-                    <YAxis yAxisId="left" orientation="left" width={50} tick={{ fontSize: 14 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} label={{ value: 'Sold (units)', angle: -90, position: 'insideLeft', offset: -20, style: { fontSize: 14 } }} />
                     <YAxis
-                      yAxisId="right"
-                      orientation="right"
-                      width={72}
-                      tick={{ fontSize: 14 }}
-                      tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(1)}K` : v}
+                      yAxisId="left"
+                      orientation="left"
+                      width={44}
+                      tick={{ fontSize: 13 }}
+                      tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}K` : String(v))}
                       label={({ viewBox }) => {
                         if (!viewBox || viewBox.height == null) return null
-                        const cx = viewBox.x + viewBox.width - 20
-                        const cy = viewBox.y + viewBox.height / 2
-                        const lineHeight = 20
+                        const { x = 0, y = 0, width = 0, height = 0 } = viewBox
+                        const cx = x + width / 2
+                        const cy = y + height / 2
+                        const labelInset = 28
                         return (
-                          <text transform={`rotate(-90, ${cx}, ${cy})`} x={cx} y={cy} textAnchor="middle" fontSize={14} fill="#6b7280">
-                            <tspan x={cx} dy={0}>
-                              Connected systems and Active <tspan fontWeight={700}>SkyportCare</tspan>
-                            </tspan>
-                            <tspan x={cx} dy={lineHeight}>
-                              licenses (units)
-                            </tspan>
-                          </text>
+                          <g transform={`translate(${cx - labelInset}, ${cy}) rotate(-90)`}>
+                            <text x={0} y={0} textAnchor="middle" fontSize={14} fill="#6b7280" fontWeight={500}>
+                              <tspan x={0} dy={-10}>
+                                Units sold
+                              </tspan>
+                              <tspan x={0} dy={20}>
+                                Active lic.
+                              </tspan>
+                            </text>
+                          </g>
                         )
                       }}
                     />
-                    <Tooltip formatter={(v) => v.toLocaleString()} labelFormatter={(l) => l} cursor={{ fill: '#fff' }} />
+                    <Tooltip formatter={(v) => (typeof v === 'number' ? v.toLocaleString() : v)} labelFormatter={(l) => l} cursor={{ fill: '#fff' }} />
                     <Bar yAxisId="left" dataKey="sold" name="Thermostats sold" fill="rgba(0, 151, 224, 0.38)" radius={[4, 4, 0, 0]} />
                     <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="connected"
-                      name="Connected"
-                      stroke="#e67e22"
-                      strokeWidth={2.5}
-                      dot={{ r: 3 }}
-                      label={({ index, x, y }) => (index === FY25_MONTHLY_CHART_DATA.length - 1
-                        ? <text x={x} y={y - 20} textAnchor="middle" fontSize={12} fill="#e67e22" fontWeight={500}>Connected</text>
-                        : null)}
-                    />
-                    <Line
-                      yAxisId="right"
+                      yAxisId="left"
                       type="monotone"
                       dataKey="activeLicenses"
                       name="Active licenses"
@@ -278,14 +279,15 @@ export default function FY26() {
                       strokeWidth={2.5}
                       dot={{ r: 3 }}
                       label={({ index, x, y }) => (index === FY25_MONTHLY_CHART_DATA.length - 1
-                        ? <text x={x} y={y - 14} textAnchor="middle" fontSize={12} fill="#9b59b6" fontWeight={500}>Active licenses</text>
+                        ? <text x={x} y={y - 20} textAnchor="middle" fontSize={12} fill="#9b59b6" fontWeight={500}>Active licenses</text>
                         : null)}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
                 <div className="fy25-chart-annotation">
-                  <p>Active licenses remain a <strong>small</strong> fraction of connected systems.</p>
-                  <p>The space between the two lines is the engagement and monetization gap.</p>
+                  <p>
+                    Active <strong>SkyportCare</strong> licenses trend up while thermostat sales vary month to month.
+                  </p>
                 </div>
               </div>
 
@@ -357,14 +359,17 @@ export default function FY26() {
               <div className="fy25-takeaway">
                 <h4 className="fy25-takeaway-title">Takeaway</h4>
                 <ul className="fy25-takeaway-list">
-                  <li>Hardware demand was strong, but digital activation and engagement did not scale.</li>
                   <li>
-                    The activation gap persisted throughout FY25, indicating a systemic execution issue rather
-                    than seasonality.
+                    Hardware demand was strong, but digital activation and engagement did not scale, with little
+                    consistent analytics in place to understand where users dropped or why.
                   </li>
                   <li>
-                    Most planned software initiatives did not operationalize at scale, limiting downstream
-                    monetization.
+                    The activation gap persisted throughout FY25, indicating a systemic execution issue, not
+                    seasonality.
+                  </li>
+                  <li>
+                    Most planned software initiatives did not operationalize at scale, and the lack of
+                    instrumentation limited visibility into engagement, retention, and downstream monetization.
                   </li>
                   <li>
                     Closing the activation gap represents the largest near‑term growth opportunity without
@@ -372,8 +377,8 @@ export default function FY26() {
                   </li>
                 </ul>
                 <p className="fy25-takeaway-bottomline">
-                  <strong>Bottom-line:</strong> Strategy was not the constraint. Execution ownership,
-                  prioritization, and throughput were.
+                  <strong>Bottom line:</strong> Strategy was not the issue. Execution ownership, prioritization,
+                  throughput, and limited analytics constrained progress.
                 </p>
               </div>
             </div>
@@ -385,14 +390,18 @@ export default function FY26() {
             </div>
             )}
           </section>
-          <section id="fy26-plan" className="ds-section ds-section-single">
-            <div className="ds-section-header">
+          <section className="ds-section ds-section-single">
+            <div className="ds-section-header" id="fy26-plan">
               <span className="ds-section-badge">2</span>
               <h2 className="ds-section-title ds-section-title-single">FY26 Plan – Operating Focus</h2>
             </div>
             {isDigitalPlatform ? (
               <div className="fy26-plan-cards">
                 <>
+                  <p className="fy26-plan-strategy-preamble-text">
+                    Our strategy follows a clear progression: activate connected systems, engage homeowners and
+                    dealers consistently, and retain value through renewals, services, and lifecycle monetization.
+                  </p>
                   <div className="fy26-mini-card fy26-outcomes-box" id="fy26-outcomes">
                     <div className="fy26-outcomes-header">
                       <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
@@ -473,8 +482,8 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Business Impact: </span>
                                 <span className="fy26-goal-colon-value">
-                                  Engagement is the leading indicator for renewal, upsell, and long-term
-                                  retention; without it, digital revenue does not scale.
+                                  Engagement is the leading indicator for retention, renewal, upsell, and
+                                  long‑term value.
                                 </span>
                               </li>
                               <li className="fy26-outcome-detail-item">
@@ -814,6 +823,11 @@ export default function FY26() {
                                   Enable feature reuse across <strong>SkyportHome</strong> and{' '}
                                   <strong>SkyportCare</strong> through shared platform services
                                 </li>
+                                <li>
+                                  Establish a shared analytics and measurement layer across{' '}
+                                  <strong>SkyportHome</strong> and <strong>SkyportCare</strong> to track activation,
+                                  engagement, retention, and monetization outcomes.
+                                </li>
                               </ul>
                             </td>
                             <td className="fy26-execution-plan-pic">
@@ -910,8 +924,8 @@ export default function FY26() {
               </div>
             )}
           </section>
-          <section id="fusion30-summary" className="ds-section ds-section-single">
-            <div className="ds-section-header">
+          <section className="ds-section ds-section-single">
+            <div className="ds-section-header" id="fusion30-summary">
               <span className="ds-section-badge">3</span>
               <h2 className="ds-section-title ds-section-title-single">Fusion30 Summary - Strategic Horizon</h2>
             </div>
@@ -956,6 +970,10 @@ export default function FY26() {
                   </li>
                   <li>
                     Reduce fragmentation through shared platform services and UX‑first execution
+                  </li>
+                  <li>
+                    Enable next‑generation business models—energy services, electrification, and whole‑home
+                    solutions—once a scalable digital engagement and monetization foundation is in place.
                   </li>
                 </ul>
               </div>

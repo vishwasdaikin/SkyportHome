@@ -8,6 +8,8 @@
    */
   --fy26-card-title: var(--text-base);
   --fy26-card-body: var(--text-sm);
+  /* ~15% tighter vertical rhythm for bullets & paragraph stacks */
+  --fy26-sentence-gap: 0.64rem;
 }
 
 /* Uniform card body + card title sizes on FY26 Playbook */
@@ -119,22 +121,32 @@
   margin-top: 0;
 }
 
+/* In-page nav: scroll lands with section header (badge + title) just below fixed app header + FY26 bar */
+.fy26-page .ds-section-header#fy25-review,
+.fy26-page .ds-section-header#fy26-plan,
+.fy26-page .ds-section-header#fusion30-summary {
+  scroll-margin-top: calc(
+    var(--app-header-height, 60px) + var(--app-playbook-nav-gap, 0.7rem) +
+      var(--app-playbook-nav-height, 60px) + 1rem
+  );
+}
+
 .fy26-page .ds-section-title-single {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.85rem 0;
   font-size: var(--heading-2);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .fy26-page .ds-content p {
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 var(--fy26-sentence-gap, 0.64rem) 0;
   color: var(--text-primary);
   line-height: 1.5;
 }
 
 .fy26-page .ds-content p.ds-subheading {
-  margin-top: 1.25rem;
-  margin-bottom: 0.35rem;
+  margin-top: 1.06rem;
+  margin-bottom: 0.3rem;
 }
 
 .fy26-page .ds-content p.ds-subheading:first-child,
@@ -171,7 +183,7 @@
 
 /* Simple FY26 Plan A–D: breathing room below section title and between lines */
 .fy26-plan-simple-list {
-  margin-top: 1.5rem;
+  margin-top: 1.28rem;
   padding-top: 0.25rem;
 }
 
@@ -181,11 +193,11 @@
 }
 
 .fy26-plan-simple-list > p.ds-subheading + p.ds-subheading {
-  margin-top: 1.35rem;
+  margin-top: 1.15rem;
 }
 
 /* Fusion30: tighter gap below section title → first line */
-#fusion30-summary .ds-section-header {
+#fusion30-summary.ds-section-header {
   margin-bottom: 0.45rem;
 }
 
@@ -230,12 +242,12 @@
 
 /* Fusion30 — Digital Platform: What we aim to accomplish */
 .fy26-fusion30-aims-intro {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.85rem 0;
   line-height: 1.55;
 }
 
 .fy26-fusion30-aims-list {
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 1.06rem 0;
   padding-left: 1.5rem;
   list-style-type: disc;
   list-style-position: outside;
@@ -243,7 +255,7 @@
 }
 
 .fy26-fusion30-aims-list li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.425rem;
   padding-left: 0.25rem;
 }
 
@@ -257,7 +269,7 @@
 }
 
 .fy26-fusion30-how-heading {
-  margin-top: 1.5rem;
+  margin-top: 1.28rem;
 }
 
 .fy26-fusion30-how-list {
@@ -266,7 +278,7 @@
 
 /* FY25 Review card — SkyportHome & SkyportCare */
 .fy25-review-body {
-  --fy25-gap: 2rem;
+  --fy25-gap: 1.7rem;
   display: flex;
   flex-direction: column;
   gap: var(--fy25-gap);
@@ -282,7 +294,7 @@
   font-size: var(--heading-3);
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.425rem 0;
 }
 
 .fy25-subhead {
@@ -292,7 +304,7 @@
 }
 
 .fy25-opportunity {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.85rem 0;
   color: var(--text-secondary);
 }
 
@@ -351,7 +363,7 @@
 }
 
 .fy25-chart-title {
-  margin-bottom: 1.25rem !important;
+  margin-bottom: 1.06rem !important;
 }
 
 .fy25-monthly-chart-wrap .recharts-wrapper,
@@ -399,7 +411,7 @@
 }
 
 .fy25-chart-annotation p {
-  margin: 0 0 0.35em 0;
+  margin: 0 0 0.3em 0;
 }
 
 .fy25-chart-annotation p:last-child {
@@ -428,13 +440,13 @@
 
 .fy25-planned-card-title {
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.425rem 0;
   color: var(--daikin-blue);
 }
 
 .fy25-planned-toggle {
   display: inline-block;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.425rem 0;
   padding: 0.25rem 0;
   color: var(--daikin-blue);
   background: none;
@@ -456,7 +468,7 @@
 }
 
 .fy25-planned-collapsed .fy25-planned-context {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.425rem;
 }
 
 .fy25-planned-summary {
@@ -466,7 +478,7 @@
 }
 
 .fy25-planned-context {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.85rem 0;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -492,7 +504,7 @@
 }
 
 .fy25-takeaway-title {
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.64rem 0;
   font-weight: 600;
   color: var(--daikin-blue);
 }
@@ -507,7 +519,7 @@
 }
 
 .fy25-takeaway-list li {
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.55rem;
   padding-left: 0.25rem;
 }
 
@@ -520,8 +532,8 @@
 }
 
 .fy25-takeaway-bottomline {
-  margin: 1rem 0 0 0;
-  padding-top: 0.85rem;
+  margin: 0.85rem 0 0 0;
+  padding-top: 0.72rem;
   border-top: 1px solid rgba(0, 151, 224, 0.25);
   line-height: 1.55;
   color: var(--text-primary);
@@ -529,18 +541,18 @@
 
 .fy25-section-title {
   font-weight: 600;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.64rem 0;
   color: var(--daikin-blue);
 }
 
 .fy25-planned-full .fy25-summary-table-wrap {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .fy25-col-title {
   font-weight: 600;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.64rem 0;
   color: var(--daikin-blue);
 }
 
@@ -551,27 +563,32 @@
 .fy25-visual {
   margin-bottom: 1.25rem;
   padding: 1rem;
-  background: #f9fafb;
+  background: #fff;
   border-radius: var(--radius);
   border: 1px solid var(--border);
 }
 
 .fy25-visual-title {
   font-weight: 600;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.64rem 0;
   color: var(--text-primary);
+}
+
+.fy25-funnel-title-scope {
+  color: var(--daikin-blue);
+  font-weight: 600;
 }
 
 .fy25-funnel-steps {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.425rem;
 }
 
 .fy25-funnel-row {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.5rem;
+  gap: 0.425rem;
   align-items: center;
 }
 
@@ -681,7 +698,7 @@
 }
 
 .fy25-list li {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.21rem;
 }
 
 .fy25-not-delivered {
@@ -814,7 +831,7 @@
 }
 
 .fy25-planned-panel .fy25-block {
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .fy25-planned-panel .fy25-block:last-of-type {
@@ -823,7 +840,7 @@
 
 /* Summary: Completed / Partial / Not completed (below Engagement Gap) */
 .fy25-summary-table-wrap {
-  margin-top: 1.25rem;
+  margin-top: 1.06rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -861,19 +878,19 @@
 
 /* Feature details template (expandable content) */
 .fy25-feature-details {
-  margin-top: 1.25rem;
-  padding-top: 1rem;
+  margin-top: 1.06rem;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--border);
 }
 
 .fy25-feature-details .fy25-block-title {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.64rem;
 }
 
 .fy25-feature-cols {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 @media (min-width: 900px) {
@@ -890,7 +907,7 @@
 }
 
 .fy25-feature-item {
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
   padding: 0.75rem;
   background: #fff;
   border-radius: var(--radius);
@@ -939,7 +956,7 @@ ul.fy25-feature-desc {
 }
 
 ul.fy25-feature-desc li {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.21rem;
 }
 
 .fy25-feature-meta {
@@ -980,10 +997,10 @@ ul.fy25-feature-desc li {
 .fy26-plan-cards {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
-  margin-bottom: 2rem;
+  gap: 1.06rem;
+  margin-bottom: 0;
   /* Match bullet spacing: [B] Strategic Themes ↔ [A] Goals expanded lists */
-  --fy26-plan-bullet-gap: 0.65rem;
+  --fy26-plan-bullet-gap: 0.55rem;
 }
 
 .fy26-mini-card {
@@ -991,6 +1008,14 @@ ul.fy25-feature-desc li {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem 1.25rem;
+}
+
+.fy26-plan-strategy-preamble-text {
+  margin: 0 0 0.25rem 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #000;
+  grid-column: 1 / -1;
 }
 
 .fy26-mini-card-title {
@@ -1148,7 +1173,7 @@ ul.fy25-feature-desc li {
 
 .fy26-execution-plan-table li {
   display: list-item;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
   line-height: 1.5;
 }
 
@@ -1171,7 +1196,7 @@ ul.fy25-feature-desc li {
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem 1rem;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.72rem;
 }
 
 .fy26-outcomes-header .fy26-mini-card-title {
@@ -1248,7 +1273,11 @@ ul.fy25-feature-desc li {
   outline-color: #000;
 }
 
-/* Goals (A): four goal rows — link-style blue; chevron matches */
+/* Goals (A): four goal rows — link-style blue; chevron matches; 15px */
+.fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-trigger {
+  font-size: 15px;
+}
+
 .fy26-plan-cards .fy26-outcomes-box .fy26-outcome-collapse-title {
   color: var(--daikin-blue);
   font-weight: 700;
@@ -1452,7 +1481,7 @@ ul.fy25-feature-desc li {
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem 1rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.64rem;
 }
 
 .fy26-strategic-themes-header .fy26-mini-card-title {
@@ -1487,7 +1516,7 @@ ul.fy25-feature-desc li {
 }
 
 .fy26-operating-model-list li {
-  margin-bottom: var(--fy26-plan-bullet-gap, 0.65rem);
+  margin-bottom: var(--fy26-plan-bullet-gap, 0.55rem);
   font-size: 15px;
   line-height: 1.55;
   color: #000;
@@ -1495,6 +1524,11 @@ ul.fy25-feature-desc li {
 
 .fy26-operating-model-list li:last-child {
   margin-bottom: 0;
+}
+
+/* Section D (last plan card): no extra pad below list */
+.fy26-plan-cards > .fy26-mini-card:last-of-type:has(.fy26-operating-model-list) {
+  padding-bottom: 0.75rem;
 }
 
 .fy26-operating-model-list li::marker {
@@ -1514,12 +1548,12 @@ ul.fy25-feature-desc li {
 
 /* Section D: Interaction & Alignment title black (rest of plan cards keep blue titles) */
 .fy26-plan-cards .fy26-mini-card:has(.fy26-operating-model-list) h4.fy26-mini-card-title--letter-badge {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.72rem;
   color: #000;
 }
 
 .fy26-mini-card .fy26-mini-card-title + .fy26-operating-model-list {
-  margin-top: 1.35rem;
+  margin-top: 0.55rem;
 }
 
 .fy26-operating-model-list strong {
@@ -1548,7 +1582,7 @@ ul.fy25-feature-desc li {
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--daikin-blue);
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
 }
 
 .fy26-goal-mini-text {
@@ -1566,8 +1600,8 @@ ul.fy25-feature-desc li {
 /* Letter inline on first line of headline; smaller than section badges */
 .fy26-goal-mini-header {
   display: block;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.35rem;
+  margin-bottom: 0.64rem;
+  padding-bottom: 0.3rem;
   border-bottom: 2px solid var(--daikin-blue-light);
   font-size: var(--text-base);
   line-height: 1.45;
@@ -1621,12 +1655,12 @@ ul.fy25-feature-desc li {
 }
 
 .fy26-goal-colon-section {
-  margin-top: 0.85rem;
-  margin-bottom: 0.85rem;
+  margin-top: 0.72rem;
+  margin-bottom: 0.72rem;
 }
 
 .fy26-goal-colon-line {
-  margin: 0 0 0.65rem 0;
+  margin: 0 0 0.55rem 0;
   font-size: var(--text-sm);
   line-height: 1.5;
 }

@@ -11,6 +11,14 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
+### Blank screen or nothing loads
+
+1. **Use the dev URL** — Open `http://localhost:5173` in Chrome/Safari/Edge. Don’t open `index.html` from the file system.
+2. **Run the dev server** — In the project folder: `npm run dev`. If the tab stays on “Loading…”, check the terminal for errors.
+3. **`.env.local`** — If you copied `.env.example` and set `VITE_USE_BACKEND_AUTH=1`, the app needs **Skyport-Core** on port 3001. Without it, you’ll see an error after ~12s (or fix Core / unset that variable). For a quick local run with no backend, leave `VITE_USE_BACKEND_AUTH` unset and leave Microsoft Entra IDs empty.
+4. **Microsoft sign-in** — If Entra is configured, the app redirects to Microsoft; finish sign-in or fix redirect URIs in Azure (see `docs/SSO_SETUP.md`).
+5. **Deployed site** — If JS fails to load (wrong base path), open DevTools → **Console** / **Network** for red errors.
+
 ## Adding your content
 
 **Option 1 — Paste in chat**  
