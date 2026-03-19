@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { isAzureAuthEnabled, isBackendAuthEnabled } from '../auth/authConfig'
+import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from '../auth/authConfig'
 import AuthNav from '../auth/AuthNav'
 import AuthNavBackend from '../auth/AuthNavBackend'
 import './Layout.css'
@@ -195,10 +195,12 @@ export default function Layout({ children }) {
           </div>
 
         </nav>
-        <div className="app-header-auth">
-          {isBackendAuthEnabled() && <AuthNavBackend />}
-          {!isBackendAuthEnabled() && isAzureAuthEnabled && <AuthNav />}
-        </div>
+        {!isAuthSkipped() && (
+          <div className="app-header-auth">
+            {isBackendAuthEnabled() && <AuthNavBackend />}
+            {!isBackendAuthEnabled() && isAzureAuthEnabled && <AuthNav />}
+          </div>
+        )}
       </header>
       {isOperatingPlaybook && (
         <nav className="app-playbook-nav" aria-label="Operating Playbook">

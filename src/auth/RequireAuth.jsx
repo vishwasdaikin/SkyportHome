@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMsal, useIsAuthenticated } from '@azure/msal-react'
 import { InteractionStatus } from '@azure/msal-browser'
-import { isAzureAuthEnabled, isBackendAuthEnabled } from './authConfig'
+import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from './authConfig'
 import { loginRequest } from './authConfig'
 import { parseOAuthErrorFromUrl, stripOAuthErrorFromBrowserUrl, isAssignmentRequiredError } from './oauthErrorUtils'
 import RequireAuthBackend from './RequireAuthBackend'
@@ -14,8 +14,12 @@ const REDIRECT_LOCK = 'skyport_msal_login_redirect'
 /**
  * When Entra ID is configured, blocks the app until the user signs in with Microsoft.
  * Preserves the URL they tried to open and sends them back after login.
+ * Set VITE_SKIP_AUTH=1 to temporarily bypass auth (dev/demo only).
  */
 export default function RequireAuth({ children }) {
+  if (isAuthSkipped()) {
+    return children
+  }
   if (isBackendAuthEnabled()) {
     return <RequireAuthBackend>{children}</RequireAuthBackend>
   }

@@ -47,6 +47,10 @@ const safariFriendlyCache = msalUseSafariFriendlyCache()
 
 export const isAzureAuthEnabled = Boolean(entraId)
 
+/** When set (e.g. VITE_SKIP_AUTH=1), no login gate and no auth nav. Dev/demo only. */
+export const isAuthSkipped = () =>
+  import.meta.env.VITE_SKIP_AUTH === '1' || import.meta.env.VITE_SKIP_AUTH === 'true'
+
 /** Skyport-Core handles OAuth (Web client); Vite proxies /api → Core so session cookie is same-site. */
 export const isBackendAuthEnabled = () =>
   import.meta.env.VITE_USE_BACKEND_AUTH === '1' ||

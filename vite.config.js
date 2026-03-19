@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_USE_BACKEND_AUTH': JSON.stringify(
         env.VITE_USE_BACKEND_AUTH ?? process.env.VITE_USE_BACKEND_AUTH ?? ''
       ),
+      'import.meta.env.VITE_SKIP_AUTH': JSON.stringify(
+        env.VITE_SKIP_AUTH ?? process.env.VITE_SKIP_AUTH ?? ''
+      ),
     },
     test: {
       environment: 'jsdom',
