@@ -55,4 +55,19 @@ describe('Layout top nav', () => {
       '/strategy/operating/overview'
     )
   })
+
+  it('includes FY26 playbook section links in Strategy flyout (same as page dropdown)', async () => {
+    const user = userEvent.setup()
+    renderNav()
+    const nav = screen.getByRole('navigation', { name: 'Main' })
+    await user.click(within(nav).getByRole('button', { name: /strategy/i }))
+
+    expect(
+      screen.getByRole('menuitem', { name: 'Res Solutions', hidden: true })
+    ).toHaveAttribute('href', '/strategy/fy26/res-solutions')
+    expect(
+      screen.getByRole('menuitem', { name: 'Digital Platform', hidden: true })
+    ).toHaveAttribute('href', '/strategy/fy26/digital-platform')
+    expect(screen.getByRole('menu', { name: 'FY26 playbook sections', hidden: true })).toBeInTheDocument()
+  })
 })

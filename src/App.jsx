@@ -20,6 +20,7 @@ import DemosCare from './pages/DemosCare'
 import ImagePage from './pages/ImagePage'
 import AppsPage from './pages/AppsPage'
 import StrategyPage from './pages/StrategyPage'
+import TestXlsxDemo from './pages/TestXlsxDemo'
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/strategy/operating/lifecycle-growth" element={<LifecycleGrowth />} />
         <Route path="/strategy/operating/reference" element={<Reference />} />
         <Route path="/strategy" element={<StrategyPage />} />
+        <Route path="/dev/test-xlsx" element={<TestXlsxDemo />} />
         <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

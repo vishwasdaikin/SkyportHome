@@ -183,6 +183,73 @@
   font-weight: 600;
 }
 
+/* Strategy → FY26: hover / focus flyout with same sections as FY26 page dropdown */
+.app-nav-dropdown-fy26-wrap {
+  position: relative;
+}
+
+.app-nav-dropdown-item--flyout-parent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.app-nav-dropdown-flyout-caret {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  opacity: 0.65;
+}
+
+.app-nav-dropdown-flyout {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 0.15rem;
+  min-width: 14.5rem;
+  max-width: min(90vw, 20rem);
+  padding: 0.35rem 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+}
+
+/* Invisible strip so cursor can reach flyout without closing hover */
+.app-nav-dropdown-flyout::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 0;
+  bottom: 0;
+  width: 0.65rem;
+}
+
+.app-nav-dropdown-fy26-wrap:hover .app-nav-dropdown-flyout,
+.app-nav-dropdown-fy26-wrap:focus-within .app-nav-dropdown-flyout {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app-nav-dropdown-fy26-wrap:hover .app-nav-dropdown-flyout,
+  .app-nav-dropdown-fy26-wrap:focus-within .app-nav-dropdown-flyout {
+    animation: appNavFy26FlyoutIn 0.2s ease-out;
+  }
+}
+
+@keyframes appNavFy26FlyoutIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .app-nav-link {
   text-decoration: none;
   border-radius: var(--radius);
@@ -274,45 +341,6 @@
   border: none;
 }
 
-/* FY26 sub-nav: same look as playbook nav */
-.app-fy26-nav {
-  position: fixed;
-  top: calc(var(--app-header-height) + var(--app-playbook-nav-gap));
-  left: 0;
-  right: 0;
-  z-index: 99;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 0.35rem 0.45rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--bg-page);
-  border-bottom: 1px solid var(--nav-border);
-}
-
-.app-fy26-nav-link {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-decoration: none;
-  padding: 0.45rem 0.7rem;
-  border-radius: 4px;
-  background: transparent;
-  border: none;
-}
-
-.app-fy26-nav-link:hover {
-  background: rgba(0, 151, 224, 0.06);
-  color: var(--text-primary);
-}
-
-.app-fy26-nav-link.active {
-  color: var(--daikin-blue);
-  background: rgba(0, 151, 224, 0.08);
-  border: none;
-}
-
 .app-main {
   flex: 1;
   padding-top: calc(var(--app-header-height) - 6px);
@@ -323,10 +351,6 @@
 }
 
 .app-layout--playbook .app-main {
-  padding-top: calc(var(--app-header-height) + var(--app-playbook-nav-gap) + var(--app-playbook-nav-height) - 6px);
-}
-
-.app-layout--fy26 .app-main {
   padding-top: calc(var(--app-header-height) + var(--app-playbook-nav-gap) + var(--app-playbook-nav-height) - 6px);
 }
 
