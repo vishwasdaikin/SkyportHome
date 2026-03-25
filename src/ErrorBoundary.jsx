@@ -23,12 +23,23 @@ export class ErrorBoundary extends React.Component {
         }}>
           <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Something went wrong</h1>
           <p style={{ color: '#5c6168', marginBottom: '1rem' }}>
-            The app hit an error. This usually fixes it:
+            {import.meta.env.DEV
+              ? 'The app hit an error. This usually fixes it:'
+              : 'The app hit an error. Try refreshing the page.'}
           </p>
-          <ol style={{ marginBottom: '1rem', paddingLeft: '1.5rem', lineHeight: 1.8 }}>
-            <li>Use <strong>npm run dev</strong> in the project folder, then open <strong>http://localhost:5173</strong> in the browser (do not open index.html as a file).</li>
-            <li>If you already do that, check the error below and fix the cause.</li>
-          </ol>
+          {import.meta.env.DEV ? (
+            <ol style={{ marginBottom: '1rem', paddingLeft: '1.5rem', lineHeight: 1.8 }}>
+              <li>
+                Use <strong>npm run dev</strong> in the project folder, then open{' '}
+                <strong>http://localhost:5173</strong> in the browser (do not open index.html as a file).
+              </li>
+              <li>If you already do that, check the error below and fix the cause.</li>
+            </ol>
+          ) : (
+            <p style={{ marginBottom: '1rem', color: '#5c6168' }}>
+              If it keeps happening, contact your administrator or try again later.
+            </p>
+          )}
           <pre style={{
             background: '#fff',
             border: '1px solid #e5e7eb',

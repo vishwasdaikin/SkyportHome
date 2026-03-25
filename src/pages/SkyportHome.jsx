@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { featuresRows, featuresDone, featuresPartial } from '../content/featuresData'
 import { FeaturesCategoryChart } from '../components/FeaturesCategoryChart'
 import { useFeatureProgress } from '../hooks/useFeatureProgress'
+import { formatFeatureCellContent } from '../utils/formatFeatureCellContent'
 import './SkyportHome.css'
 import './Features.css'
 
@@ -34,45 +35,11 @@ function filterRows(rows, query) {
       (r.feature && r.feature.toLowerCase().includes(q)) ||
       (r.displayGroup && r.displayGroup.toLowerCase().includes(q)) ||
       (r.endUserCategory && r.endUserCategory.toLowerCase().includes(q)) ||
-      (r.initiativeType && r.initiativeType.toLowerCase().includes(q))
+      (r.initiativeType && r.initiativeType.toLowerCase().includes(q)) ||
+      (r.monetizationModel && r.monetizationModel.toLowerCase().includes(q)) ||
+      (r.development && r.development.toLowerCase().includes(q)) ||
+      (r.priority != null && String(r.priority).includes(q))
   )
-}
-
-
-/** Renders feature cell: green "real‑time" in temperature row; a)–e) on separate lines for system mode visibility */
-function formatFeatureContent(featureText) {
-  if (!featureText) return null
-  // Temperature & humidity: highlight "real‑time" in green
-  if (featureText.includes('Temperature & humidity trend views') && featureText.includes('real‑time')) {
-    const parts = featureText.split('real‑time')
-    return (
-      <>
-        {parts[0]}
-        <span className="features-cell-highlight-green">real‑time</span>
-        {parts[1]}
-      </>
-    )
-  }
-  // System mode visibility: put a) b) c) d) e) each on its own line
-  if (featureText.includes('System mode visibility (current & historical)') && featureText.includes(' a) ')) {
-    const sep = '\u0001'
-    const withSep = featureText
-      .replace(' a) ', `${sep}a) `)
-      .replace(' b) ', `${sep}b) `)
-      .replace(' c) ', `${sep}c) `)
-      .replace(' d) ', `${sep}d) `)
-      .replace(' e) ', `${sep}e) `)
-    const parts = withSep.split(sep)
-    return (
-      <>
-        {parts[0]}
-        {parts.slice(1).map((p, i) => (
-          <div key={i} className="features-cell-list-item">{p}</div>
-        ))}
-      </>
-    )
-  }
-  return featureText
 }
 
 export default function SkyportHome() {
@@ -127,7 +94,8 @@ export default function SkyportHome() {
       <section id="roadmap" className="skyport-home-section skyport-home-section-features">
         <h2 className="skyport-home-section-title">Roadmap</h2>
         <p className="skyport-home-section-desc">
-          Feature / Function groups, initiative types, end user categories, and monetization.
+          Feature / Function groups, initiative types, end user categories, monetization, priority, and development
+          scope.
         </p>
 
         {!showCategoryChart ? (
@@ -249,6 +217,8 @@ export default function SkyportHome() {
                             <th>Initiative Type</th>
                             <th>End User Category</th>
                             <th>Monetization</th>
+                            <th className="features-cell-priority">Priority</th>
+                            <th>Development</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -256,10 +226,12 @@ export default function SkyportHome() {
                             const status = getStatus(row.feature)
                             return (
                             <tr key={i} className={status ? `features-row--${status}` : undefined}>
-                              <td className="features-cell-feature">{formatFeatureContent(row.feature)}</td>
+                              <td className="features-cell-feature">{formatFeatureCellContent(row.feature)}</td>
                               <td className="features-cell-type">{row.initiativeType}</td>
                               <td className="features-cell-category">{row.endUserCategory}</td>
                               <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+                              <td className="features-cell-priority">{row.priority ?? '—'}</td>
+                              <td className="features-cell-development">{row.development || '—'}</td>
                             </tr>
                           )
                           })}
@@ -285,6 +257,8 @@ export default function SkyportHome() {
                   <th>Initiative Type</th>
                   <th>End User Category</th>
                   <th>Monetization Model</th>
+                  <th className="features-cell-priority">Priority</th>
+                  <th>Development</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,10 +267,12 @@ export default function SkyportHome() {
                   return (
                   <tr key={i} className={status ? `features-row--${status}` : undefined}>
                     <td className="features-cell-group">{row.displayGroup}</td>
-                    <td className="features-cell-feature">{formatFeatureContent(row.feature)}</td>
+                    <td className="features-cell-feature">{formatFeatureCellContent(row.feature)}</td>
                     <td className="features-cell-type">{row.initiativeType}</td>
                     <td className="features-cell-category">{row.endUserCategory}</td>
                     <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+                    <td className="features-cell-priority">{row.priority ?? '—'}</td>
+                    <td className="features-cell-development">{row.development || '—'}</td>
                   </tr>
                 )
                 })}

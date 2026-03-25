@@ -437,10 +437,34 @@
   font-weight: 600;
 }
 
-/* System mode visibility: a) b) c) d) e) each on its own line; semicolon bullets in SkyportCare */
+/* Wrapper for multiline / lettered feature descriptions */
+.features-cell-feature-block {
+  display: block;
+}
+
+.features-cell-feature-lead {
+  display: block;
+  margin-bottom: 0.35em;
+  line-height: 1.45;
+}
+
+/* Lettered sub-lines under a feature title (roadmap multiline cells) */
+.features-cell-feature-block .features-cell-list-item {
+  margin-top: 0.3em;
+  margin-bottom: 0;
+  padding-left: 0.45em;
+  line-height: 1.45;
+  border-left: 2px solid rgba(0, 151, 224, 0.35);
+}
+.features-cell-feature-block > .features-cell-list-item:first-of-type {
+  margin-top: 0.15em;
+}
+
+/* SkyportCare & other tables: list rows in feature column */
 .features-cell-list-item {
   margin-top: 0.35em;
   margin-bottom: 0;
+  line-height: 1.45;
 }
 .features-cell-list-item:first-child {
   margin-top: 0.5em;
@@ -537,10 +561,10 @@
   display: none;
 }
 
+/* Let tall groups (e.g. Remote Control) expand fully — no inner vertical scroll */
 .features-panel-table-wrap {
   overflow-x: auto;
-  max-height: 400px;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .features-panel-table {
@@ -548,28 +572,39 @@
   font-size: var(--text-sm);
   table-layout: fixed;
   width: 100%;
-  min-width: 640px;
+  min-width: 56rem;
 }
 
-/* Fixed column widths so all accordion sections align (4 cols) */
+/* Six columns: feature, initiative, category, monetization, priority, development */
 .features-panel-table th:nth-child(1),
 .features-panel-table td:nth-child(1) {
-  width: 46%;
+  width: 32%;
   min-width: 0;
 }
 .features-panel-table th:nth-child(2),
 .features-panel-table td:nth-child(2) {
-  width: 18%;
+  width: 15%;
   min-width: 0;
 }
 .features-panel-table th:nth-child(3),
 .features-panel-table td:nth-child(3) {
-  width: 18%;
+  width: 16%;
   min-width: 0;
 }
 .features-panel-table th:nth-child(4),
 .features-panel-table td:nth-child(4) {
-  width: 18%;
+  width: 12%;
+  min-width: 0;
+}
+.features-panel-table th:nth-child(5),
+.features-panel-table td:nth-child(5) {
+  width: 6%;
+  min-width: 0;
+  text-align: center;
+}
+.features-panel-table th:nth-child(6),
+.features-panel-table td:nth-child(6) {
+  width: 19%;
   min-width: 0;
 }
 
@@ -587,6 +622,10 @@
   letter-spacing: 0.02em;
   text-align: left;
   box-sizing: border-box;
+  white-space: normal;
+  line-height: 1.25;
+  vertical-align: bottom;
+  hyphens: auto;
 }
 
 .features-panel-table td {

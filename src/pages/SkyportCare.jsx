@@ -39,7 +39,10 @@ function filterRows(rows, query) {
       (r.feature && r.feature.toLowerCase().includes(q)) ||
       (r.displayGroup && r.displayGroup.toLowerCase().includes(q)) ||
       (r.endUserCategory && r.endUserCategory.toLowerCase().includes(q)) ||
-      (r.initiativeType && r.initiativeType.toLowerCase().includes(q))
+      (r.initiativeType && r.initiativeType.toLowerCase().includes(q)) ||
+      (r.monetizationModel && r.monetizationModel.toLowerCase().includes(q)) ||
+      (r.development && r.development.toLowerCase().includes(q)) ||
+      (r.priority != null && String(r.priority).includes(q))
   )
 }
 
@@ -140,7 +143,7 @@ export default function SkyportCare() {
       <section id="roadmap" className="skyport-care-section skyport-care-section-features">
         <h2 className="skyport-care-section-title">Roadmap</h2>
         <p className="skyport-care-section-desc">
-          Feature / Function groups, initiative types, end user categories, and monetization.
+          Feature / Function groups, initiative types, end user categories, monetization, priority, and development scope.
         </p>
 
         {!showCategoryChart ? (
@@ -262,6 +265,8 @@ export default function SkyportCare() {
                             <th>Initiative Type</th>
                             <th>End User Category</th>
                             <th>Monetization</th>
+                            <th className="features-cell-priority">Priority</th>
+                            <th>Development</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -273,6 +278,8 @@ export default function SkyportCare() {
                                 <td className="features-cell-type">{row.initiativeType}</td>
                                 <td className="features-cell-category">{row.endUserCategory}</td>
                                 <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+                                <td className="features-cell-priority">{row.priority ?? '—'}</td>
+                                <td className="features-cell-development">{row.development || '—'}</td>
                               </tr>
                             )
                           })}
@@ -298,6 +305,8 @@ export default function SkyportCare() {
                   <th>Initiative Type</th>
                   <th>End User Category</th>
                   <th>Monetization Model</th>
+                  <th className="features-cell-priority">Priority</th>
+                  <th>Development</th>
                 </tr>
               </thead>
               <tbody>
@@ -310,6 +319,8 @@ export default function SkyportCare() {
                       <td className="features-cell-type">{row.initiativeType}</td>
                       <td className="features-cell-category">{row.endUserCategory}</td>
                       <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+                      <td className="features-cell-priority">{row.priority ?? '—'}</td>
+                      <td className="features-cell-development">{row.development || '—'}</td>
                     </tr>
                   )
                 })}

@@ -6,6 +6,12 @@ import AuthProvider from './auth/AuthProvider'
 import App from './App'
 import './index.css'
 
+function routerBasename() {
+  const b = import.meta.env.BASE_URL
+  if (!b || b === '/') return undefined
+  return b.replace(/\/$/, '') || undefined
+}
+
 let root
 try {
   root = ReactDOM.createRoot(document.getElementById('root'))
@@ -13,7 +19,7 @@ try {
     <React.StrictMode>
       <ErrorBoundary>
         <AuthProvider>
-          <BrowserRouter>
+          <BrowserRouter basename={routerBasename()}>
             <App />
           </BrowserRouter>
         </AuthProvider>
@@ -21,9 +27,17 @@ try {
     </React.StrictMode>,
   )
 } catch (err) {
-  document.getElementById('root').innerHTML =
+  const el = document.getElementById('root')
+  if (!el) throw err
+  const hintHtml = import.meta.env.DEV
+    ? '<p>Use <strong>npm run dev</strong> in the project folder, then open <strong>http://localhost:5173</strong> in your browser.</p>'
+    : '<p>Try refreshing the page. If this keeps happening, open the site from your published URL (not a downloaded HTML file).</p>'
+  el.innerHTML =
     '<div style="padding:2rem;font-family:system-ui;max-width:40rem">' +
-    '<h1>App failed to start</h1><p>Use <strong>npm run dev</strong> in the project folder, then open <strong>http://localhost:5173</strong> in your browser. Do not open index.html directly as a file.</p>' +
-    '<pre style="background:#eee;padding:1rem;overflow:auto;font-size:14px">' + (err && err.message ? err.message : String(err)) + '</pre>' +
+    '<h1>App failed to start</h1>' +
+    hintHtml +
+    '<pre style="background:#eee;padding:1rem;overflow:auto;font-size:14px">' +
+    (err && err.message ? err.message : String(err)) +
+    '</pre>' +
     '</div>'
 }

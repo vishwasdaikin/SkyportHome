@@ -5,19 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
+    "dev:host": "vite --host",
+    "build:city-state-data": "node scripts/build-city-counts-by-us-state.cjs",
+    "build:city-hotspots": "node scripts/build-city-hotspots.cjs",
+    "build": "npm run build:city-state-data && npm run build:city-hotspots && vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@azure/msal-browser": "^3.28.0",
-    "lucide-react": "^0.460.0",
     "@azure/msal-react": "^2.2.0",
+    "lucide-react": "^0.460.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.3.1",
     "react-router-dom": "^6.22.0",
+    "react-simple-maps": "^3.0.0",
     "recharts": "^3.8.0"
   },
   "devDependencies": {
@@ -27,6 +31,8 @@
     "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.27",
+    "d3-geo": "^2.0.2",
+    "country-state-city": "^3.2.1",
     "jsdom": "^29.0.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.1",

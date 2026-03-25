@@ -454,9 +454,181 @@
   margin-bottom: 0;
 }
 
+.fy26-business-model-block {
+  margin-top: 1.35rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.fy26-page #digital-platforms-business-model {
+  scroll-margin-top: calc(var(--app-header-height, 60px) + 1.25rem);
+}
+
+.fy26-business-model-details {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.fy26-business-model-summary {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  list-style: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+  color: var(--daikin-blue);
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fy26-business-model-summary:hover,
+.fy26-business-model-summary:hover .fy26-business-model-summary-label {
+  color: var(--daikin-blue-dark, #0066a8);
+}
+
+.fy26-business-model-summary:focus {
+  outline: none;
+}
+
+.fy26-business-model-summary:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.fy26-business-model-summary::-webkit-details-marker,
+.fy26-business-model-summary::marker {
+  display: none;
+}
+
+.fy26-business-model-summary::after {
+  content: '[+]';
+  flex-shrink: 0;
+  font-size: 1em;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.fy26-business-model-details[open] > .fy26-business-model-summary::after {
+  content: '[-]';
+}
+
+.fy26-business-model-summary-label {
+  display: inline;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1.5px;
+}
+
+.fy26-business-model-details-body {
+  margin-top: 0.85rem;
+  padding: 0;
+}
+
+.fy26-business-model-scroll {
+  overflow-x: auto;
+  margin: 0 -0.25rem;
+  padding: 0 0.25rem 0.35rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fy26-business-model-table {
+  width: 100%;
+  min-width: 52rem;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.fy26-bm-caption {
+  caption-side: top;
+  text-align: left;
+  font-size: var(--text-sm);
+  color: var(--text-secondary, #444);
+  margin-bottom: 0.65rem;
+  padding: 0 0.15rem;
+}
+
+.fy26-business-model-table th,
+.fy26-business-model-table td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.55rem;
+  vertical-align: top;
+}
+
+.fy26-business-model-table .fy26-bm-corner {
+  text-align: left;
+  font-weight: 600;
+  background: #f6f7f9;
+  min-width: 11rem;
+}
+
+.fy26-business-model-table .fy26-bm-col-head {
+  text-align: center;
+  font-weight: 600;
+  background: #f0f2f5;
+  white-space: nowrap;
+}
+
+.fy26-bm-section-head th {
+  background: #1a1a1a;
+  color: #fff;
+  text-align: left;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.65rem;
+}
+
+.fy26-bm-subhead th {
+  background: #9fd5eb;
+  color: var(--daikin-blue-dark, #0066a8);
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 0.45rem 0.735rem;
+  border-color: rgba(0, 102, 168, 0.35);
+}
+
+.fy26-business-model-table tbody th[scope='row'] {
+  text-align: left;
+  font-weight: 500;
+  background: #fafbfc;
+  max-width: 14rem;
+}
+
+.fy26-business-model-table .fy26-bm-emphasis {
+  font-weight: 600;
+}
+
+.fy26-bm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fy26-bm-total-row th,
+.fy26-bm-total-row td {
+  font-weight: 700;
+  background: #f0f7ff;
+  border-top-width: 2px;
+}
+
 /* FY25 Review card — SkyportHome & SkyportCare */
 .fy25-review-body {
-  --fy25-gap: 1.7rem;
+  --fy25-gap: 1.05rem;
   display: flex;
   flex-direction: column;
   gap: var(--fy25-gap);
@@ -496,7 +668,7 @@
 
 @media (max-width: 767px) {
   .fy25-review-body {
-    --fy25-gap: 1rem;
+    --fy25-gap: 0.85rem;
   }
   .fy25-two-col {
     gap: 1rem;
@@ -539,7 +711,7 @@
 /* SkyportHome card — below Monthly + All-Time charts */
 .fy25-skyport-home-wrap {
   width: 100%;
-  margin-top: 1.25rem;
+  margin-top: 0;
 }
 
 .fy25-skyport-home-card {
@@ -564,6 +736,707 @@
 
 .fy25-skyport-home-card-header .fy25-skyport-home-feedback-details-link {
   flex-shrink: 0;
+}
+
+/* GY25 — quarterly sentiment metrics (nested under SkyportHome Experience Quality & Sentiment) */
+.fy25-skyport-home-sentiment-quarter-card {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem 1.15rem;
+  background: #fffef7;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius, 8px);
+  min-width: 0;
+}
+
+.fy25-skyport-home-sentiment-quarter-title {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.fy25-skyport-home-sentiment-quarter-intro {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #57534e;
+}
+
+.fy25-skyport-home-sentiment-quarter-badge {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #713f12;
+  background: #fef3c7;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.fy25-skyport-home-chart-wrap--sentiment-quarterly {
+  margin-top: 0;
+}
+
+.fy25-skyport-home-chart-inner--sentiment-quarterly {
+  min-width: 0;
+}
+
+/* Thermostat locations: text control opens choropleth dialog (SkyportHome Experience Quality & Sentiment card) */
+.fy25-thermostat-locations-map {
+  margin-top: 0.65rem;
+  margin-bottom: 0.35rem;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.fy25-thermostat-locations-map__see-locations {
+  margin: 0;
+  padding: 0.15rem 0;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--daikin-blue, #0097e0);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.fy25-thermostat-locations-map__see-locations:hover {
+  color: #0077b3;
+}
+
+.fy25-thermostat-locations-map__see-locations:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.fy25-thermostat-locations-map__see-locations--inline {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Full-screen dialog for interactive choropleth */
+.fy25-thermostat-locations-map-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.25rem 0.75rem 2rem;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.55);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.fy25-thermostat-locations-map-modal {
+  width: min(960px, 100%);
+  max-width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: min(94vh, 100%);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.fy25-thermostat-locations-map-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.fy25-thermostat-locations-map-modal__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--daikin-blue, #0097e0);
+}
+
+.fy25-thermostat-locations-map-modal__close {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.fy25-thermostat-locations-map-modal__close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.fy25-thermostat-locations-map-modal__close:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+}
+
+.fy25-thermostat-locations-map-modal__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.65rem 0.85rem 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fy25-thermostat-locations-map--modal-inner {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.fy25-thermostat-locations-map__overlay-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 0 0.65rem 0;
+  padding: 0.45rem 0.65rem;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.fy25-thermostat-locations-map__map-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.fy25-thermostat-locations-map__checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #334155;
+  cursor: pointer;
+  margin: 0;
+}
+
+.fy25-thermostat-locations-map__checkbox {
+  margin: 0.15rem 0 0 0;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  accent-color: var(--daikin-blue, #0097e0);
+  cursor: pointer;
+}
+
+.fy25-thermostat-locations-map--loading,
+.fy25-thermostat-locations-map--error {
+  min-height: 4rem;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1rem 1.1rem;
+  background: #f8fafc;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 8px);
+}
+
+.fy25-thermostat-locations-map__loading,
+.fy25-thermostat-locations-map__error {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.fy25-thermostat-locations-map__error {
+  color: #b91c1c;
+}
+
+/* US / Canada tabs */
+.fy25-thermostat-locations-map__tabs {
+  margin-top: 0.15rem;
+}
+
+.fy25-thermostat-locations-map__tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 0.65rem 0;
+  padding: 3px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.fy25-thermostat-locations-map__tab {
+  margin: 0;
+  padding: 0.45rem 1.1rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.fy25-thermostat-locations-map__tab:hover {
+  color: #1d4ed8;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.fy25-thermostat-locations-map__tab:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+}
+
+.fy25-thermostat-locations-map__tab--active {
+  color: #1e40af;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+.fy25-thermostat-locations-map__panel {
+  min-width: 0;
+}
+
+.fy25-thermostat-locations-map__panel--canada {
+  padding-top: 0.15rem;
+}
+
+.fy25-thermostat-locations-map__us {
+  position: relative;
+  min-width: 0;
+}
+
+.fy25-thermostat-locations-map__svg-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  /* Avoid a horizontal scrollbar on the card */
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.fy25-thermostat-locations-map__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: min(800px, 100%);
+  margin: 0 auto;
+}
+
+.fy25-thermostat-locations-map__tooltip {
+  position: fixed;
+  z-index: 10060;
+  pointer-events: none;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  background: rgba(15, 23, 42, 0.92);
+  color: #f8fafc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 220px;
+}
+
+.fy25-thermostat-locations-map__tooltip--hotspot {
+  border-left: 3px solid #f97316;
+  max-width: 260px;
+}
+
+.fy25-thermostat-locations-map__tooltip--state strong {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.fy25-thermostat-locations-map__hotspot-region {
+  font-size: 0.68rem;
+  opacity: 0.9;
+  margin: 0.1rem 0 0.05rem;
+  color: #cbd5e1;
+}
+
+.fy25-thermostat-locations-map__hotspot-legend {
+  margin: 0.55rem 0 0 0;
+  padding-top: 0.45rem;
+  border-top: 1px dashed #fde68a;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: #b45309;
+}
+
+.fy25-thermostat-locations-map__heat-legend {
+  margin-top: 0.45rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed #bfdbfe;
+}
+
+.fy25-thermostat-locations-map__heat-legend-title {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 0.3rem;
+}
+
+.fy25-thermostat-locations-map__heat-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.fy25-thermostat-locations-map__heat-legend-end {
+  font-size: 0.65rem;
+  color: #78716c;
+  font-weight: 600;
+}
+
+.fy25-thermostat-locations-map__legend-gradient--heat {
+  flex: 1 1 120px;
+  min-width: 100px;
+  max-width: 220px;
+  border-color: #d97706;
+}
+
+.fy25-thermostat-locations-map__legend {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  background: #fff;
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #475569);
+}
+
+.fy25-thermostat-locations-map__legend-title {
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: #1e40af;
+  margin-bottom: 0.45rem;
+}
+
+.fy25-thermostat-locations-map__legend-scale {
+  display: grid;
+  grid-template-columns: minmax(3rem, auto) 1fr minmax(3rem, auto);
+  align-items: center;
+  gap: 0.45rem 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.fy25-thermostat-locations-map__legend-bound {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #1d4ed8;
+  text-align: center;
+}
+
+.fy25-thermostat-locations-map__legend-gradient {
+  min-height: 16px;
+  height: 16px;
+  border-radius: 6px;
+  border: 1px solid #60a5fa;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.fy25-thermostat-locations-map__legend-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+
+.fy25-thermostat-locations-map__legend-caption-part {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fy25-thermostat-locations-map__legend-arrow {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.fy25-thermostat-locations-map__legend-nodata {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  color: #64748b;
+  padding-top: 0.25rem;
+  border-top: 1px dashed #bfdbfe;
+}
+
+.fy25-thermostat-locations-map__legend-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(30, 64, 175, 0.35);
+  flex-shrink: 0;
+}
+
+.fy25-thermostat-locations-map__legend-swatch--low {
+  background: hsl(210, 58%, 88%);
+}
+
+.fy25-thermostat-locations-map__legend-swatch--high {
+  background: hsl(220, 56%, 26%);
+}
+
+.fy25-thermostat-locations-map__legend-swatch--empty {
+  background: #e8eef5;
+  border-color: #cbd5e1;
+}
+
+.fy25-thermostat-locations-map__click-hint {
+  margin: 0.55rem 0 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #bfdbfe;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
+/* State click → city / country detail modal */
+.fy25-state-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.25rem 1rem 2rem;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.fy25-state-detail-modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.35rem 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #c7e9d2;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.fy25-state-detail-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  color: #64748b;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.fy25-state-detail-close:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.fy25-state-detail-close:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+}
+
+.fy25-state-detail-title {
+  margin: 0 2.5rem 0.35rem 0;
+  padding-right: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #14532d;
+  line-height: 1.25;
+}
+
+.fy25-state-detail-abbr {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+  color: #166534;
+  background: #dcfce7;
+  border-radius: 4px;
+}
+
+.fy25-state-detail-mapcount {
+  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.fy25-state-detail-section {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fy25-state-detail-section-title {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--daikin-blue, #0097e0);
+}
+
+.fy25-state-detail-note {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.fy25-state-detail-empty {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.fy25-state-detail-table-wrap {
+  max-height: min(42vh, 320px);
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.fy25-state-detail-table-wrap--country {
+  max-height: min(36vh, 260px);
+}
+
+.fy25-state-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.fy25-state-detail-table th,
+.fy25-state-detail-table td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fy25-state-detail-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8fafc;
+  font-weight: 600;
+  color: #334155;
+}
+
+.fy25-state-detail-table-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fy25-state-detail-mono {
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+}
+
+.fy25-state-detail-more,
+.fy25-state-detail-foot {
+  margin: 0.45rem 0 0 0;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.fy25-state-detail-foot {
+  margin-top: 0.35rem;
+}
+
+.fy25-thermostat-locations-map__canada {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  min-width: 0;
+}
+
+.fy25-thermostat-locations-map__canada-subtitle--tab {
+  margin-top: 0;
+}
+
+.fy25-thermostat-locations-map__canada-title {
+  margin: 0 0 0.15rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.fy25-thermostat-locations-map__canada-subtitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.72rem;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.35;
+}
+
+.fy25-thermostat-locations-map__canada-map {
+  margin-top: 0.35rem;
+  position: relative;
+}
+
+.fy25-thermostat-locations-map__canada-svg-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.fy25-thermostat-locations-map__canada-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: min(760px, 100%);
+  margin: 0 auto;
 }
 
 .fy25-skyport-home-title {
@@ -1152,6 +2025,10 @@
   margin-bottom: 0;
 }
 
+.fy25-monthly-chart-wrap .fy25-skyportcare-dealer-adoption {
+  margin-top: 1.15rem;
+}
+
 .fy25-funnel--combined {
   width: 100%;
 }
@@ -1160,10 +2037,32 @@
   margin-bottom: 0.75rem !important;
 }
 
-/* Elegant data table — Installed Base funnel */
+.fy25-funnel-dealer-callout,
+.fy25-funnel-thermostat-footprint-line {
+  margin: 0.85rem 0 0 0;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #1e3a5f;
+  background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%);
+  border-left: 4px solid var(--daikin-blue, #0097e0);
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.fy25-funnel-thermostat-footprint-line .fy25-thermostat-locations-map__see-locations--inline {
+  font-weight: 600;
+  color: var(--daikin-blue, #0097e0);
+  cursor: pointer;
+}
+
+.fy25-funnel-thermostat-footprint-line .fy25-thermostat-locations-map__see-locations--inline:hover {
+  color: #0077b3;
+}
+
+/* Elegant data table — Installed Base funnel (no horizontal scroll; fits playbook width) */
 .fy25-funnel-table-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: visible;
   margin: 0;
   border-radius: 10px;
   border: 1px solid var(--border, #e2e8f0);
@@ -1173,7 +2072,9 @@
 
 .fy25-funnel-table {
   width: 100%;
-  min-width: 36rem;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.875rem;
   line-height: 1.35;
@@ -1220,6 +2121,136 @@
   font-weight: 500;
   color: var(--text-primary, #0f172a);
   background: #fcfdfe;
+  overflow-wrap: anywhere;
+}
+
+.fy25-funnel-metric-label-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.fy25-funnel-alp-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 0.15rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--daikin-blue, #0097e0);
+  cursor: pointer;
+}
+
+.fy25-funnel-alp-expand:hover {
+  color: var(--daikin-blue-dark, #0066a8);
+}
+
+.fy25-funnel-alp-expand:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.fy25-funnel-metric-help-wrap {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.fy25-funnel-metric-tooltip {
+  position: absolute;
+  /* Anchor to the help control so the bubble opens rightward and does not cover label text left of ? */
+  left: 0;
+  top: calc(100% + 2px);
+  z-index: 80;
+  width: max-content;
+  max-width: min(18rem, 72vw);
+  padding: 0.4rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: normal;
+  text-transform: none;
+  text-align: left;
+  color: #f8fafc;
+  background: #0f172a;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.32);
+  pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(0, -2px);
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease,
+    visibility 0.12s;
+}
+
+.fy25-funnel-metric-help-wrap:hover .fy25-funnel-metric-tooltip,
+.fy25-funnel-metric-help-wrap:focus-within .fy25-funnel-metric-tooltip,
+.fy25-funnel-metric-help-wrap:has(.fy25-funnel-metric-tooltip:hover) .fy25-funnel-metric-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0, 0);
+}
+
+/* Bottom table rows: open upward so the scroll wrapper does not clip the bubble */
+.fy25-funnel-metric-help-wrap--tooltip-above .fy25-funnel-metric-tooltip {
+  top: auto;
+  bottom: calc(100% + 2px);
+  z-index: 120;
+  transform: translate(0, 2px);
+}
+
+.fy25-funnel-metric-help-wrap--tooltip-above:hover .fy25-funnel-metric-tooltip,
+.fy25-funnel-metric-help-wrap--tooltip-above:focus-within .fy25-funnel-metric-tooltip,
+.fy25-funnel-metric-help-wrap--tooltip-above:has(.fy25-funnel-metric-tooltip:hover) .fy25-funnel-metric-tooltip {
+  transform: translate(0, 0);
+}
+
+.fy25-funnel-table tbody tr:has(.fy25-funnel-metric-help-wrap:hover),
+.fy25-funnel-table tbody tr:has(.fy25-funnel-metric-help-wrap:focus-within),
+.fy25-funnel-table tbody tr:has(.fy25-funnel-metric-tooltip:hover) {
+  position: relative;
+  z-index: 6;
+}
+
+.fy25-funnel-metric-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0 0.2rem;
+  border: 1px solid #94a3b8;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #475569;
+  background: #f1f5f9;
+  cursor: help;
+}
+
+.fy25-funnel-metric-help:hover {
+  border-color: var(--daikin-blue, #0097e0);
+  color: var(--daikin-blue, #0097e0);
+  background: #f0f9ff;
+}
+
+.fy25-funnel-metric-help:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
 }
 
 .fy25-funnel-table tbody tr:nth-child(even) .fy25-funnel-table-rowhead {
@@ -1260,6 +2291,13 @@
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-secondary, #64748b);
+}
+
+.fy25-funnel-table-inline-paren {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
 }
 
 .fy25-funnel-table-na {

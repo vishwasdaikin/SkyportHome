@@ -30,19 +30,22 @@
 
 .features-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 72rem;
   border-collapse: collapse;
   font-size: var(--text-sm);
 }
 
 .features-table th {
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
   background: var(--daikin-blue-light);
   border-bottom: 2px solid var(--daikin-blue);
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.25;
+  vertical-align: bottom;
+  hyphens: auto;
 }
 
 .features-table th:first-child {
@@ -51,6 +54,46 @@
 
 .features-table th:last-child {
   border-radius: 0 8px 0 0;
+}
+
+.features-cell-priority {
+  text-align: center;
+  white-space: nowrap;
+  width: 4.5rem;
+}
+
+.features-cell-development {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  white-space: normal;
+  max-width: 11rem;
+}
+
+/* Shared with SkyportHome roadmap (formatFeatureCellContent) */
+.features-cell-highlight-green {
+  color: #1a6b1a;
+  font-weight: 600;
+}
+
+.features-cell-feature-block {
+  display: block;
+}
+
+.features-cell-feature-lead {
+  display: block;
+  margin-bottom: 0.35em;
+  line-height: 1.45;
+}
+
+.features-cell-feature-block .features-cell-list-item {
+  margin-top: 0.3em;
+  padding-left: 0.45em;
+  line-height: 1.45;
+  border-left: 2px solid rgba(0, 151, 224, 0.35);
+}
+
+.features-cell-feature-block > .features-cell-list-item:first-of-type {
+  margin-top: 0.15em;
 }
 
 .features-table td {
@@ -76,7 +119,8 @@
 
 .features-cell-feature {
   min-width: 14rem;
-  max-width: 28rem;
+  max-width: 32rem;
+  line-height: 1.45;
 }
 
 .features-cell-type {

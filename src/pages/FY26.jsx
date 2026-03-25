@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useEffect, useRef, useId } from 'react'
 import { useParams, Navigate, Link, NavLink, useLocation } from 'react-router-dom'
 import { FY26_BASE, FY26_NAV_ITEMS, FY26_TOP_NAV_IDS, FY26_TOP_NAV_TITLES } from '../constants/fy26Nav'
 import {
@@ -20,6 +20,11 @@ import {
 } from 'recharts'
 import './DigitalStrategy.css'
 import './FY26.css'
+import {
+  ThermostatLocationsMapProvider,
+  ThermostatLocationsMapInlineLink,
+} from '../components/ThermostatLocationsMap'
+import { DigitalPlatformsBusinessModelTable } from '../components/DigitalPlatformsBusinessModelTable'
 
 /** FY2023 units sold + active SkyportCare licenses (Apr'23–Mar'24). */
 const FY23_THERMOSTAT_MONTHLY_DATA = [
@@ -130,14 +135,14 @@ const FY25_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY = [
 
 /** FY25 in progress (Apr'25–Feb'26): active Cloud Services licenses by month (11 months; Mar'26 not yet). */
 const FY25_ACTIVE_LICENSES_CUMULATIVE_MONTHLY = [
-  10_265, 10_400, 10_584, 10_720, 10_917, 11_076, 11_280, 11_521, 11_833, 11_963, 12_165,
+  10_265, 10_400, 10_584, 10_720, 10_917, 11_076, 11_280, 11_521, 11_833, 11_963, 13_308,
 ]
 
 /** Fiscal quarter-end month indices in FY (0=Apr … 11=Mar): Q1 Jun=2, Q2 Sep=5, Q3 Dec=8, Q4 Mar=11. */
 const FY_FISCAL_QUARTER_END_MONTH_INDEX = [2, 5, 8, 11]
 
 /** SkyportHome users count (dot between Q3 and Q4 FY25; value also on Q4 row for tooltip). */
-const SKYPORTHOME_ALL_TIME_VALUE = 280_000
+const SKYPORTHOME_ALL_TIME_VALUE = 317_000
 
 /**
  * Quarter-end points FY23 → FY24 → FY25. If fiscal Q4 (Mar) is missing but Jan/Feb exist,
@@ -224,10 +229,11 @@ const ALL_TIME_RIGHT_QUARTERLY_SPAN = (() => {
   return rows
 })()
 
-/** Tooltip / legend copy for SkyportHome users point (~280K). */
-const SKYPORTHOME_ALL_TIME_ACCOUNTS_CALLOUT = 'SkyportHome Accounts: ~280K'
-/** Inline label on the all-time chart (same style as other series end labels). */
-const SKYPORTHOME_ALL_TIME_POINT_LABEL = 'SkyportHome ~280K'
+/** Tooltip / legend copy for SkyportHome users point (~317K). */
+const SKYPORTHOME_ALL_TIME_ACCOUNTS_CALLOUT = 'SkyportHome Accounts: ~317K'
+/** Inline label on the all-time chart: value line, then product name below. */
+const SKYPORTHOME_ALL_TIME_POINT_LABEL_VALUE = '~317K'
+const SKYPORTHOME_ALL_TIME_POINT_LABEL_NAME = 'SkyportHome'
 
 /** Last index in All-Time series that has any series data (excludes trailing Q4 row when all null). */
 const ALL_TIME_RIGHT_QUARTERLY_SPAN_LAST_DATA_INDEX = (() => {
@@ -253,6 +259,27 @@ const THERMOSTAT_FY_TABS = [
   { id: 'FY24', label: 'FY24' },
   { id: 'FY23', label: 'FY23' },
 ]
+
+/** Installed base funnel table: Active License Penetration FY columns (presentation). */
+const FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY = {
+  FY25: { pct: '6%', absParen: '(4,600)' },
+  FY24: { pct: '6%', absParen: '(5,700)' },
+  FY23: { pct: '4%', absParen: '(1,700)' },
+}
+
+/** Installed base funnel table: Paid Annual License Penetration FY columns (presentation). */
+const FUNNEL_PAID_ANNUAL_PENETRATION_FY_DISPLAY = {
+  FY25: '0.4%',
+  FY24: '0.3%',
+  FY23: '0.1%',
+}
+
+/** Installed base funnel table: Paid Lifetime License Penetration FY columns (presentation). */
+const FUNNEL_PAID_LIFETIME_PENETRATION_FY_DISPLAY = {
+  FY25: '4.6%',
+  FY24: '2.6%',
+  FY23: '3.4%',
+}
 
 const CONNECTED_CUMULATIVE_BY_FY = {
   FY23: FY23_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY,
@@ -328,10 +355,28 @@ function formatFunnelTildeAbs(n) {
   return `(~${Math.round(n).toLocaleString()})`
 }
 
+const ACTIVE_LICENSES_TIP =
+  'This is equal to Bundled Active Licenses + 1-Year Active Licenses + Lifetime Active Licenses.'
+
+const ACTIVE_LICENSE_PENETRATION_TIP =
+  'This is the total active licenses as a % of Thermostats Connected — Active License Penetration reflects platform adoption and defines the monetizable pool.'
+
+const PAID_ANNUAL_LICENSE_PENETRATION_TIP =
+  'This is the total active paid 1-Year licenses as a % of Connected Systems.'
+
+const PAID_LIFETIME_LICENSE_PENETRATION_TIP =
+  'This is the total active paid lifetime licenses as a % of Connected Systems.'
+
 function InstalledBaseFunnelTable({ allTimeFunnel }) {
+  const [licenseBreakdownOpen, setLicenseBreakdownOpen] = useState(false)
+  const activeLicensesTipId = useId()
+  const activeLicensePenetrationTipId = useId()
+  const paidAnnualLicensePenetrationTipId = useId()
+  const paidLifetimeLicensePenetrationTipId = useId()
   const fyCols = THERMOSTAT_FY_TABS.map((tab) => ({
     ...tab,
     m: getFyActivationFunnelMetrics(tab.id),
+    paid: getFyPaidPenetrationOfConnected(tab.id),
   }))
 
   return (
@@ -366,50 +411,199 @@ function InstalledBaseFunnelTable({ allTimeFunnel }) {
           </tr>
           <tr>
             <th scope="row" className="fy25-funnel-table-rowhead">
-              Connected to Cloud / App
+              Thermostats Connected
             </th>
-            <td className="fy25-funnel-table-stack">
-              <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(allTimeFunnel.pctConnected)}</span>
-              <span className="fy25-funnel-table-abs">{formatFunnelTildeAbs(allTimeFunnel.connected)}</span>
+            <td className="fy25-funnel-table-num">
+              {allTimeFunnel.connected.toLocaleString('en-US')}{' '}
+              <span className="fy25-funnel-table-inline-paren">
+                ({formatFunnelPctForDisplay(allTimeFunnel.pctConnected)})
+              </span>
             </td>
             {fyCols.map(({ id, m }) => (
-              <td key={id} className="fy25-funnel-table-stack">
+              <td key={id} className="fy25-funnel-table-num">
                 {m ? (
                   <>
-                    <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(m.connectedPct)}</span>
-                    <span className="fy25-funnel-table-abs">{formatFunnelTildeAbs(m.connectedNew)}</span>
+                    {m.connectedNew.toLocaleString('en-US')}{' '}
+                    <span className="fy25-funnel-table-inline-paren">
+                      ({formatFunnelPctForDisplay(m.connectedPct)})
+                    </span>
                   </>
                 ) : (
-                  <span className="fy25-funnel-table-na">—</span>
+                  '—'
                 )}
               </td>
             ))}
           </tr>
-          <tr className="fy25-funnel-table-tr-last">
+          <tr>
             <th scope="row" className="fy25-funnel-table-rowhead">
-              Active Cloud Services licenses
+              <span className="fy25-funnel-metric-label-wrap">
+                Active License Penetration
+                <span className="fy25-funnel-metric-help-wrap">
+                  <button
+                    type="button"
+                    className="fy25-funnel-metric-help"
+                    aria-label="Help: Active License Penetration"
+                    aria-describedby={activeLicensePenetrationTipId}
+                  >
+                    ?
+                  </button>
+                  <span id={activeLicensePenetrationTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                    {ACTIVE_LICENSE_PENETRATION_TIP}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="fy25-funnel-alp-expand"
+                  aria-expanded={licenseBreakdownOpen}
+                  aria-controls="fy25-funnel-row-active-licenses fy25-funnel-row-paid-annual fy25-funnel-row-paid-lifetime"
+                  aria-label={
+                    licenseBreakdownOpen
+                      ? 'Hide Active Licenses and paid license penetration rows'
+                      : 'Show Active Licenses and paid license penetration rows'
+                  }
+                  onClick={() => setLicenseBreakdownOpen((o) => !o)}
+                >
+                  {licenseBreakdownOpen ? '[-]' : '[+]'}
+                </button>
+              </span>
             </th>
-            <td className="fy25-funnel-table-stack">
+            <td className="fy25-funnel-table-num">
               <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
                 {formatFunnelPctForDisplay(allTimeFunnel.pctActiveOfConnected)}
               </span>
-              <span className="fy25-funnel-table-abs">{formatFunnelTildeAbs(allTimeFunnel.active)}</span>
             </td>
-            {fyCols.map(({ id, m }) => (
-              <td key={id} className="fy25-funnel-table-stack">
-                {m ? (
-                  <>
+            {fyCols.map(({ id, m }) => {
+              const alpFy = FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY[id]
+              return (
+                <td key={id} className="fy25-funnel-table-num">
+                  {alpFy ? (
+                    <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">{alpFy.pct}</span>
+                  ) : m ? (
                     <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
                       {formatFunnelPctForDisplay(m.activePct)}
                     </span>
-                    <span className="fy25-funnel-table-abs">{formatFunnelTildeAbs(m.activeNew)}</span>
-                  </>
-                ) : (
-                  <span className="fy25-funnel-table-na">—</span>
-                )}
-              </td>
-            ))}
+                  ) : (
+                    <span className="fy25-funnel-table-na">—</span>
+                  )}
+                </td>
+              )
+            })}
           </tr>
+          {licenseBreakdownOpen && (
+            <>
+              <tr id="fy25-funnel-row-active-licenses">
+            <th scope="row" className="fy25-funnel-table-rowhead">
+              <span className="fy25-funnel-metric-label-wrap">
+                Active Licenses
+                <span className="fy25-funnel-metric-help-wrap">
+                  <button
+                    type="button"
+                    className="fy25-funnel-metric-help"
+                    aria-label="Help: Active Licenses"
+                    aria-describedby={activeLicensesTipId}
+                  >
+                    ?
+                  </button>
+                  <span id={activeLicensesTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                    {ACTIVE_LICENSES_TIP}
+                  </span>
+                </span>
+              </span>
+            </th>
+            <td className="fy25-funnel-table-num">
+              {allTimeFunnel.active.toLocaleString('en-US')}
+            </td>
+            {fyCols.map(({ id, m }) => {
+              const alpFy = FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY[id]
+              const fyCount =
+                alpFy != null ? alpFy.absParen.replace(/^\(|\)$/g, '') : m?.activeNew.toLocaleString('en-US')
+              return (
+                <td key={id} className="fy25-funnel-table-num">
+                  {fyCount ?? '—'}
+                </td>
+              )
+            })}
+              </tr>
+              <tr id="fy25-funnel-row-paid-annual">
+            <th scope="row" className="fy25-funnel-table-rowhead">
+              <span className="fy25-funnel-metric-label-wrap">
+                Paid Annual License Penetration
+                <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
+                  <button
+                    type="button"
+                    className="fy25-funnel-metric-help"
+                    aria-label="Help: Paid Annual License Penetration"
+                    aria-describedby={paidAnnualLicensePenetrationTipId}
+                  >
+                    ?
+                  </button>
+                  <span id={paidAnnualLicensePenetrationTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                    {PAID_ANNUAL_LICENSE_PENETRATION_TIP}
+                  </span>
+                </span>
+              </span>
+            </th>
+            <td className="fy25-funnel-table-num">
+              <span className="fy25-funnel-table-pct">
+                {formatFunnelPctForDisplay(allTimeFunnel.paidAnnualOfConnectedPct)}
+              </span>
+            </td>
+            {fyCols.map(({ id, paid }) => {
+              const annualFyPct = FUNNEL_PAID_ANNUAL_PENETRATION_FY_DISPLAY[id]
+              return (
+                <td key={id} className="fy25-funnel-table-num">
+                  {annualFyPct != null ? (
+                    <span className="fy25-funnel-table-pct">{annualFyPct}</span>
+                  ) : paid ? (
+                    <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(paid.pctAnnual)}</span>
+                  ) : (
+                    <span className="fy25-funnel-table-na">—</span>
+                  )}
+                </td>
+              )
+            })}
+              </tr>
+              <tr className="fy25-funnel-table-tr-last" id="fy25-funnel-row-paid-lifetime">
+            <th scope="row" className="fy25-funnel-table-rowhead">
+              <span className="fy25-funnel-metric-label-wrap">
+                Paid Lifetime License Penetration
+                <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
+                  <button
+                    type="button"
+                    className="fy25-funnel-metric-help"
+                    aria-label="Help: Paid Lifetime License Penetration"
+                    aria-describedby={paidLifetimeLicensePenetrationTipId}
+                  >
+                    ?
+                  </button>
+                  <span id={paidLifetimeLicensePenetrationTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                    {PAID_LIFETIME_LICENSE_PENETRATION_TIP}
+                  </span>
+                </span>
+              </span>
+            </th>
+            <td className="fy25-funnel-table-num">
+              <span className="fy25-funnel-table-pct">
+                {formatFunnelPctForDisplay(allTimeFunnel.paidLifetimeOfConnectedPct)}
+              </span>
+            </td>
+            {fyCols.map(({ id, paid }) => {
+              const lifetimeFyPct = FUNNEL_PAID_LIFETIME_PENETRATION_FY_DISPLAY[id]
+              return (
+                <td key={id} className="fy25-funnel-table-num">
+                  {lifetimeFyPct != null ? (
+                    <span className="fy25-funnel-table-pct">{lifetimeFyPct}</span>
+                  ) : paid ? (
+                    <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(paid.pctLifetime)}</span>
+                  ) : (
+                    <span className="fy25-funnel-table-na">—</span>
+                  )}
+                </td>
+              )
+            })}
+              </tr>
+            </>
+          )}
         </tbody>
       </table>
     </div>
@@ -431,7 +625,12 @@ function averageMonthlyUnitsSold(rows) {
   return sum / rows.length
 }
 
-const FY26_INPAGE_HASH_IDS = ['fy25-review', 'fy26-plan', 'fusion30-summary']
+const FY26_INPAGE_HASH_IDS = [
+  'fy25-review',
+  'fy26-plan',
+  'fusion30-summary',
+  'digital-platforms-business-model',
+]
 
 /** Full “FY26 Playbook: {section}” heading is the section switcher (single dropdown). */
 function Fy26PlaybookTitleDropdown({ sectionId }) {
@@ -536,6 +735,136 @@ const SKYPORT_PUBLIC_STORE_WRITTEN_REVIEWS_COUNT = 900
 
 /** Labels the public sentiment bar chart for assistive tech (sibling caption in DOM). */
 const SKYPORT_PUBLIC_SENTIMENT_CAPTION_ID = 'skyport-home-public-sentiment-caption'
+
+/** Monthly license-type counts for funnel paid-penetration lookups (`getLicenseMonthlyRow`). */
+const SKYPORTHOME_LICENSE_MONTHLY_ROWS = [
+  { month: '2020-09', bundledActive: 0, bundledInactive: 0, lifetimeActive: 3, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2020-10', bundledActive: 0, bundledInactive: 0, lifetimeActive: 37, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2020-11', bundledActive: 0, bundledInactive: 0, lifetimeActive: 226, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2020-12', bundledActive: 0, bundledInactive: 0, lifetimeActive: 333, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-01', bundledActive: 0, bundledInactive: 0, lifetimeActive: 440, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-02', bundledActive: 0, bundledInactive: 0, lifetimeActive: 532, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-03', bundledActive: 0, bundledInactive: 0, lifetimeActive: 619, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-04', bundledActive: 0, bundledInactive: 0, lifetimeActive: 683, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-05', bundledActive: 0, bundledInactive: 0, lifetimeActive: 798, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-06', bundledActive: 0, bundledInactive: 0, lifetimeActive: 867, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-07', bundledActive: 0, bundledInactive: 0, lifetimeActive: 906, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-08', bundledActive: 0, bundledInactive: 0, lifetimeActive: 915, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-09', bundledActive: 0, bundledInactive: 0, lifetimeActive: 961, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-10', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1020, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-11', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1072, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2021-12', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1121, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-01', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1135, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-02', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1185, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-03', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1224, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-04', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1239, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-05', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1268, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-06', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1336, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-07', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1384, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-08', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1392, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-09', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1399, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-10', bundledActive: 0, bundledInactive: 0, lifetimeActive: 1433, oneYearActive: 0, oneYearInactive: 0 },
+  { month: '2022-11', bundledActive: 199, bundledInactive: 0, lifetimeActive: 1423, oneYearActive: 9, oneYearInactive: 0 },
+  { month: '2022-12', bundledActive: 396, bundledInactive: 0, lifetimeActive: 1444, oneYearActive: 19, oneYearInactive: 0 },
+  { month: '2023-01', bundledActive: 611, bundledInactive: 0, lifetimeActive: 1481, oneYearActive: 29, oneYearInactive: 0 },
+  { month: '2023-02', bundledActive: 862, bundledInactive: 0, lifetimeActive: 1578, oneYearActive: 42, oneYearInactive: 0 },
+  { month: '2023-03', bundledActive: 1157, bundledInactive: 0, lifetimeActive: 1673, oneYearActive: 69, oneYearInactive: 0 },
+  { month: '2023-04', bundledActive: 1530, bundledInactive: 0, lifetimeActive: 1770, oneYearActive: 88, oneYearInactive: 0 },
+  { month: '2023-05', bundledActive: 1868, bundledInactive: 0, lifetimeActive: 1834, oneYearActive: 98, oneYearInactive: 0 },
+  { month: '2023-06', bundledActive: 2370, bundledInactive: 0, lifetimeActive: 1884, oneYearActive: 122, oneYearInactive: 0 },
+  { month: '2023-07', bundledActive: 3016, bundledInactive: 0, lifetimeActive: 1925, oneYearActive: 139, oneYearInactive: 0 },
+  { month: '2023-08', bundledActive: 3544, bundledInactive: 0, lifetimeActive: 1964, oneYearActive: 205, oneYearInactive: 0 },
+  { month: '2023-09', bundledActive: 3918, bundledInactive: 0, lifetimeActive: 2009, oneYearActive: 288, oneYearInactive: 0 },
+  { month: '2023-10', bundledActive: 4335, bundledInactive: 0, lifetimeActive: 2065, oneYearActive: 297, oneYearInactive: 0 },
+  { month: '2023-11', bundledActive: 4668, bundledInactive: 83, lifetimeActive: 2112, oneYearActive: 308, oneYearInactive: 0 },
+  { month: '2023-12', bundledActive: 4983, bundledInactive: 154, lifetimeActive: 2163, oneYearActive: 306, oneYearInactive: 10 },
+  { month: '2024-01', bundledActive: 5387, bundledInactive: 252, lifetimeActive: 2217, oneYearActive: 306, oneYearInactive: 19 },
+  { month: '2024-02', bundledActive: 5636, bundledInactive: 416, lifetimeActive: 2274, oneYearActive: 299, oneYearInactive: 31 },
+  { month: '2024-03', bundledActive: 5937, bundledInactive: 590, lifetimeActive: 2328, oneYearActive: 283, oneYearInactive: 51 },
+  { month: '2024-04', bundledActive: 6139, bundledInactive: 831, lifetimeActive: 2377, oneYearActive: 268, oneYearInactive: 74 },
+  { month: '2024-05', bundledActive: 6437, bundledInactive: 1120, lifetimeActive: 2413, oneYearActive: 259, oneYearInactive: 88 },
+  { month: '2024-06', bundledActive: 6755, bundledInactive: 1426, lifetimeActive: 2448, oneYearActive: 256, oneYearInactive: 99 },
+  { month: '2024-07', bundledActive: 7018, bundledInactive: 1946, lifetimeActive: 2501, oneYearActive: 242, oneYearInactive: 127 },
+  { month: '2024-08', bundledActive: 7108, bundledInactive: 2540, lifetimeActive: 2541, oneYearActive: 239, oneYearInactive: 139 },
+  { month: '2024-09', bundledActive: 7137, bundledInactive: 3009, lifetimeActive: 2567, oneYearActive: 175, oneYearInactive: 206 },
+  { month: '2024-10', bundledActive: 7478, bundledInactive: 3320, lifetimeActive: 2599, oneYearActive: 101, oneYearInactive: 288 },
+  { month: '2024-11', bundledActive: 7668, bundledInactive: 3719, lifetimeActive: 2658, oneYearActive: 134, oneYearInactive: 298 },
+  { month: '2024-12', bundledActive: 7875, bundledInactive: 4103, lifetimeActive: 2688, oneYearActive: 138, oneYearInactive: 309 },
+  { month: '2025-01', bundledActive: 7548, bundledInactive: 5140, lifetimeActive: 2710, oneYearActive: 146, oneYearInactive: 316 },
+  { month: '2025-02', bundledActive: 7674, bundledInactive: 5658, lifetimeActive: 2752, oneYearActive: 158, oneYearInactive: 325 },
+  { month: '2025-03', bundledActive: 7841, bundledInactive: 6071, lifetimeActive: 2782, oneYearActive: 159, oneYearInactive: 330 },
+  { month: '2025-04', bundledActive: 8020, bundledInactive: 6530, lifetimeActive: 2815, oneYearActive: 164, oneYearInactive: 334 },
+  { month: '2025-05', bundledActive: 8230, bundledInactive: 6990, lifetimeActive: 2856, oneYearActive: 181, oneYearInactive: 342 },
+  { month: '2025-06', bundledActive: 8386, bundledInactive: 7580, lifetimeActive: 2892, oneYearActive: 196, oneYearInactive: 347 },
+  { month: '2025-07', bundledActive: 8684, bundledInactive: 8187, lifetimeActive: 2932, oneYearActive: 214, oneYearInactive: 355 },
+  { month: '2025-08', bundledActive: 8702, bundledInactive: 8989, lifetimeActive: 2970, oneYearActive: 221, oneYearInactive: 369 },
+  { month: '2025-09', bundledActive: 8643, bundledInactive: 9659, lifetimeActive: 3005, oneYearActive: 235, oneYearInactive: 378 },
+  { month: '2025-10', bundledActive: 8952, bundledInactive: 10157, lifetimeActive: 3056, oneYearActive: 246, oneYearInactive: 381 },
+  { month: '2025-11', bundledActive: 9103, bundledInactive: 10823, lifetimeActive: 3093, oneYearActive: 279, oneYearInactive: 389 },
+  { month: '2025-12', bundledActive: 9384, bundledInactive: 11396, lifetimeActive: 3174, oneYearActive: 257, oneYearInactive: 433 },
+  { month: '2026-01', bundledActive: 9603, bundledInactive: 11998, lifetimeActive: 3222, oneYearActive: 280, oneYearInactive: 447 },
+  { month: '2026-02', bundledActive: 9643, bundledInactive: 12718, lifetimeActive: 3287, oneYearActive: 302, oneYearInactive: 469 },
+  { month: '2026-03', bundledActive: 9545, bundledInactive: 13367, lifetimeActive: 3320, oneYearActive: 318, oneYearInactive: 483 },
+]
+
+function getLicenseMonthlyRow(ym) {
+  return SKYPORTHOME_LICENSE_MONTHLY_ROWS.find((r) => r.month === ym) ?? null
+}
+
+/** Same “latest month” basis as funnel connected snapshot (last FY25 thermostat export month). */
+const FUNNEL_PAID_LICENSE_ALIGNMENT_MONTH = '2026-02'
+
+/**
+ * SkyportHome 1‑year active & lifetime active vs connected base (same denominator as Active License Penetration).
+ */
+function enrichAllTimeFunnelWithPaidPenetration(base) {
+  const lic = getLicenseMonthlyRow(FUNNEL_PAID_LICENSE_ALIGNMENT_MONTH)
+  const c = base.connected
+  const lifetime = lic?.lifetimeActive ?? 0
+  const annual = lic?.oneYearActive ?? 0
+  return {
+    ...base,
+    paidAnnualOfConnectedPct: c > 0 ? (annual / c) * 100 : 0,
+    paidAnnualAbs: annual,
+    paidLifetimeOfConnectedPct: c > 0 ? (lifetime / c) * 100 : 0,
+    paidLifetimeAbs: lifetime,
+  }
+}
+
+/** Fiscal FY end (Mar) or FY25 partial (Feb&apos;26): license CSV row + cumulative connected at that point. */
+const FY_PAID_PENETRATION_ENDPOINTS = {
+  FY23: {
+    month: '2024-03',
+    connected: FY23_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY[11] ?? 0,
+  },
+  FY24: {
+    month: '2025-03',
+    connected: FY24_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY[11] ?? 0,
+  },
+  FY25: {
+    month: '2026-02',
+    connected:
+      FY25_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY[
+        FY25_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY.length - 1
+      ] ?? 0,
+  },
+}
+
+function getFyPaidPenetrationOfConnected(fyId) {
+  const ep = FY_PAID_PENETRATION_ENDPOINTS[fyId]
+  if (!ep) return null
+  const lic = getLicenseMonthlyRow(ep.month)
+  if (!lic) return null
+  const c = ep.connected
+  const lifetime = lic.lifetimeActive
+  const annual = lic.oneYearActive
+  return {
+    pctAnnual: c > 0 ? (annual / c) * 100 : 0,
+    absAnnual: annual,
+    pctLifetime: c > 0 ? (lifetime / c) * 100 : 0,
+    absLifetime: lifetime,
+  }
+}
 
 /** Default axis tick typography — Y ticks match X on each FY26 playbook chart */
 const FY26_RECHARTS_AXIS_TICK = {
@@ -768,7 +1097,7 @@ function SkyportHomeUserFeedbackCard() {
   return (
     <div className="fy25-skyport-home-card">
       <div className="fy25-skyport-home-card-header">
-        <h4 className="fy25-skyport-home-title">SkyportHome User Sentiment</h4>
+        <h4 className="fy25-skyport-home-title">SkyportHome Experience Quality &amp; Sentiment</h4>
         <button
           type="button"
           className="fy25-skyport-home-feedback-details-link"
@@ -1104,15 +1433,20 @@ function AllTimeSkyportHomeBetweenQ3Q4Overlay() {
         strokeWidth={2}
       />
       <text
-        x={cx - 10}
-        y={cy + 18}
+        x={cx + 6}
+        y={cy + 14}
         textAnchor="end"
         dominantBaseline="hanging"
         fontSize={11}
         fill={FY26_SKYPORTHOME_USERS_LINE_COLOR}
         fontWeight={600}
       >
-        {SKYPORTHOME_ALL_TIME_POINT_LABEL}
+        <tspan x={cx + 6} dy={0}>
+          {SKYPORTHOME_ALL_TIME_POINT_LABEL_VALUE}
+        </tspan>
+        <tspan x={cx + 6} dy={13}>
+          {SKYPORTHOME_ALL_TIME_POINT_LABEL_NAME}
+        </tspan>
       </text>
     </g>
   )
@@ -1250,11 +1584,15 @@ export default function FY26() {
 
   const isDigitalPlatform = sectionId === 'digital-platform'
 
-  const allTimeFunnel = getAllTimeFunnelSnapshot()
+  const allTimeFunnel = enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
+  const businessModelDetailsRef = useRef(null)
 
   useLayoutEffect(() => {
     const id = location.hash.replace(/^#/, '')
     if (!FY26_INPAGE_HASH_IDS.includes(id)) return
+    if (id === 'digital-platforms-business-model' && businessModelDetailsRef.current) {
+      businessModelDetailsRef.current.open = true
+    }
     const el = document.getElementById(id)
     if (!el) return
     el.scrollIntoView({ block: 'start', behavior: 'auto' })
@@ -1285,6 +1623,7 @@ export default function FY26() {
               </h2>
             </div>
             {sectionId === 'digital-platform' ? (
+            <ThermostatLocationsMapProvider>
             <div className="fy25-review-body">
               <div className="fy25-graphs-row">
                 <div className="fy25-visual fy25-funnel fy25-funnel--combined">
@@ -1292,6 +1631,11 @@ export default function FY26() {
                     Installed Base Activation Funnel
                   </h5>
                   <InstalledBaseFunnelTable allTimeFunnel={allTimeFunnel} />
+                  <p className="fy25-funnel-thermostat-footprint-line" role="note">
+                    {'Thermostat Locations ('}
+                    <ThermostatLocationsMapInlineLink>see map</ThermostatLocationsMapInlineLink>
+                    {'): Large and widespread footprint — the issue is execution, not reach.'}
+                  </p>
                 </div>
               </div>
 
@@ -1359,10 +1703,17 @@ export default function FY26() {
                     </div>
                   </div>
                 </div>
+
+                <p className="fy25-funnel-dealer-callout fy25-skyportcare-dealer-adoption" role="note">
+                  SkyportCare Dealer Adoption: ~11% (1,978 / 18,123) dealers actively using SkyportCare — limiting
+                  system activation and platform utilization.
+                </p>
+
                 <div className="fy25-takeaway fy25-takeaway--thermostat-opportunity">
                   <p className="fy25-takeaway-paragraph">
                     <strong className="fy25-takeaway-inline-label">Opportunity:</strong>{' '}
-                    Closing the activation gap converts existing hardware volume into recurring digital value.
+                    Closing the activation gap converts existing hardware volume into a monetizable digital base,
+                    enabling renewals, upgrades, and long&#8209;term recurring value.
                   </p>
                 </div>
               </div>
@@ -1384,7 +1735,7 @@ export default function FY26() {
                       >
                         {showPlannedDetails
                           ? 'Collapse initiative details'
-                          : 'Expand to view initiative details'}
+                          : 'Expand initiative details'}
                       </button>
                     </div>
                   </div>
@@ -1470,6 +1821,7 @@ export default function FY26() {
                 </p>
               </div>
             </div>
+            </ThermostatLocationsMapProvider>
             ) : (
             <div className="ds-content">
               <p className="ds-subheading"><strong>Results vs plan</strong></p>
@@ -1563,8 +1915,9 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Target: </span>
                                 <span className="fy26-goal-colon-value">
-                                  Establish 100% coverage of monthly engagement measurement across connected
-                                  homeowners and drive consistent engagement at scale.
+                                  Establish consistent monthly engagement across the connected homeowner base, with
+                                  ≥50% SkyportHome MAU and ≥35% of connected homeowners taking at least one
+                                  meaningful value action per month.
                                 </span>
                               </li>
                               <li className="fy26-outcome-detail-item">
@@ -1577,8 +1930,8 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Primary KPI(s): </span>
                                 <span className="fy26-goal-colon-value">
-                                  Monthly active users (MAU), % of connected systems with ≥1 meaningful monthly
-                                  action, insight / report interaction rate
+                                  Monthly active users (MAU), Users with ≥1 meaningful monthly action, insight /
+                                  report interaction rate
                                 </span>
                               </li>
                             </ul>
@@ -1624,8 +1977,8 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Target: </span>
                                 <span className="fy26-goal-colon-value">
-                                  Increase active license penetration from ~1% today to low double‑digit levels
-                                  (~10–12%) across connected systems.
+                                  Increase active license penetration from ~3–4% to ~6–8% of connected systems by
+                                  end of FY26.
                                 </span>
                               </li>
                               <li className="fy26-outcome-detail-item">
@@ -1638,7 +1991,8 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Primary KPI(s): </span>
                                 <span className="fy26-goal-colon-value">
-                                  Active license penetration (% of connected systems), Net new active licenses
+                                  Active License Penetration (% of connected systems), Net new activations, Dealer
+                                  participation rate (SkyportCare)
                                 </span>
                               </li>
                             </ul>
@@ -1684,8 +2038,8 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Target: </span>
                                 <span className="fy26-goal-colon-value">
-                                  Achieve ~$18M in recurring digital revenue through{' '}
-                                  <strong>SkyportCare</strong> licensing in FY26.
+                                  Achieve ~$18M in recognized SkyportCare revenue in FY26, driven primarily by bundled
+                                  year&#8209;1 licenses, while building Paid Annual renewal momentum.
                                 </span>
                               </li>
                               <li className="fy26-outcome-detail-item">
@@ -1698,7 +2052,8 @@ export default function FY26() {
                               <li className="fy26-outcome-detail-item">
                                 <span className="fy26-goal-colon-label">Primary KPI(s): </span>
                                 <span className="fy26-goal-colon-value">
-                                  Digital ARR, License renewal rate, Revenue per connected system
+                                  Paid Annual &amp; Lifetime License Penetration, Renewal conversion rate (included →
+                                  paid), Revenue per connected system
                                 </span>
                               </li>
                             </ul>
@@ -1745,7 +2100,7 @@ export default function FY26() {
                                 <span className="fy26-goal-colon-label">Target: </span>
                                 <span className="fy26-goal-colon-value">
                                   Begin shifting value capture from one‑time install economics toward multi‑year,
-                                  per‑home value.
+                                  per‑home value through active platform adoption and paid digital services.
                                 </span>
                               </li>
                               <li className="fy26-outcome-detail-item">
@@ -1777,8 +2132,8 @@ export default function FY26() {
                     <ul className="fy26-strategic-themes-list">
                       <li>
                         <span className="fy26-strategic-themes-lead">Activation &amp; Onboarding:</span> Moves
-                        systems from connected to activated, directly driving active license adoption and recurring
-                        digital revenue.
+                        systems from connected to activated, directly driving active license adoption and future
+                        monetization.
                       </li>
                       <li>
                         <span className="fy26-strategic-themes-lead">Engagement &amp; Action:</span> Sustained
@@ -2060,8 +2415,14 @@ export default function FY26() {
                   <li>
                     Reach 2M+ connected homeowners across <strong>SkyportHome</strong>
                   </li>
-                  <li>Achieve ~70%+ sustained digital service adoption across connected systems</li>
-                  <li>Build a $150M+ recurring digital revenue stream</li>
+                  <li>
+                    Achieve digital ubiquity across the installed base (~80% connected), with ~18% of systems
+                    participating in active, dealer‑led <strong>SkyportCare</strong> workflows.
+                  </li>
+                  <li>
+                    Build a $100M+ recurring digital revenue stream driven by paid services, renewals, and
+                    lifecycle monetization.
+                  </li>
                   <li>
                     Shift value capture from one‑time installs to multi‑year, per‑home value
                   </li>
@@ -2084,7 +2445,8 @@ export default function FY26() {
                     Operate with product‑led ownership and outcome‑based prioritization
                   </li>
                   <li>
-                    Convert connectivity into activation, engagement, and monetization across ~2M connected homes
+                    Convert connectivity into sustained engagement, dealer activation, and monetization across ~2M
+                    connected homes.
                   </li>
                   <li>
                     Reduce fragmentation through shared platform services and UX‑first execution
@@ -2106,6 +2468,20 @@ export default function FY26() {
               </div>
             )}
           </section>
+          {isDigitalPlatform && (
+            <div className="fy26-business-model-block" id="digital-platforms-business-model">
+              <details ref={businessModelDetailsRef} className="fy26-business-model-details">
+                <summary className="fy26-business-model-summary">
+                  <span className="fy26-business-model-summary-label">
+                    Digital Platforms Business Model
+                  </span>
+                </summary>
+                <div className="fy26-business-model-details-body">
+                  <DigitalPlatformsBusinessModelTable />
+                </div>
+              </details>
+            </div>
+          )}
         </div>
       </div>
       </div>
