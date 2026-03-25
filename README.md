@@ -19,6 +19,8 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Microsoft sign-in** — If Entra is configured, the app redirects to Microsoft; finish sign-in or fix redirect URIs in Azure (see `docs/SSO_SETUP.md`).
 5. **Deployed site** — Open DevTools → **Network**: if `index-D….js` or `index-….css` is **404**, the build used the wrong **asset base**. Sites at `https://<user>.github.io/<RepoName>/` must be built with `VITE_BASE_PATH=/<RepoName>/` or deploy via this repo’s **GitHub Actions → Deploy GitHub Pages** workflow (`VITE_GITHUB_PAGES=1`). Root hosts (Vercel default, custom domain at `/`) keep the default base `/`.
 
+6. **“Not seeing the latest UI change”** — Hard-refresh the tab (**Cmd+Shift+R** / **Ctrl+Shift+R**) or try a private window. On **Vercel**, open the project → **Deployments** and confirm the latest commit is **Ready** (trigger **Redeploy** if needed). FY26 roadmap table updates live under **FY26 Playbook → Digital Apps & Services** → scroll to **Execution plan** (card C) → click **+ See detailed SkyportHome features and capabilities** to expand the panel (it starts collapsed).
+
 ## Adding your content
 
 **Option 1 — Paste in chat**  
