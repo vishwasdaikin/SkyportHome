@@ -582,7 +582,7 @@
   min-width: 0;
 }
 
-/* Six columns (legacy panels without focus timeframe): feature, initiative, category, monetization, priority, development */
+/* Six columns (legacy panels without Target): feature, initiative, category, monetization, priority, development */
 .features-panel-table:not(.features-panel-table--cols-7) th:nth-child(1),
 .features-panel-table:not(.features-panel-table--cols-7) td:nth-child(1) {
   width: 32%;
@@ -615,7 +615,7 @@
   min-width: 0;
 }
 
-/* Seven columns (SkyportHome roadmap panel): + focus timeframe */
+/* Seven columns (SkyportHome roadmap panel): + Target */
 .features-panel-table--cols-7 th:nth-child(1),
 .features-panel-table--cols-7 td:nth-child(1) {
   width: 36%;
@@ -636,9 +636,10 @@
   width: 6%;
   min-width: 0;
 }
+/* Cols 5–7: Development, Priority, Target (same widths as prior Target / Priority / Development order) */
 .features-panel-table--cols-7 th:nth-child(5),
 .features-panel-table--cols-7 td:nth-child(5) {
-  width: 10%;
+  width: 18%;
   min-width: 0;
   padding-left: 1rem;
 }
@@ -650,7 +651,7 @@
 }
 .features-panel-table--cols-7 th:nth-child(7),
 .features-panel-table--cols-7 td:nth-child(7) {
-  width: 18%;
+  width: 10%;
   min-width: 0;
   padding-left: 1rem;
 }

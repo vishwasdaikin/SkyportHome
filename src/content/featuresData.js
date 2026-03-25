@@ -1,6 +1,6 @@
 /**
- * Features table: Feature Group, Feature / Function, Initiative Type, End User Category,
- * Monetization Model, Focus Timeframe, Priority (1–3), Development (UI / Data / Algorithm scope).
+ * Features table: Attribute (featureGroup), Feature / Function, Initiative Type, End User Category,
+ * Monetization Model, Target, Priority (1–3), Development (UI / Data / Algorithm scope).
  * Empty featureGroup means same group as previous row.
  */
 const _featuresRowsRaw = [

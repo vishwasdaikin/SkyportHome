@@ -20,7 +20,7 @@ const FY26_PAGE_NAV_SIMPLE = [
     label: 'FY26 PLAYBOOK',
     items: [
       { id: 'fy25-review', label: 'FY25 Review', num: 1 },
-      { id: 'fy26-plan', label: 'FY26 Plan', num: 2 },
+      { id: 'fy26-plan', label: 'FY26 Tracker', num: 2 },
       { id: 'fusion30-summary', label: 'Fusion30 Summary', num: 3 },
     ],
   },
@@ -33,7 +33,7 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
       { id: 'fy25-review', label: 'FY25 Review', num: 1 },
       {
         id: 'fy25-thermostat-sales-skyportcare',
-        label: 'Thermostat sales & SkyportCare adoption',
+        label: 'Thermostat Sales & Connectivity, SkyportHome Users, SkyportCare Active Licenses',
         num: 2,
       },
       {
@@ -49,7 +49,7 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
     ],
   },
   {
-    label: 'FY26 PLAN',
+    label: 'FY26 TRACKER',
     items: [
       { id: 'fy26-plan', label: 'FY26 Review', num: 5 },
       { id: 'fy26-outcomes', label: 'Goals', num: 6 },
@@ -64,11 +64,10 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
   },
   {
     label: 'FUSION30',
-    items: [{ id: 'fusion30-summary', label: 'Fusion30 Summary', num: 10 }],
-  },
-  {
-    label: 'REFERENCE',
-    items: [{ id: 'digital-platforms-business-model', label: 'Business model', num: 11 }],
+    items: [
+      { id: 'fusion30-summary', label: 'Fusion30 Summary', num: 10 },
+      { id: 'digital-platforms-business-model', label: 'Business model', num: 11 },
+    ],
   },
 ]
 

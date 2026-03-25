@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { featuresRows } from '../content/featuresData'
 import { FeaturesSortableTh } from '../components/FeaturesSortableTh'
 import { formatFeatureCellContent } from '../utils/formatFeatureCellContent'
-import { createDefaultSortConfig, sortFeatureRows } from '../utils/featuresRoadmapSort'
+import { sortFeatureRows } from '../utils/featuresRoadmapSort'
 import './Features.css'
 
 function getRowsWithGroups(rows) {
@@ -14,7 +14,7 @@ function getRowsWithGroups(rows) {
 }
 
 export default function Features() {
-  const [sortConfig, setSortConfig] = useState(createDefaultSortConfig)
+  const [sortConfig, setSortConfig] = useState({ key: 'priority', dir: 'asc' })
   const rowsWithGroups = useMemo(() => getRowsWithGroups(featuresRows), [])
   const rows = useMemo(
     () => sortFeatureRows(rowsWithGroups, sortConfig.key, sortConfig.dir),
@@ -33,8 +33,7 @@ export default function Features() {
       <header className="features-header">
         <h1>Roadmap</h1>
         <p className="features-tagline">
-          Feature / Function groups, initiative types, end user categories, monetization, focus timeframe, priority, and
-          development scope.
+          Attributes, initiative types, end user categories, monetization, target, priority, and development scope.
         </p>
       </header>
 
@@ -43,7 +42,7 @@ export default function Features() {
           <thead>
             <tr>
               <FeaturesSortableTh sortKey="displayGroup" sortConfig={sortConfig} onSort={toggleSort}>
-                Feature / Function Group
+                Attribute
               </FeaturesSortableTh>
               <FeaturesSortableTh sortKey="feature" sortConfig={sortConfig} onSort={toggleSort}>
                 Feature / Function
@@ -63,7 +62,7 @@ export default function Features() {
                 onSort={toggleSort}
                 className="features-cell-timeframe"
               >
-                Focus Timeframe
+                Target
               </FeaturesSortableTh>
               <FeaturesSortableTh
                 sortKey="priority"

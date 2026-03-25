@@ -19,8 +19,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-  Legend,
   Cell,
+  LabelList,
   useXAxisScale,
   useYAxisScale,
 } from 'recharts'
@@ -33,6 +33,11 @@ import {
 import { DigitalPlatformsBusinessModelTable } from '../components/DigitalPlatformsBusinessModelTable'
 import FY26PageNav from '../components/FY26PageNav'
 import { Fy26DigitalAppsRoadmapEmbeds } from '../components/Fy26DigitalAppsRoadmapEmbeds'
+import {
+  getDigitalPlatformsForecastYearlyChartData,
+  getDigitalPlatformsForecastCumulativeChartData,
+  getDigitalPlatformsForecastFunnelColumnsForTable,
+} from '../content/digitalPlatformsForecastFunnel'
 
 /** FY2023 units sold + active SkyportCare licenses (Apr'23–Mar'24). */
 const FY23_THERMOSTAT_MONTHLY_DATA = [
@@ -263,9 +268,9 @@ const THERMOSTAT_SALES_CHART_DATA = {
 }
 
 const THERMOSTAT_FY_TABS = [
-  { id: 'FY25', label: 'FY25' },
-  { id: 'FY24', label: 'FY24' },
   { id: 'FY23', label: 'FY23' },
+  { id: 'FY24', label: 'FY24' },
+  { id: 'FY25', label: 'FY25' },
 ]
 
 /** Installed base funnel table: Active License Penetration FY columns (presentation). */
@@ -287,6 +292,13 @@ const FUNNEL_PAID_LIFETIME_PENETRATION_FY_DISPLAY = {
   FY25: '4.6%',
   FY24: '2.6%',
   FY23: '3.4%',
+}
+
+/** Active license counts by type (FY columns + all‑time), under “Active Licenses” breakdown. */
+const FUNNEL_ACTIVE_LICENSE_TYPE_BREAKDOWN = {
+  bundled: { FY23: 1157, FY24: 4780, FY25: 3608, allTime: 9545 },
+  oneYear: { FY23: 69, FY24: 214, FY25: 35, allTime: 318 },
+  lifetime: { FY23: 449, FY24: 655, FY25: 992, allTime: 3320 },
 }
 
 const CONNECTED_CUMULATIVE_BY_FY = {
@@ -323,8 +335,8 @@ function getAllTimeFunnelSnapshot() {
 }
 
 /**
- * FY funnel (right card): in‑FY units sold; net new connected & active licenses from Apr through last reported month,
- * as % of in‑FY sold (matches prior FY25 ~44% / ~1.2% pattern from cumulative series).
+ * FY funnel: in‑FY units sold; net new connected & active licenses from Apr through last reported month,
+ * as % of in‑FY sold.
  */
 function getFyActivationFunnelMetrics(fyId) {
   const rows = THERMOSTAT_SALES_CHART_DATA[fyId]
@@ -355,14 +367,6 @@ function formatFunnelPctForDisplay(p) {
   return `${String(rounded).replace(/\.0$/, '')}%`
 }
 
-/** Rounded “~72K” / “~2K” style for funnel parentheses. */
-function formatFunnelTildeAbs(n) {
-  if (!Number.isFinite(n) || n < 0) return '(~0)'
-  if (n >= 1_000_000) return `(~${Math.round(n / 100_000) / 10}M)`
-  if (n >= 1000) return `(~${Math.round(n / 1000)}K)`
-  return `(~${Math.round(n).toLocaleString()})`
-}
-
 const ACTIVE_LICENSES_TIP =
   'This is equal to Bundled Active Licenses + 1-Year Active Licenses + Lifetime Active Licenses.'
 
@@ -374,6 +378,274 @@ const PAID_ANNUAL_LICENSE_PENETRATION_TIP =
 
 const PAID_LIFETIME_LICENSE_PENETRATION_TIP =
   'This is the total active paid lifetime licenses as a % of Connected Systems.'
+
+const FORECAST_YEARLY_CHART_DATA = getDigitalPlatformsForecastYearlyChartData()
+const FORECAST_CUMULATIVE_CHART_DATA = getDigitalPlatformsForecastCumulativeChartData()
+const FORECAST_CUMULATIVE_CHART_LAST_INDEX = Math.max(0, FORECAST_CUMULATIVE_CHART_DATA.length - 1)
+const FORECAST_FUNNEL_TABLE_COLS = getDigitalPlatformsForecastFunnelColumnsForTable()
+
+function forecastTooltipSeriesColor(entry) {
+  if (!entry?.dataKey) return '#64748b'
+  if (entry.dataKey === 'fyThermostatsAllBrands') return '#0097e0'
+  if (entry.dataKey === 'fyConnectedThermostats') return '#0d9488'
+  if (entry.dataKey === 'fySkyportHomeUsers') return FY26_SKYPORTHOME_USERS_LINE_COLOR
+  if (entry.dataKey === 'fyActiveLicensesNetNew') return '#b91c1c'
+  return '#64748b'
+}
+
+/** Shared tooltip styling to match other FY25/FY26 charts. */
+function BusinessModelForecastQuarterlyTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null
+  const rows = payload.filter(
+    (e) =>
+      e != null &&
+      e.type !== 'none' &&
+      e.value != null &&
+      !(typeof e.value === 'number' && Number.isNaN(e.value)) &&
+      (e.dataKey === 'fyThermostatsAllBrands' ||
+        e.dataKey === 'fyConnectedThermostats' ||
+        e.dataKey === 'fySkyportHomeUsers' ||
+        e.dataKey === 'fyActiveLicensesNetNew'),
+  )
+  if (!rows.length) return null
+
+  return (
+    <div className="fy25-recharts-tooltip">
+      {label != null && label !== '' && <div className="fy25-recharts-tooltip-label">{label}</div>}
+      <ul className="fy25-recharts-tooltip-list">
+        {rows.map((e, i) => (
+          <li key={`${e.dataKey}-${i}`} className="fy25-recharts-tooltip-item">
+            <span
+              className="fy25-recharts-tooltip-swatch"
+              style={{ background: forecastTooltipSeriesColor(e) }}
+              aria-hidden
+            />
+            <span className="fy25-recharts-tooltip-name">{e.name}</span>
+            <span className="fy25-recharts-tooltip-value">{formatThermostatTooltipValue(e.value)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function formatForecastFyBarDataLabel(v) {
+  if (v == null || !Number.isFinite(v)) return ''
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
+  if (v >= 10_000) return `${Math.round(v / 1000)}K`
+  return `${Math.round(v)}`
+}
+
+function renderForecastLastBarValueLabel(fill, labelText) {
+  return ({ x, y, width, value, index }) => {
+    const lastIndex = FORECAST_YEARLY_CHART_DATA.length - 1
+    if (index !== lastIndex || value == null || !Number.isFinite(value)) return null
+    return (
+      <text
+        x={x + width / 2}
+        y={y - 6}
+        textAnchor="middle"
+        fontSize={9}
+        fontWeight={600}
+        fill={fill}
+      >
+        {labelText}
+      </text>
+    )
+  }
+}
+
+/** Left outlook panel: FY26–FY30 activity as grouped bars (+ FY net‑new active licenses, red). */
+function BusinessModelForecastFyBarsChart() {
+  return (
+    <ComposedChart
+      data={FORECAST_YEARLY_CHART_DATA}
+      margin={{ top: 22, right: 20, left: 16, bottom: 8 }}
+      {...{ overflow: 'visible' }}
+    >
+      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
+      <XAxis
+        dataKey="period"
+        interval={0}
+        height={32}
+        tick={FY26_RECHARTS_FORECAST_X_TICK}
+        tickMargin={6}
+      />
+      <YAxis
+        yAxisId="left"
+        orientation="left"
+        width={54}
+        tick={FY26_RECHARTS_QUARTERLY_AXIS_TICK}
+        tickFormatter={(v) =>
+          v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` : v >= 1000 ? `${Math.round(v / 1000)}K` : String(v)
+        }
+        axisLine={{ stroke: 'var(--border, #e2e8f0)' }}
+        tickLine={{ stroke: 'var(--border, #e2e8f0)' }}
+      />
+      <Tooltip content={<BusinessModelForecastQuarterlyTooltip />} cursor={{ fill: '#fff' }} />
+      <Bar
+        yAxisId="left"
+        dataKey="fyThermostatsAllBrands"
+        name="FY thermostats (all brands)"
+        fill="rgba(0, 151, 224, 0.45)"
+        radius={[3, 3, 0, 0]}
+        maxBarSize={24}
+      >
+        <LabelList
+          content={renderForecastLastBarValueLabel('#0369a1', 'Thermostats sold')}
+        />
+      </Bar>
+      <Bar
+        yAxisId="left"
+        dataKey="fyConnectedThermostats"
+        name="FY connected thermostats"
+        fill="rgba(13, 148, 136, 0.5)"
+        radius={[3, 3, 0, 0]}
+        maxBarSize={24}
+      >
+        <LabelList
+          content={renderForecastLastBarValueLabel('#0f766e', 'Connected thermostats')}
+        />
+      </Bar>
+      <Bar
+        yAxisId="left"
+        dataKey="fySkyportHomeUsers"
+        name="FY SkyportHome users (net new)"
+        fill="rgba(124, 58, 237, 0.45)"
+        radius={[3, 3, 0, 0]}
+        maxBarSize={24}
+      >
+        <LabelList
+          content={renderForecastLastBarValueLabel('#6d28d9', 'SkyportHome users')}
+        />
+      </Bar>
+      <Bar
+        yAxisId="left"
+        dataKey="fyActiveLicensesNetNew"
+        name="Active licenses (FY net new)"
+        fill="rgba(220, 38, 38, 0.55)"
+        radius={[3, 3, 0, 0]}
+        maxBarSize={24}
+      >
+        <LabelList
+          content={renderForecastLastBarValueLabel('#b91c1c', 'Active licenses')}
+        />
+      </Bar>
+    </ComposedChart>
+  )
+}
+
+/** Right outlook panel: FY25–FY30 fiscal year‑end cumulative lines (same shape as FY25 All‑Time chart). */
+function BusinessModelForecastAllTimeCumulativeChart() {
+  return (
+    <LineChart
+      data={FORECAST_CUMULATIVE_CHART_DATA}
+      margin={{ top: 18, right: 20, left: 16, bottom: 4 }}
+      {...{ overflow: 'visible' }}
+    >
+      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
+      <XAxis
+        dataKey="period"
+        interval={0}
+        height={32}
+        tick={FY26_RECHARTS_FORECAST_X_TICK}
+        tickMargin={6}
+      />
+      <YAxis
+        yAxisId="left"
+        orientation="left"
+        width={54}
+        tick={FY26_RECHARTS_QUARTERLY_AXIS_TICK}
+        tickFormatter={(v) =>
+          v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` : v >= 1000 ? `${Math.round(v / 1000)}K` : String(v)
+        }
+        axisLine={{ stroke: 'var(--border, #e2e8f0)' }}
+        tickLine={{ stroke: 'var(--border, #e2e8f0)' }}
+      />
+      <Tooltip content={AllTimeChartTooltip} cursor={{ stroke: '#cbd5e1' }} />
+      <Line
+        yAxisId="left"
+        type="monotone"
+        dataKey="cumulative"
+        name="Total thermostats sold (cumulative)"
+        stroke="#0097e0"
+        strokeWidth={2.75}
+        dot={{ r: 4, fill: '#0097e0', stroke: '#fff', strokeWidth: 2 }}
+        activeDot={{ r: 6 }}
+        connectNulls={false}
+        label={({ index, x, y, value }) =>
+          index === FORECAST_CUMULATIVE_CHART_LAST_INDEX && value != null ? (
+            <text x={x - 10} y={y - 4} textAnchor="end" fontSize={11} fill="#0097e0" fontWeight={600}>
+              Thermostats sold
+            </text>
+          ) : null}
+      />
+      <Line
+        yAxisId="left"
+        type="monotone"
+        dataKey="connectedCumulative"
+        name="Connected thermostats (cumulative)"
+        stroke="#0d9488"
+        strokeWidth={2.5}
+        dot={{ r: 4, fill: '#0d9488', stroke: '#fff', strokeWidth: 2 }}
+        activeDot={{ r: 6 }}
+        connectNulls={false}
+        label={({ index, x, y, value }) =>
+          index === FORECAST_CUMULATIVE_CHART_LAST_INDEX && value != null ? (
+            <text x={x - 10} y={y - 12} textAnchor="end" fontSize={11} fill="#0f766e" fontWeight={600}>
+              Connected
+            </text>
+          ) : null}
+      />
+      <Line
+        yAxisId="left"
+        type="monotone"
+        dataKey="activeLicensesCumulative"
+        name="Active licenses (FY-end cumulative)"
+        stroke={FY26_ACTIVE_LICENSES_LINE_COLOR}
+        strokeWidth={2.25}
+        dot={{ r: 3.5, fill: FY26_ACTIVE_LICENSES_LINE_COLOR, stroke: '#fff', strokeWidth: 2 }}
+        activeDot={{ r: 5 }}
+        connectNulls={false}
+        label={({ index, x, y, value }) =>
+          index === FORECAST_CUMULATIVE_CHART_LAST_INDEX && value != null ? (
+            <text x={x - 10} y={y - 14} textAnchor="end" fontSize={11} fill={FY26_ACTIVE_LICENSES_LINE_COLOR} fontWeight={500}>
+              Active licenses
+            </text>
+          ) : null}
+      />
+      <Line
+        yAxisId="left"
+        type="monotone"
+        dataKey="usersCumulative"
+        name="SkyportHome users (FY-end cumulative)"
+        stroke={FY26_SKYPORTHOME_USERS_LINE_COLOR}
+        strokeWidth={2.25}
+        dot={{ r: 3.5, fill: FY26_SKYPORTHOME_USERS_LINE_COLOR, stroke: '#fff', strokeWidth: 2 }}
+        activeDot={{ r: 5 }}
+        connectNulls={false}
+        label={({ index, x, y, value }) =>
+          index === Math.max(0, FORECAST_CUMULATIVE_CHART_LAST_INDEX - 1) && value != null ? (
+            <text
+              x={x + 8}
+              y={y + 16}
+              textAnchor="start"
+              fontSize={11}
+              fill={FY26_SKYPORTHOME_USERS_LINE_COLOR}
+              fontWeight={600}
+            >
+              <tspan x={x + 8} dy={0}>
+                SkyportHome
+              </tspan>
+              <tspan x={x + 8} dy={13}>
+                users
+              </tspan>
+            </text>
+          ) : null}
+      />
+    </LineChart>
+  )
+}
 
 function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
   const [licenseBreakdownOpen, setLicenseBreakdownOpen] = useState(false)
@@ -390,6 +662,22 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
     paid: getFyPaidPenetrationOfConnected(tab.id),
   }))
 
+  const licenseBreakdownRowIds =
+    'fy25-funnel-row-active-licenses fy25-funnel-row-license-bundled fy25-funnel-row-license-1year fy25-funnel-row-license-lifetime-active fy25-funnel-row-paid-annual fy25-funnel-row-paid-lifetime'
+
+  const licenseTypeBreakdownCells = (byFy) => (
+    <>
+      {fyCols.map(({ id }) => (
+        <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+          {(byFy[id] ?? 0).toLocaleString('en-US')}
+        </td>
+      ))}
+      <td className="fy25-funnel-table-num fy25-funnel-table-num--count">
+        {(byFy.allTime ?? 0).toLocaleString('en-US')}
+      </td>
+    </>
+  )
+
   return (
     <div className="fy25-funnel-table-scroll">
       <table className="fy25-funnel-table">
@@ -398,14 +686,14 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
             <th scope="col" className="fy25-funnel-table-th-metric">
               Metric
             </th>
-            <th scope="col" className="fy25-funnel-table-th-data">
-              All‑Time
-            </th>
             {THERMOSTAT_FY_TABS.map((tab) => (
               <th key={tab.id} scope="col" className="fy25-funnel-table-th-data">
                 {tab.label}
               </th>
             ))}
+            <th scope="col" className="fy25-funnel-table-th-data">
+              All‑Time
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -413,25 +701,21 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
             <th scope="row" className="fy25-funnel-table-rowhead">
               Thermostats sold
             </th>
-            <td className="fy25-funnel-table-num">{allTimeFunnel.total.toLocaleString()}</td>
             {fyCols.map(({ id, m }) => (
-              <td key={id} className="fy25-funnel-table-num">
+              <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
                 {m ? m.sold.toLocaleString() : '—'}
               </td>
             ))}
+            <td className="fy25-funnel-table-num fy25-funnel-table-num--count">
+              {allTimeFunnel.total.toLocaleString()}
+            </td>
           </tr>
           <tr>
             <th scope="row" className="fy25-funnel-table-rowhead">
               Thermostats Connected
             </th>
-            <td className="fy25-funnel-table-num">
-              {allTimeFunnel.connected.toLocaleString('en-US')}{' '}
-              <span className="fy25-funnel-table-inline-paren">
-                ({formatFunnelPctForDisplay(allTimeFunnel.pctConnected)})
-              </span>
-            </td>
             {fyCols.map(({ id, m }) => (
-              <td key={id} className="fy25-funnel-table-num">
+              <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
                 {m ? (
                   <>
                     {m.connectedNew.toLocaleString('en-US')}{' '}
@@ -442,6 +726,264 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
                 ) : (
                   '—'
                 )}
+              </td>
+            ))}
+            <td className="fy25-funnel-table-num fy25-funnel-table-num--count">
+              {allTimeFunnel.connected.toLocaleString('en-US')}{' '}
+              <span className="fy25-funnel-table-inline-paren">
+                ({formatFunnelPctForDisplay(allTimeFunnel.pctConnected)})
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row" className="fy25-funnel-table-rowhead">
+              <span className="fy25-funnel-metric-label-wrap">
+                Active License Penetration
+                <span className="fy25-funnel-metric-help-wrap">
+                  <button
+                    type="button"
+                    className="fy25-funnel-metric-help"
+                    aria-label="Help: Active License Penetration"
+                    aria-describedby={activeLicensePenetrationTipId}
+                  >
+                    ?
+                  </button>
+                  <span id={activeLicensePenetrationTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                    {ACTIVE_LICENSE_PENETRATION_TIP}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="fy25-funnel-alp-expand"
+                  aria-expanded={licenseBreakdownOpen}
+                  aria-controls={licenseBreakdownRowIds}
+                  aria-label={
+                    licenseBreakdownOpen
+                      ? 'Hide Active Licenses breakdown and paid license penetration rows'
+                      : 'Show Active Licenses breakdown and paid license penetration rows'
+                  }
+                  onClick={() => setLicenseBreakdownOpen((o) => !o)}
+                >
+                  {licenseBreakdownOpen ? '[-]' : '[+]'}
+                </button>
+              </span>
+            </th>
+            {fyCols.map(({ id, m }) => {
+              const alpFy = FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY[id]
+              return (
+                <td key={id} className="fy25-funnel-table-num">
+                  {alpFy ? (
+                    <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">{alpFy.pct}</span>
+                  ) : m ? (
+                    <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
+                      {formatFunnelPctForDisplay(m.activePct)}
+                    </span>
+                  ) : (
+                    <span className="fy25-funnel-table-na">—</span>
+                  )}
+                </td>
+              )
+            })}
+            <td className="fy25-funnel-table-num">
+              <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
+                {formatFunnelPctForDisplay(allTimeFunnel.pctActiveOfConnected)}
+              </span>
+            </td>
+          </tr>
+          {licenseBreakdownOpen && (
+            <>
+              <tr id="fy25-funnel-row-active-licenses">
+                <th scope="row" className="fy25-funnel-table-rowhead">
+                  <span className="fy25-funnel-metric-label-wrap">
+                    Active Licenses
+                    <span className="fy25-funnel-metric-help-wrap">
+                      <button
+                        type="button"
+                        className="fy25-funnel-metric-help"
+                        aria-label="Help: Active Licenses"
+                        aria-describedby={activeLicensesTipId}
+                      >
+                        ?
+                      </button>
+                      <span id={activeLicensesTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                        {ACTIVE_LICENSES_TIP}
+                      </span>
+                    </span>
+                  </span>
+                </th>
+                {fyCols.map(({ id, m }) => {
+                  const alpFy = FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY[id]
+                  const fyCount =
+                    alpFy != null ? alpFy.absParen.replace(/^\(|\)$/g, '') : m?.activeNew.toLocaleString('en-US')
+                  return (
+                    <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                      {fyCount ?? '—'}
+                    </td>
+                  )
+                })}
+                <td className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                  {allTimeFunnel.active.toLocaleString('en-US')}
+                </td>
+              </tr>
+              <tr id="fy25-funnel-row-license-bundled">
+                <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
+                  Bundled Active Licenses
+                </th>
+                {licenseTypeBreakdownCells(FUNNEL_ACTIVE_LICENSE_TYPE_BREAKDOWN.bundled)}
+              </tr>
+              <tr id="fy25-funnel-row-license-1year">
+                <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
+                  1-Year Active Licenses
+                </th>
+                {licenseTypeBreakdownCells(FUNNEL_ACTIVE_LICENSE_TYPE_BREAKDOWN.oneYear)}
+              </tr>
+              <tr id="fy25-funnel-row-license-lifetime-active">
+                <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
+                  Lifetime Active Licenses
+                </th>
+                {licenseTypeBreakdownCells(FUNNEL_ACTIVE_LICENSE_TYPE_BREAKDOWN.lifetime)}
+              </tr>
+              <tr id="fy25-funnel-row-paid-annual">
+                <th scope="row" className="fy25-funnel-table-rowhead">
+                  <span className="fy25-funnel-metric-label-wrap">
+                    Paid Annual License Penetration
+                    <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
+                      <button
+                        type="button"
+                        className="fy25-funnel-metric-help"
+                        aria-label="Help: Paid Annual License Penetration"
+                        aria-describedby={paidAnnualLicensePenetrationTipId}
+                      >
+                        ?
+                      </button>
+                      <span
+                        id={paidAnnualLicensePenetrationTipId}
+                        role="tooltip"
+                        className="fy25-funnel-metric-tooltip"
+                      >
+                        {PAID_ANNUAL_LICENSE_PENETRATION_TIP}
+                      </span>
+                    </span>
+                  </span>
+                </th>
+                {fyCols.map(({ id, paid }) => {
+                  const annualFyPct = FUNNEL_PAID_ANNUAL_PENETRATION_FY_DISPLAY[id]
+                  return (
+                    <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
+                      {annualFyPct != null ? (
+                        <span className="fy25-funnel-table-pct">{annualFyPct}</span>
+                      ) : paid ? (
+                        <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(paid.pctAnnual)}</span>
+                      ) : (
+                        <span className="fy25-funnel-table-na">—</span>
+                      )}
+                    </td>
+                  )
+                })}
+                <td className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
+                  <span className="fy25-funnel-table-pct">
+                    {formatFunnelPctForDisplay(allTimeFunnel.paidAnnualOfConnectedPct)}
+                  </span>
+                </td>
+              </tr>
+              <tr className="fy25-funnel-table-tr-last" id="fy25-funnel-row-paid-lifetime">
+                <th scope="row" className="fy25-funnel-table-rowhead">
+                  <span className="fy25-funnel-metric-label-wrap">
+                    Paid Lifetime License Penetration
+                    <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
+                      <button
+                        type="button"
+                        className="fy25-funnel-metric-help"
+                        aria-label="Help: Paid Lifetime License Penetration"
+                        aria-describedby={paidLifetimeLicensePenetrationTipId}
+                      >
+                        ?
+                      </button>
+                      <span
+                        id={paidLifetimeLicensePenetrationTipId}
+                        role="tooltip"
+                        className="fy25-funnel-metric-tooltip"
+                      >
+                        {PAID_LIFETIME_LICENSE_PENETRATION_TIP}
+                      </span>
+                    </span>
+                  </span>
+                </th>
+                {fyCols.map(({ id, paid }) => {
+                  const lifetimeFyPct = FUNNEL_PAID_LIFETIME_PENETRATION_FY_DISPLAY[id]
+                  return (
+                    <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
+                      {lifetimeFyPct != null ? (
+                        <span className="fy25-funnel-table-pct">{lifetimeFyPct}</span>
+                      ) : paid ? (
+                        <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(paid.pctLifetime)}</span>
+                      ) : (
+                        <span className="fy25-funnel-table-na">—</span>
+                      )}
+                    </td>
+                  )
+                })}
+                <td className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
+                  <span className="fy25-funnel-table-pct">
+                    {formatFunnelPctForDisplay(allTimeFunnel.paidLifetimeOfConnectedPct)}
+                  </span>
+                </td>
+              </tr>
+            </>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+/** Forecast funnel: FY26–FY30 columns from business model (no all‑time column; colors match FY25 funnel table). */
+function InstalledBaseForecastFunnelTable({ presentExpandAll }) {
+  const [licenseBreakdownOpen, setLicenseBreakdownOpen] = useState(false)
+  useLayoutEffect(() => {
+    if (presentExpandAll) setLicenseBreakdownOpen(true)
+  }, [presentExpandAll])
+  const activeLicensesTipId = useId()
+  const activeLicensePenetrationTipId = useId()
+  const paidAnnualLicensePenetrationTipId = useId()
+  const paidLifetimeLicensePenetrationTipId = useId()
+
+  return (
+    <div className="fy25-funnel-table-scroll">
+      <table className="fy25-funnel-table">
+        <thead>
+          <tr>
+            <th scope="col" className="fy25-funnel-table-th-metric">
+              Metric
+            </th>
+            {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              <th key={col.id} scope="col" className="fy25-funnel-table-th-data">
+                {col.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row" className="fy25-funnel-table-rowhead">
+              Thermostats sold
+            </th>
+            {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                {col.fyThermostatsSold.toLocaleString()}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th scope="row" className="fy25-funnel-table-rowhead">
+              Thermostats Connected
+            </th>
+            {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                {col.fyConnectedNew.toLocaleString('en-US')}{' '}
+                <span className="fy25-funnel-table-inline-paren">
+                  ({formatFunnelPctForDisplay(col.connectedPct)})
+                </span>
               </td>
             ))}
           </tr>
@@ -466,11 +1008,11 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
                   type="button"
                   className="fy25-funnel-alp-expand"
                   aria-expanded={licenseBreakdownOpen}
-                  aria-controls="fy25-funnel-row-active-licenses fy25-funnel-row-paid-annual fy25-funnel-row-paid-lifetime"
+                  aria-controls="fy26-ff-funnel-row-active-licenses fy26-ff-funnel-row-license-bundled fy26-ff-funnel-row-license-1year fy26-ff-funnel-row-license-lifetime-active fy26-ff-funnel-row-paid-annual fy26-ff-funnel-row-paid-lifetime"
                   aria-label={
                     licenseBreakdownOpen
-                      ? 'Hide Active Licenses and paid license penetration rows'
-                      : 'Show Active Licenses and paid license penetration rows'
+                      ? 'Hide Active Licenses breakdown and paid license penetration rows'
+                      : 'Show Active Licenses breakdown and paid license penetration rows'
                   }
                   onClick={() => setLicenseBreakdownOpen((o) => !o)}
                 >
@@ -478,140 +1020,128 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
                 </button>
               </span>
             </th>
-            <td className="fy25-funnel-table-num">
-              <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
-                {formatFunnelPctForDisplay(allTimeFunnel.pctActiveOfConnected)}
-              </span>
-            </td>
-            {fyCols.map(({ id, m }) => {
-              const alpFy = FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY[id]
-              return (
-                <td key={id} className="fy25-funnel-table-num">
-                  {alpFy ? (
-                    <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">{alpFy.pct}</span>
-                  ) : m ? (
-                    <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
-                      {formatFunnelPctForDisplay(m.activePct)}
-                    </span>
-                  ) : (
-                    <span className="fy25-funnel-table-na">—</span>
-                  )}
-                </td>
-              )
-            })}
+            {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              <td key={col.id} className="fy25-funnel-table-num">
+                <span className="fy25-funnel-table-pct fy25-funnel-table-pct--emph">
+                  {col.activeLicensePenetrationLabel}
+                </span>
+              </td>
+            ))}
           </tr>
           {licenseBreakdownOpen && (
             <>
-              <tr id="fy25-funnel-row-active-licenses">
-            <th scope="row" className="fy25-funnel-table-rowhead">
-              <span className="fy25-funnel-metric-label-wrap">
-                Active Licenses
-                <span className="fy25-funnel-metric-help-wrap">
-                  <button
-                    type="button"
-                    className="fy25-funnel-metric-help"
-                    aria-label="Help: Active Licenses"
-                    aria-describedby={activeLicensesTipId}
-                  >
-                    ?
-                  </button>
-                  <span id={activeLicensesTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
-                    {ACTIVE_LICENSES_TIP}
+              <tr id="fy26-ff-funnel-row-active-licenses">
+                <th scope="row" className="fy25-funnel-table-rowhead">
+                  <span className="fy25-funnel-metric-label-wrap">
+                    Active Licenses
+                    <span className="fy25-funnel-metric-help-wrap">
+                      <button
+                        type="button"
+                        className="fy25-funnel-metric-help"
+                        aria-label="Help: Active Licenses"
+                        aria-describedby={activeLicensesTipId}
+                      >
+                        ?
+                      </button>
+                      <span id={activeLicensesTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
+                        {ACTIVE_LICENSES_TIP}
+                      </span>
+                    </span>
                   </span>
-                </span>
-              </span>
-            </th>
-            <td className="fy25-funnel-table-num">
-              {allTimeFunnel.active.toLocaleString('en-US')}
-            </td>
-            {fyCols.map(({ id, m }) => {
-              const alpFy = FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY[id]
-              const fyCount =
-                alpFy != null ? alpFy.absParen.replace(/^\(|\)$/g, '') : m?.activeNew.toLocaleString('en-US')
-              return (
-                <td key={id} className="fy25-funnel-table-num">
-                  {fyCount ?? '—'}
-                </td>
-              )
-            })}
+                </th>
+                {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                    {col.activeLicensesEoy.toLocaleString('en-US')}
+                  </td>
+                ))}
               </tr>
-              <tr id="fy25-funnel-row-paid-annual">
-            <th scope="row" className="fy25-funnel-table-rowhead">
-              <span className="fy25-funnel-metric-label-wrap">
-                Paid Annual License Penetration
-                <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
-                  <button
-                    type="button"
-                    className="fy25-funnel-metric-help"
-                    aria-label="Help: Paid Annual License Penetration"
-                    aria-describedby={paidAnnualLicensePenetrationTipId}
-                  >
-                    ?
-                  </button>
-                  <span id={paidAnnualLicensePenetrationTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
-                    {PAID_ANNUAL_LICENSE_PENETRATION_TIP}
-                  </span>
-                </span>
-              </span>
-            </th>
-            <td className="fy25-funnel-table-num">
-              <span className="fy25-funnel-table-pct">
-                {formatFunnelPctForDisplay(allTimeFunnel.paidAnnualOfConnectedPct)}
-              </span>
-            </td>
-            {fyCols.map(({ id, paid }) => {
-              const annualFyPct = FUNNEL_PAID_ANNUAL_PENETRATION_FY_DISPLAY[id]
-              return (
-                <td key={id} className="fy25-funnel-table-num">
-                  {annualFyPct != null ? (
-                    <span className="fy25-funnel-table-pct">{annualFyPct}</span>
-                  ) : paid ? (
-                    <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(paid.pctAnnual)}</span>
-                  ) : (
-                    <span className="fy25-funnel-table-na">—</span>
-                  )}
-                </td>
-              )
-            })}
+              <tr id="fy26-ff-funnel-row-license-bundled">
+                <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
+                  Bundled Active Licenses
+                </th>
+                {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                    {col.bundledActiveLicensesEoy.toLocaleString('en-US')}
+                  </td>
+                ))}
               </tr>
-              <tr className="fy25-funnel-table-tr-last" id="fy25-funnel-row-paid-lifetime">
-            <th scope="row" className="fy25-funnel-table-rowhead">
-              <span className="fy25-funnel-metric-label-wrap">
-                Paid Lifetime License Penetration
-                <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
-                  <button
-                    type="button"
-                    className="fy25-funnel-metric-help"
-                    aria-label="Help: Paid Lifetime License Penetration"
-                    aria-describedby={paidLifetimeLicensePenetrationTipId}
-                  >
-                    ?
-                  </button>
-                  <span id={paidLifetimeLicensePenetrationTipId} role="tooltip" className="fy25-funnel-metric-tooltip">
-                    {PAID_LIFETIME_LICENSE_PENETRATION_TIP}
+              <tr id="fy26-ff-funnel-row-license-1year">
+                <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
+                  1-Year Active Licenses
+                </th>
+                {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                    {col.oneYearActiveLicensesEoy.toLocaleString('en-US')}
+                  </td>
+                ))}
+              </tr>
+              <tr id="fy26-ff-funnel-row-license-lifetime-active">
+                <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
+                  Lifetime Active Licenses
+                </th>
+                {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+                    {col.lifetimeActiveLicensesEoy.toLocaleString('en-US')}
+                  </td>
+                ))}
+              </tr>
+              <tr id="fy26-ff-funnel-row-paid-annual">
+                <th scope="row" className="fy25-funnel-table-rowhead">
+                  <span className="fy25-funnel-metric-label-wrap">
+                    Paid Annual License Penetration
+                    <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
+                      <button
+                        type="button"
+                        className="fy25-funnel-metric-help"
+                        aria-label="Help: Paid Annual License Penetration"
+                        aria-describedby={paidAnnualLicensePenetrationTipId}
+                      >
+                        ?
+                      </button>
+                      <span
+                        id={paidAnnualLicensePenetrationTipId}
+                        role="tooltip"
+                        className="fy25-funnel-metric-tooltip"
+                      >
+                        {PAID_ANNUAL_LICENSE_PENETRATION_TIP}
+                      </span>
+                    </span>
                   </span>
-                </span>
-              </span>
-            </th>
-            <td className="fy25-funnel-table-num">
-              <span className="fy25-funnel-table-pct">
-                {formatFunnelPctForDisplay(allTimeFunnel.paidLifetimeOfConnectedPct)}
-              </span>
-            </td>
-            {fyCols.map(({ id, paid }) => {
-              const lifetimeFyPct = FUNNEL_PAID_LIFETIME_PENETRATION_FY_DISPLAY[id]
-              return (
-                <td key={id} className="fy25-funnel-table-num">
-                  {lifetimeFyPct != null ? (
-                    <span className="fy25-funnel-table-pct">{lifetimeFyPct}</span>
-                  ) : paid ? (
-                    <span className="fy25-funnel-table-pct">{formatFunnelPctForDisplay(paid.pctLifetime)}</span>
-                  ) : (
-                    <span className="fy25-funnel-table-na">—</span>
-                  )}
-                </td>
-              )
-            })}
+                </th>
+                {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
+                    <span className="fy25-funnel-table-pct">{col.paidAnnualPenetrationLabel}</span>
+                  </td>
+                ))}
+              </tr>
+              <tr className="fy25-funnel-table-tr-last" id="fy26-ff-funnel-row-paid-lifetime">
+                <th scope="row" className="fy25-funnel-table-rowhead">
+                  <span className="fy25-funnel-metric-label-wrap">
+                    Paid Lifetime License Penetration
+                    <span className="fy25-funnel-metric-help-wrap fy25-funnel-metric-help-wrap--tooltip-above">
+                      <button
+                        type="button"
+                        className="fy25-funnel-metric-help"
+                        aria-label="Help: Paid Lifetime License Penetration"
+                        aria-describedby={paidLifetimeLicensePenetrationTipId}
+                      >
+                        ?
+                      </button>
+                      <span
+                        id={paidLifetimeLicensePenetrationTipId}
+                        role="tooltip"
+                        className="fy25-funnel-metric-tooltip"
+                      >
+                        {PAID_LIFETIME_LICENSE_PENETRATION_TIP}
+                      </span>
+                    </span>
+                  </span>
+                </th>
+                {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
+                    <span className="fy25-funnel-table-pct">{col.paidLifetimePenetrationLabel}</span>
+                  </td>
+                ))}
               </tr>
             </>
           )}
@@ -912,6 +1442,19 @@ const FY26_RECHARTS_QUARTERLY_AXIS_TICK = {
 const FY26_RECHARTS_QUARTERLY_X_TICK = {
   ...FY26_RECHARTS_QUARTERLY_AXIS_TICK,
   angle: -28,
+}
+
+/** Outlook forecast charts (FY26–FY30 / FY25–FY30): short labels — horizontal ticks. */
+const FY26_RECHARTS_FORECAST_X_TICK = {
+  ...FY26_RECHARTS_QUARTERLY_AXIS_TICK,
+  angle: 0,
+}
+
+/** FY monthly thermostat chart: 12 month labels — angle avoids overlap on narrow widths. */
+const FY26_RECHARTS_MONTHLY_X_TICK = {
+  ...FY26_RECHARTS_QUARTERLY_AXIS_TICK,
+  angle: -32,
+  textAnchor: 'end',
 }
 
 function SkyportPublicSentimentVerticalBars({ captionId = SKYPORT_PUBLIC_SENTIMENT_CAPTION_ID }) {
@@ -1546,6 +2089,7 @@ function AllTimeChartTooltip({ active, payload, label }) {
   if (label != null && label !== '') {
     if (row0?.q4PartialNote) header = `${label} — ${row0.q4PartialNote}`
     else if (row0?.skyportHomeUsers != null) header = SKYPORTHOME_ALL_TIME_ACCOUNTS_CALLOUT
+    else if (String(label).match(/^FY\d{2}/)) header = `${label} — fiscal year-end`
     else header = String(label).match(/^Q\d/) ? `${label} — quarter-end` : String(label)
   }
   const rows = payload.filter(
@@ -1585,50 +2129,46 @@ function ThermostatFyMonthlyChart({ fyId }) {
       margin={{
         top: 8,
         right: 20,
-        left: 52,
-        bottom: 12,
+        left: 16,
+        bottom: 28,
       }}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
-      <XAxis dataKey="month" interval={0} height={28} tick={FY26_RECHARTS_X_TICK} tickMargin={6} />
+      <XAxis
+        dataKey="month"
+        interval={0}
+        height={52}
+        tick={FY26_RECHARTS_MONTHLY_X_TICK}
+        tickMargin={6}
+      />
       <YAxis
         yAxisId="left"
         orientation="left"
-        width={52}
+        width={54}
         tick={FY26_RECHARTS_AXIS_TICK}
         tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}K` : String(v))}
-        label={({ viewBox }) => {
-          if (!viewBox || viewBox.height == null) return null
-          const { x = 0, y = 0, width = 0, height = 0 } = viewBox
-          const cx = x + width / 2
-          const cy = y + height / 2
-          const labelInset = 14
-          const dual = thermostatChartHasLicenseSeries(fyRows)
+      />
+      <Tooltip content={FyMonthlyChartTooltip} cursor={{ fill: '#fff' }} />
+      <Bar
+        yAxisId="left"
+        dataKey="sold"
+        name="Thermostats sold"
+        fill="rgba(0, 151, 224, 0.38)"
+        radius={[4, 4, 0, 0]}
+        label={({ x, y, width, value, index }) => {
+          if (fyId !== 'FY25') return null
+          const lastIndex = fyRows.length - 1
+          if (index !== lastIndex || value == null || !Number.isFinite(value) || x == null || width == null || y == null) {
+            return null
+          }
           return (
-            <g transform={`translate(${cx - labelInset}, ${cy}) rotate(-90)`}>
-              <text x={0} y={0} textAnchor="middle" fontSize={12} fill="#6b7280" fontWeight={500}>
-                {dual ? (
-                  <>
-                    <tspan x={0} dy={-10}>
-                      Thermostats sold
-                    </tspan>
-                    <tspan x={0} dy={20}>
-                      Active licenses
-                    </tspan>
-                  </>
-                ) : (
-                  <tspan x={0} dy={0}>
-                    Thermostats sold
-                  </tspan>
-                )}
-              </text>
-            </g>
+            <text x={x + width / 2} y={y - 6} textAnchor="middle" fontSize={9} fontWeight={600} fill="#0097e0">
+              Thermostats sold
+            </text>
           )
         }}
       />
-      <Tooltip content={FyMonthlyChartTooltip} cursor={{ fill: '#fff' }} />
-      <Bar yAxisId="left" dataKey="sold" name="Thermostats sold" fill="rgba(0, 151, 224, 0.38)" radius={[4, 4, 0, 0]} />
       {avgSold != null && (
         <ReferenceLine
           yAxisId="left"
@@ -1727,7 +2267,7 @@ function ThermostatRightAllTimeQuarterlyChart() {
   return (
     <LineChart
       data={ALL_TIME_RIGHT_QUARTERLY_SPAN}
-      margin={{ top: 22, right: 20, left: 10, bottom: 4 }}
+      margin={{ top: 22, right: 20, left: 16, bottom: 4 }}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid yAxisId="left" strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -1742,27 +2282,9 @@ function ThermostatRightAllTimeQuarterlyChart() {
       <YAxis
         yAxisId="left"
         orientation="left"
-        width={52}
+        width={54}
         tick={FY26_RECHARTS_QUARTERLY_AXIS_TICK}
         tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}K` : String(v))}
-        label={({ viewBox }) => {
-          if (!viewBox || viewBox.height == null) return null
-          const { x = 0, y = 0, width = 0, height = 0 } = viewBox
-          const cx = x + width / 2
-          const cy = y + height / 2
-          return (
-            <g transform={`translate(${cx - 8}, ${cy}) rotate(-90)`}>
-              <text x={0} y={0} textAnchor="middle" fontSize={12} fill="#6b7280" fontWeight={500}>
-                <tspan x={0} dy={-14}>
-                  All series
-                </tspan>
-                <tspan x={0} dy={14}>
-                  (same scale)
-                </tspan>
-              </text>
-            </g>
-          )
-        }}
       />
       <Tooltip content={AllTimeChartTooltip} cursor={{ stroke: '#cbd5e1' }} />
       <Line
@@ -1778,7 +2300,7 @@ function ThermostatRightAllTimeQuarterlyChart() {
         label={({ index, x, y, value }) =>
           index === ALL_TIME_RIGHT_QUARTERLY_SPAN_LAST_DATA_INDEX && value != null ? (
             <text x={x - 10} y={y - 12} textAnchor="end" fontSize={11} fill="#0097e0" fontWeight={600}>
-              Total sold
+              Thermostats sold
             </text>
           ) : null}
       />
@@ -1837,7 +2359,7 @@ export default function FY26() {
   const { sectionId } = useParams()
   const location = useLocation()
   const [showPlannedDetails, setShowPlannedDetails] = useState(false)
-  const [thermostatChartTabId, setThermostatChartTabId] = useState('FY25')
+  const [thermostatChartTabId, setThermostatChartTabId] = useState('FY23')
   const [outcomeExpanded, setOutcomeExpanded] = useState({
     a: false,
     b: false,
@@ -1932,7 +2454,7 @@ export default function FY26() {
                   className="fy25-visual-title fy25-chart-main-heading"
                   id="fy25-thermostat-sales-skyportcare"
                 >
-                  Thermostat sales &amp; SkyportCare adoption
+                  Thermostat Sales &amp; Connectivity, SkyportHome Users, SkyportCare Active Licenses
                 </h5>
                 <div className="fy25-chart-dual-row">
                   <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--fy">
@@ -1978,7 +2500,7 @@ export default function FY26() {
                   <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--alltime">
                     <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
                       <span className="fy25-chart-split-panel-label fy25-chart-split-panel-label--alltime" id="thermostat-alltime-heading">
-                        All-Time
+                        FY23 - FY25 (Cumulative)
                       </span>
                     </div>
                     <div
@@ -2126,7 +2648,7 @@ export default function FY26() {
           <section className="ds-section ds-section-single">
             <div className="ds-section-header" id="fy26-plan">
               <span className="ds-section-badge">2</span>
-              <h2 className="ds-section-title ds-section-title-single">FY26 Plan – Operating Focus</h2>
+              <h2 className="ds-section-title ds-section-title-single">FY26 – Operating Focus</h2>
             </div>
             {isDigitalPlatform ? (
               <div className="fy26-plan-cards">
@@ -2414,6 +2936,58 @@ export default function FY26() {
                         )}
                       </div>
                     </div>
+                    <div className="fy26-forecast-installed-funnel">
+                      <h5 className="fy26-forecast-installed-funnel-title">Installed Base Forecast Funnel</h5>
+                      <InstalledBaseForecastFunnelTable presentExpandAll={presentModeOpen} />
+                    </div>
+                    <div
+                      className="fy26-goals-outlook-chart"
+                      aria-label="Forecast outlook: left chart, FY26–FY30 activity bars including FY net-new active licenses; right chart, FY25–FY30 cumulative installed base (lines)"
+                    >
+                      <h5 className="fy26-goals-outlook-chart-title">
+                        Forecast: Thermostat Sales &amp; Connectivity, SkyportHome Users, SkyportCare Active Licenses
+                      </h5>
+                      <div className="fy25-chart-dual-row fy26-goals-outlook-chart-dual">
+                        <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--fy">
+                          <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
+                            <span
+                              className="fy25-chart-split-panel-label fy25-chart-split-panel-label--monthly"
+                              id="fy26-forecast-fy-chart-heading"
+                            >
+                              FY26–FY30 (by year)
+                            </span>
+                          </div>
+                          <div
+                            className="fy25-thermostat-recharts-root fy26-goals-outlook-chart-wrap"
+                            role="region"
+                            aria-labelledby="fy26-forecast-fy-chart-heading"
+                          >
+                            <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                              <BusinessModelForecastFyBarsChart />
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                        <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--alltime">
+                          <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
+                            <span
+                              className="fy25-chart-split-panel-label fy25-chart-split-panel-label--alltime"
+                              id="fy26-forecast-alltime-chart-heading"
+                            >
+                              FY25 - FY30 (Cumulative)
+                            </span>
+                          </div>
+                          <div
+                            className="fy25-thermostat-recharts-root fy26-goals-outlook-chart-wrap"
+                            role="region"
+                            aria-labelledby="fy26-forecast-alltime-chart-heading"
+                          >
+                            <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                              <BusinessModelForecastAllTimeCumulativeChart />
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="fy26-mini-card fy26-strategic-themes-box" id="fy26-strategic-themes">
                     <div className="fy26-strategic-themes-header">
@@ -2482,7 +3056,7 @@ export default function FY26() {
                               Key Dependencies
                             </th>
                             <th scope="col" className="fy26-execution-plan-th-quarter">
-                              Focus Timeframe
+                              Target
                             </th>
                           </tr>
                         </thead>
@@ -2626,9 +3200,9 @@ export default function FY26() {
                       </table>
                     </div>
                     <p className="fy26-execution-plan-delivery-note">
-                      <strong>Note:</strong> Focus Timeframe indicates execution focus and sequencing within FY26.
-                      &ldquo;Ongoing&rdquo; items represent operating model changes and cadence, not discrete
-                      feature delivery milestones.
+                      <strong>Note:</strong> The <strong>Target</strong> column indicates execution focus and
+                      sequencing within FY26. &ldquo;Ongoing&rdquo; items represent operating model changes and
+                      cadence, not discrete feature delivery milestones.
                     </p>
                     <Fy26DigitalAppsRoadmapEmbeds forceExpandRoadmaps={presentModeOpen} />
                   </div>
@@ -2752,17 +3326,19 @@ export default function FY26() {
             )}
           </section>
           {isDigitalPlatform && (
-            <div className="fy26-business-model-block" id="digital-platforms-business-model">
-              <details ref={businessModelDetailsRef} className="fy26-business-model-details">
-                <summary className="fy26-business-model-summary">
-                  <span className="fy26-business-model-summary-label">
-                    Digital Platforms Business Model
-                  </span>
-                </summary>
-                <div className="fy26-business-model-details-body">
-                  <DigitalPlatformsBusinessModelTable />
-                </div>
-              </details>
+            <div className="fy26-business-model-below-fusion30">
+              <div className="fy26-business-model-block" id="digital-platforms-business-model">
+                <details ref={businessModelDetailsRef} className="fy26-business-model-details">
+                  <summary className="fy26-business-model-summary">
+                    <span className="fy26-business-model-summary-label">
+                      Digital Platforms Business Model
+                    </span>
+                  </summary>
+                  <div className="fy26-business-model-details-body">
+                    <DigitalPlatformsBusinessModelTable />
+                  </div>
+                </details>
+              </div>
             </div>
           )}
         </div>

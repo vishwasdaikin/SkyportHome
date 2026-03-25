@@ -410,6 +410,15 @@
   margin-bottom: 0;
 }
 
+/* Sits below Fusion30 section (full playbook width, not inside Goals card). */
+.fy26-business-model-below-fusion30 {
+  margin-top: 1.75rem;
+}
+
+.fy26-business-model-below-fusion30 .fy26-business-model-block {
+  margin-top: 0;
+}
+
 .fy26-business-model-block {
   margin-top: 1.35rem;
   padding: 0;
@@ -2164,6 +2173,32 @@
   margin-bottom: 0.75rem !important;
 }
 
+.fy25-funnel-forecast-note {
+  margin: 0.65rem 0 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #475569);
+}
+
+.fy25-forecast-chart-tooltip {
+  background: #fff;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.fy25-forecast-chart-tooltip-label {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: #0f172a;
+}
+
+.fy25-forecast-chart-tooltip-row {
+  line-height: 1.45;
+}
+
 .fy25-funnel-dealer-callout,
 .fy25-funnel-thermostat-footprint-line {
   margin: 0.85rem 0 0 0;
@@ -2249,6 +2284,12 @@
   color: var(--text-primary, #0f172a);
   background: #fcfdfe;
   overflow-wrap: anywhere;
+}
+
+.fy25-funnel-table-rowhead--sub {
+  padding-left: 1.35rem;
+  font-weight: 500;
+  color: var(--text-primary, #0f172a);
 }
 
 .fy25-funnel-metric-label-wrap {
@@ -2388,11 +2429,19 @@
   background: rgba(248, 250, 252, 0.85);
 }
 
+/* Funnel data cells: base layout only — color via modifiers (counts blue, paid % black, ALP orange in span). */
 .fy25-funnel-table-num {
   text-align: right;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+}
+
+.fy25-funnel-table-num--count {
   color: var(--daikin-blue, #0097e0);
+}
+
+.fy25-funnel-table-num--paid-pct {
+  color: var(--text-primary, #0f172a);
 }
 
 .fy25-funnel-table-stack {
@@ -3348,33 +3397,32 @@ ul.fy25-feature-desc li {
   width: 18%;
 }
 
-/* SkyportHome embed: six columns (Initiative Type + End User Category are band rows, not columns) */
-.fy26-roadmap-embed-table--home-nested .features-cell-group {
+/* Nested FY26 roadmap embed: band rows + six data columns */
+.fy26-roadmap-embed-table--nested.fy26-roadmap-embed-table--grouped .features-cell-group {
   width: 12%;
 }
 
-.fy26-roadmap-embed-table--home-nested .features-cell-feature {
+.fy26-roadmap-embed-table--nested.fy26-roadmap-embed-table--grouped .features-cell-feature {
   width: 28%;
 }
 
-.fy26-roadmap-embed-table--home-nested .features-cell-monetization {
+.fy26-roadmap-embed-table--nested.fy26-roadmap-embed-table--grouped .features-cell-monetization {
   width: 12%;
 }
 
-.fy26-roadmap-embed-table--home-nested .features-cell-timeframe {
+.fy26-roadmap-embed-table--nested.fy26-roadmap-embed-table--grouped .features-cell-timeframe {
   width: 12%;
 }
 
-.fy26-roadmap-embed-table--home-nested .features-cell-priority {
+.fy26-roadmap-embed-table--nested.fy26-roadmap-embed-table--grouped .features-cell-priority {
   width: 8%;
 }
 
-.fy26-roadmap-embed-table--home-nested .features-cell-development {
+.fy26-roadmap-embed-table--nested.fy26-roadmap-embed-table--grouped .features-cell-development {
   width: 28%;
 }
 
-/* Initiative Type — band row (SkyportHome detailed table only) */
-.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--home-nested .fy26-roadmap-embed-tier1 td {
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--nested .fy26-roadmap-embed-tier1 td {
   font-weight: 600;
   font-size: 15px;
   line-height: 1.35;
@@ -3387,14 +3435,13 @@ ul.fy25-feature-desc li {
 }
 
 .fy26-digital-apps-roadmap-table-wrap
-  .features-table.fy26-roadmap-embed-table--home-nested
+  .features-table.fy26-roadmap-embed-table--nested
   .fy26-roadmap-embed-tier1
   .fy26-roadmap-embed-tier-label {
   color: rgba(255, 255, 255, 0.88);
 }
 
-/* End User Category — nested band (SkyportHome detailed table only) */
-.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--home-nested .fy26-roadmap-embed-tier2 td {
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--nested .fy26-roadmap-embed-tier2 td {
   font-weight: 600;
   font-size: 15px;
   line-height: 1.4;
@@ -3407,7 +3454,7 @@ ul.fy25-feature-desc li {
 }
 
 .fy26-digital-apps-roadmap-table-wrap
-  .features-table.fy26-roadmap-embed-table--home-nested
+  .features-table.fy26-roadmap-embed-table--nested
   .fy26-roadmap-embed-tier2
   .fy26-roadmap-embed-tier-label {
   color: #92400e;
@@ -3529,7 +3576,7 @@ ul.fy25-feature-desc li {
   vertical-align: middle;
 }
 
-/* Focus Timeframe column: ~25% narrower than prior 9.5rem min (9.5 × 0.75 = 7.125rem) */
+/* Target column: ~25% narrower than prior 9.5rem min (9.5 × 0.75 = 7.125rem) */
 .fy26-execution-plan-table th.fy26-execution-plan-th-quarter {
   min-width: 7.125rem;
   max-width: 9rem;
@@ -3733,6 +3780,42 @@ ul.fy25-feature-desc li {
   display: flex;
   flex-direction: column;
   gap: 0;
+}
+
+.fy26-goals-outlook-chart {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-goals-outlook-chart-title {
+  margin: 0 0 0.65rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.35;
+}
+
+.fy26-goals-outlook-chart-wrap {
+  margin-top: 0.25rem;
+}
+
+.fy26-goals-outlook-chart-dual {
+  margin-top: 0.35rem;
+}
+
+.fy26-forecast-installed-funnel {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-forecast-installed-funnel-title {
+  margin: 0 0 0.65rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.35;
 }
 
 .fy26-outcome-row {

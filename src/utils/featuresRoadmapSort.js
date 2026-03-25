@@ -1,5 +1,5 @@
 /**
- * Chronological-ish rank for Focus Timeframe labels (ascending: Q1 FY26 → Q4 → FY26 ongoing → FY27+).
+ * Chronological-ish rank for Target column values (ascending: Q1 FY26 → Q4 → FY26 ongoing → FY27+).
  */
 export function focusTimeframeRank(value) {
   const t = String(value ?? '').trim()
@@ -17,11 +17,21 @@ function compareStrings(a, b) {
   return String(a ?? '').localeCompare(String(b ?? ''), undefined, { sensitivity: 'base' })
 }
 
+function priorityRank(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  const s = String(value ?? '').trim()
+  if (!s || s === '—') return 999
+  const n = Number(s)
+  if (Number.isFinite(n)) return n
+  const m = s.match(/\d+/)
+  return m ? Number(m[0]) : 999
+}
+
 /** Raw comparison: negative if a before b in ascending order. */
 export function compareFeatureRowsForSort(a, b, sortKey) {
   switch (sortKey) {
     case 'priority':
-      return (Number(a.priority) || 999) - (Number(b.priority) || 999)
+      return priorityRank(a.priority) - priorityRank(b.priority)
     case 'focusTimeframe':
       return focusTimeframeRank(a.focusTimeframe) - focusTimeframeRank(b.focusTimeframe)
     case 'displayGroup':

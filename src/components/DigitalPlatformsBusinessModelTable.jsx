@@ -1,4 +1,4 @@
-const COLS = ['Inception to FY25', 'FY26', 'FY27', 'FY28', 'FY29', 'FY30']
+import { DP_BUSINESS_MODEL_COLUMN_LABELS as COLS } from '../content/digitalPlatformsForecastFunnel'
 
 function cell(v) {
   if (v === '' || v === null || v === undefined) return '—'
@@ -122,6 +122,11 @@ export function DigitalPlatformsBusinessModelTable() {
           <DataRow
             label="Lifetime active licenses"
             values={['3,320', '6,315', '16,566', '34,584', '63,298', '134,920']}
+          />
+          <DataRow
+            label="Active licenses"
+            values={['13,183', '36,084', '79,515', '167,981', '309,458', '578,228']}
+            labelClass="fy26-bm-emphasis"
           />
           <DataRow
             label="Active license penetration"

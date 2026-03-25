@@ -7,7 +7,7 @@ import {
 import { FeaturesCategoryChart } from '../components/FeaturesCategoryChart'
 import { FeaturesSortableTh } from '../components/FeaturesSortableTh'
 import { useFeatureProgress } from '../hooks/useFeatureProgress'
-import { createDefaultSortConfig, sortFeatureRows } from '../utils/featuresRoadmapSort'
+import { sortFeatureRows } from '../utils/featuresRoadmapSort'
 import { formatSkyportCareFeatureCellContent } from '../utils/formatSkyportCareFeatureCellContent'
 import './SkyportCare.css'
 import './Features.css'
@@ -102,7 +102,7 @@ function formatFeatureContent(featureText) {
 
 export default function SkyportCare() {
   const [search, setSearch] = useState('')
-  const [sortConfig, setSortConfig] = useState(createDefaultSortConfig)
+  const [sortConfig, setSortConfig] = useState({ key: 'priority', dir: 'asc' })
   const [viewMode, setViewMode] = useState('grouped')
   const [openGroups, setOpenGroups] = useState(new Set())
   const [showCategoryChart, setShowCategoryChart] = useState(false)
@@ -165,8 +165,7 @@ export default function SkyportCare() {
       <section id="roadmap" className="skyport-care-section skyport-care-section-features">
         <h2 className="skyport-care-section-title">Roadmap</h2>
         <p className="skyport-care-section-desc">
-          Feature / Function groups, initiative types, end user categories, monetization, focus timeframe, priority, and
-          development scope.
+          Attributes, initiative types, end user categories, monetization, development, priority, and target.
         </p>
 
         {!showCategoryChart ? (
@@ -177,7 +176,7 @@ export default function SkyportCare() {
               onClick={() => setShowCategoryChart(true)}
               aria-expanded={false}
             >
-              Graphical view: Feature/Function by End User Category
+              Graphical view: Attribute by End User Category
             </button>
           </p>
         ) : (
@@ -297,12 +296,12 @@ export default function SkyportCare() {
                               Monetization
                             </FeaturesSortableTh>
                             <FeaturesSortableTh
-                              sortKey="focusTimeframe"
+                              sortKey="development"
                               sortConfig={sortConfig}
                               onSort={toggleSort}
-                              className="features-cell-timeframe"
+                              className="features-cell-development"
                             >
-                              Focus Timeframe
+                              Development
                             </FeaturesSortableTh>
                             <FeaturesSortableTh
                               sortKey="priority"
@@ -313,12 +312,12 @@ export default function SkyportCare() {
                               Priority
                             </FeaturesSortableTh>
                             <FeaturesSortableTh
-                              sortKey="development"
+                              sortKey="focusTimeframe"
                               sortConfig={sortConfig}
                               onSort={toggleSort}
-                              className="features-cell-development"
+                              className="features-cell-timeframe"
                             >
-                              Development
+                              Target
                             </FeaturesSortableTh>
                           </tr>
                         </thead>
@@ -331,9 +330,9 @@ export default function SkyportCare() {
                                 <td className="features-cell-type">{row.initiativeType}</td>
                                 <td className="features-cell-category">{row.endUserCategory}</td>
                                 <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
-                                <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
-                                <td className="features-cell-priority">{row.priority ?? '—'}</td>
                                 <td className="features-cell-development">{row.development || '—'}</td>
+                                <td className="features-cell-priority">{row.priority ?? '—'}</td>
+                                <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
                               </tr>
                             )
                           })}
@@ -355,7 +354,7 @@ export default function SkyportCare() {
               <thead>
                 <tr>
                   <FeaturesSortableTh sortKey="displayGroup" sortConfig={sortConfig} onSort={toggleSort}>
-                    Feature / Function Group
+                    Attribute
                   </FeaturesSortableTh>
                   <FeaturesSortableTh sortKey="feature" sortConfig={sortConfig} onSort={toggleSort}>
                     Feature / Function
@@ -370,12 +369,12 @@ export default function SkyportCare() {
                     Monetization Model
                   </FeaturesSortableTh>
                   <FeaturesSortableTh
-                    sortKey="focusTimeframe"
+                    sortKey="development"
                     sortConfig={sortConfig}
                     onSort={toggleSort}
-                    className="features-cell-timeframe"
+                    className="features-cell-development"
                   >
-                    Focus Timeframe
+                    Development
                   </FeaturesSortableTh>
                   <FeaturesSortableTh
                     sortKey="priority"
@@ -386,12 +385,12 @@ export default function SkyportCare() {
                     Priority
                   </FeaturesSortableTh>
                   <FeaturesSortableTh
-                    sortKey="development"
+                    sortKey="focusTimeframe"
                     sortConfig={sortConfig}
                     onSort={toggleSort}
-                    className="features-cell-development"
+                    className="features-cell-timeframe"
                   >
-                    Development
+                    Target
                   </FeaturesSortableTh>
                 </tr>
               </thead>
@@ -405,9 +404,9 @@ export default function SkyportCare() {
                       <td className="features-cell-type">{row.initiativeType}</td>
                       <td className="features-cell-category">{row.endUserCategory}</td>
                       <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
-                      <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
-                      <td className="features-cell-priority">{row.priority ?? '—'}</td>
                       <td className="features-cell-development">{row.development || '—'}</td>
+                      <td className="features-cell-priority">{row.priority ?? '—'}</td>
+                      <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
                     </tr>
                   )
                 })}
