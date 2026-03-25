@@ -9,13 +9,25 @@ export default defineConfig(({ mode }) => {
 
   /**
    * Asset base URL. Default `/` for Vercel, Netlify, and root domains.
-   * For GitHub Pages at https://user.github.io/RepoName/ set VITE_BASE_PATH=/RepoName/
+   * For GitHub Pages at https://user.github.io/RepoName/ either:
+   * - set VITE_BASE_PATH=/RepoName/ on the build, or
+   * - set VITE_GITHUB_PAGES=1 in CI (uses GITHUB_REPOSITORY → /RepoName/).
+   * Without this, index.html loads but /assets/*.js 404s → blank page.
    */
   const basePathRaw = env.VITE_BASE_PATH ?? process.env.VITE_BASE_PATH
+  const ghPagesFlag = String(
+    env.VITE_GITHUB_PAGES ?? process.env.VITE_GITHUB_PAGES ?? '',
+  ).trim()
   let base = '/'
   if (basePathRaw != null && String(basePathRaw).trim() !== '') {
     const p = String(basePathRaw).trim()
     base = p.endsWith('/') ? p : `${p}/`
+  } else if (ghPagesFlag === '1' || ghPagesFlag.toLowerCase() === 'true') {
+    const repoFull = env.GITHUB_REPOSITORY ?? process.env.GITHUB_REPOSITORY ?? ''
+    const repoName = repoFull.includes('/') ? repoFull.split('/')[1] : ''
+    if (repoName) {
+      base = `/${repoName}/`
+    }
   }
 
   return {
