@@ -222,42 +222,9 @@
   font-weight: 600;
 }
 
-/* Single-column layout: no left sidebar */
-.fy26-page .fy26-layout {
-  display: block;
-}
-
-/* In-page nav buttons — pinned to the far right of the title row */
-.fy26-inpage-nav {
-  margin-top: 0;
-  margin-left: auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem 0.75rem;
-  flex: 0 0 auto;
-}
-
-/* Same glow as SkyportHome .skyport-home-nav a (Roadmap / Concept Demo) */
-.fy26-inpage-nav a {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: transparent;
-  border: none;
-  box-shadow: 0 0 16px rgba(0, 151, 224, 0.28), 0 2px 8px rgba(0, 151, 224, 0.2);
-  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
-}
-
-.fy26-inpage-nav a:hover {
-  color: var(--daikin-blue);
-  background: rgba(0, 151, 224, 0.06);
-  text-decoration: none;
-  box-shadow: 0 0 24px rgba(0, 151, 224, 0.4), 0 2px 12px rgba(0, 151, 224, 0.35);
+/* Playbook-style left TOC: grid from DigitalStrategy `.ds-layout`; sticky below fixed header */
+.fy26-page .fy26-layout .ds-nav {
+  top: calc(var(--app-header-height, 60px) + 0.75rem);
 }
 
 @media (max-width: 639px) {
@@ -281,12 +248,6 @@
     max-width: 100%;
     justify-content: flex-start;
   }
-  .fy26-inpage-nav {
-    width: 100%;
-    min-width: 0;
-    margin-left: 0;
-    justify-content: flex-end;
-  }
 }
 
 @media (min-width: 640px) {
@@ -302,10 +263,20 @@
   margin-top: 0;
 }
 
-/* In-page anchors: clear fixed app header (FY26 section nav is in-page dropdown, not a second fixed bar) */
+/* In-page anchors: clear fixed app header */
 .fy26-page .ds-section-header#fy25-review,
 .fy26-page .ds-section-header#fy26-plan,
-.fy26-page .ds-section-header#fusion30-summary {
+.fy26-page .ds-section-header#fusion30-summary,
+.fy26-page #skyport-home,
+.fy26-page #fy26-outcomes,
+.fy26-page #fy26-strategic-themes,
+.fy26-page #fy26-execution-plan,
+.fy26-page #fy26-interaction-alignment,
+.fy26-page #digital-platforms-business-model,
+.fy26-page #fy25-thermostat-sales-skyportcare,
+.fy26-page #fy25-skyporthome-experience-sentiment,
+.fy26-page #fy25-planned-vs-actual,
+.fy26-page .fy26-outcome-collapse-trigger[id^='fy26-outcome-trigger-'] {
   scroll-margin-top: calc(var(--app-header-height, 60px) + 1.25rem);
 }
 
@@ -342,21 +313,6 @@
 .fy26-page--simple .ds-section-title {
   color: var(--text-primary);
   border-bottom-color: var(--border);
-}
-
-.fy26-page--simple .fy26-inpage-nav a {
-  box-shadow: none;
-  padding: 0.35rem 0.65rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  text-decoration: none;
-}
-
-.fy26-page--simple .fy26-inpage-nav a:hover {
-  color: var(--text-primary);
-  background: rgba(0, 0, 0, 0.04);
-  box-shadow: none;
-  text-decoration: none;
 }
 
 /* Simple FY26 Plan A–D: breathing room below section title and between lines */

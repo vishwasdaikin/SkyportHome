@@ -25,6 +25,7 @@ import {
   ThermostatLocationsMapInlineLink,
 } from '../components/ThermostatLocationsMap'
 import { DigitalPlatformsBusinessModelTable } from '../components/DigitalPlatformsBusinessModelTable'
+import FY26PageNav from '../components/FY26PageNav'
 
 /** FY2023 units sold + active SkyportCare licenses (Apr'23–Mar'24). */
 const FY23_THERMOSTAT_MONTHLY_DATA = [
@@ -627,7 +628,19 @@ function averageMonthlyUnitsSold(rows) {
 
 const FY26_INPAGE_HASH_IDS = [
   'fy25-review',
+  'skyport-home',
+  'fy25-thermostat-sales-skyportcare',
+  'fy25-skyporthome-experience-sentiment',
+  'fy25-planned-vs-actual',
   'fy26-plan',
+  'fy26-outcomes',
+  'fy26-strategic-themes',
+  'fy26-execution-plan',
+  'fy26-interaction-alignment',
+  'fy26-outcome-trigger-a',
+  'fy26-outcome-trigger-b',
+  'fy26-outcome-trigger-c',
+  'fy26-outcome-trigger-d',
   'fusion30-summary',
   'digital-platforms-business-model',
 ]
@@ -1097,7 +1110,9 @@ function SkyportHomeUserFeedbackCard() {
   return (
     <div className="fy25-skyport-home-card">
       <div className="fy25-skyport-home-card-header">
-        <h4 className="fy25-skyport-home-title">SkyportHome Experience Quality &amp; Sentiment</h4>
+        <h4 className="fy25-skyport-home-title" id="fy25-skyporthome-experience-sentiment">
+          SkyportHome Experience Quality &amp; Sentiment
+        </h4>
         <button
           type="button"
           className="fy25-skyport-home-feedback-details-link"
@@ -1593,10 +1608,16 @@ export default function FY26() {
     if (id === 'digital-platforms-business-model' && businessModelDetailsRef.current) {
       businessModelDetailsRef.current.open = true
     }
+    if (isDigitalPlatform) {
+      const goalKey = id.match(/^fy26-outcome-trigger-([abcd])$/)?.[1]
+      if (goalKey) {
+        setOutcomeExpanded((s) => ({ ...s, [goalKey]: true }))
+      }
+    }
     const el = document.getElementById(id)
     if (!el) return
     el.scrollIntoView({ block: 'start', behavior: 'auto' })
-  }, [location.hash])
+  }, [location.hash, sectionId, isDigitalPlatform])
 
   return (
     <article className={`fy26-page${isDigitalPlatform ? '' : ' fy26-page--simple'}`}>
@@ -1604,16 +1625,12 @@ export default function FY26() {
         <div className="fy26-header-title-row">
           <div className="fy26-header-title-cluster">
             <Fy26PlaybookTitleDropdown sectionId={sectionId} />
-            <nav className="fy26-inpage-nav" aria-label="Page sections">
-              <a href="#fy25-review">FY25 Review</a>
-              <a href="#fy26-plan">FY26 Plan</a>
-              <a href="#fusion30-summary">Fusion30 Summary</a>
-            </nav>
           </div>
         </div>
       </header>
       <div key={sectionId} className="fy26-page-transition-surface">
         <div className="ds-layout fy26-layout">
+        <FY26PageNav sectionId={sectionId} />
         <div className="ds-sections">
           <section className="ds-section ds-section-single">
             <div className="ds-section-header" id="fy25-review">
@@ -1640,7 +1657,10 @@ export default function FY26() {
               </div>
 
               <div className="fy25-monthly-chart-wrap">
-                <h5 className="fy25-visual-title fy25-chart-main-heading" id="thermostat-sales-chart-heading">
+                <h5
+                  className="fy25-visual-title fy25-chart-main-heading"
+                  id="fy25-thermostat-sales-skyportcare"
+                >
                   Thermostat sales &amp; SkyportCare adoption
                 </h5>
                 <div className="fy25-chart-dual-row">
@@ -1725,7 +1745,9 @@ export default function FY26() {
               <div className="fy25-planned-full">
                 <div className="fy25-planned-card">
                   <div className="fy25-planned-header">
-                    <h4 className="fy25-planned-card-title">Planned vs Actual initiatives</h4>
+                    <h4 className="fy25-planned-card-title" id="fy25-planned-vs-actual">
+                      Planned vs Actual initiatives
+                    </h4>
                     <div className="fy25-planned-bulk-actions">
                       <button
                         type="button"
@@ -2122,7 +2144,7 @@ export default function FY26() {
                       </div>
                     </div>
                   </div>
-                  <div className="fy26-mini-card fy26-strategic-themes-box">
+                  <div className="fy26-mini-card fy26-strategic-themes-box" id="fy26-strategic-themes">
                     <div className="fy26-strategic-themes-header">
                       <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
                         <span className="fy26-plan-letter-badge">B</span>
@@ -2153,7 +2175,7 @@ export default function FY26() {
                       </li>
                     </ul>
                   </div>
-                  <div className="fy26-mini-card">
+                  <div className="fy26-mini-card" id="fy26-execution-plan">
                     <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
                       <span className="fy26-plan-letter-badge">C</span>
                       <span>Execution Plan</span>
@@ -2349,7 +2371,7 @@ export default function FY26() {
                       features and capabilities are documented on the product pages and are not repeated here.
                     </p>
                   </div>
-                  <div className="fy26-mini-card">
+                  <div className="fy26-mini-card" id="fy26-interaction-alignment">
                     <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
                       <span className="fy26-plan-letter-badge">D</span>
                       <span>Interaction &amp; Alignment with Other Teams</span>
