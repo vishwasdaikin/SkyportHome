@@ -7,14 +7,15 @@ export default defineConfig(({ mode }) => {
   const coreApiOrigin =
     env.SKYPORT_CORE_URL || process.env.SKYPORT_CORE_URL || 'http://localhost:3001'
 
-  /** GitHub Pages project URLs are /repo-name/ — without this, /assets/* 404s and the app never loads. */
+  /**
+   * Asset base URL. Default `/` for Vercel, Netlify, and root domains.
+   * For GitHub Pages at https://user.github.io/RepoName/ set VITE_BASE_PATH=/RepoName/
+   */
   const basePathRaw = env.VITE_BASE_PATH ?? process.env.VITE_BASE_PATH
   let base = '/'
   if (basePathRaw != null && String(basePathRaw).trim() !== '') {
     const p = String(basePathRaw).trim()
     base = p.endsWith('/') ? p : `${p}/`
-  } else if (mode === 'production') {
-    base = '/SkyportHome/'
   }
 
   return {
