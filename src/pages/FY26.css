@@ -3348,6 +3348,81 @@ ul.fy25-feature-desc li {
   width: 18%;
 }
 
+/* SkyportHome embed: six columns (Initiative Type + End User Category are band rows, not columns) */
+.fy26-roadmap-embed-table--home-nested .features-cell-group {
+  width: 12%;
+}
+
+.fy26-roadmap-embed-table--home-nested .features-cell-feature {
+  width: 28%;
+}
+
+.fy26-roadmap-embed-table--home-nested .features-cell-monetization {
+  width: 12%;
+}
+
+.fy26-roadmap-embed-table--home-nested .features-cell-timeframe {
+  width: 12%;
+}
+
+.fy26-roadmap-embed-table--home-nested .features-cell-priority {
+  width: 8%;
+}
+
+.fy26-roadmap-embed-table--home-nested .features-cell-development {
+  width: 28%;
+}
+
+/* Initiative Type — band row (SkyportHome detailed table only) */
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--home-nested .fy26-roadmap-embed-tier1 td {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.35;
+  background: #0077b8;
+  color: #fff;
+  border: 1px solid #005a8c;
+  border-bottom: 2px solid #004d76;
+  padding: 0.65rem 0.75rem;
+  vertical-align: middle;
+}
+
+.fy26-digital-apps-roadmap-table-wrap
+  .features-table.fy26-roadmap-embed-table--home-nested
+  .fy26-roadmap-embed-tier1
+  .fy26-roadmap-embed-tier-label {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* End User Category — nested band (SkyportHome detailed table only) */
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--home-nested .fy26-roadmap-embed-tier2 td {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  background: #fef3c7;
+  color: #422006;
+  border: 1px solid var(--border);
+  border-left: 4px solid #d97706;
+  padding: 0.65rem 0.75rem 0.65rem calc(0.75rem + 0.15rem);
+  vertical-align: middle;
+}
+
+.fy26-digital-apps-roadmap-table-wrap
+  .features-table.fy26-roadmap-embed-table--home-nested
+  .fy26-roadmap-embed-tier2
+  .fy26-roadmap-embed-tier-label {
+  color: #92400e;
+}
+
+.fy26-roadmap-embed-tier-label {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #64748b);
+}
+
 .fy26-execution-plan-product-link {
   color: var(--daikin-blue);
   text-decoration: underline;

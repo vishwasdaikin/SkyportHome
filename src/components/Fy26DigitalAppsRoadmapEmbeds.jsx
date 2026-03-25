@@ -15,7 +15,145 @@ function getRowsWithGroups(rows) {
   })
 }
 
-function Fy26RoadmapEmbedThead({ sortConfig, onSort }) {
+/**
+ * SkyportHome embed: sort only within each Initiative × End-user bucket.
+ * Initiative Type and End User Category are band rows, not columns — every remaining column sorts here.
+ */
+const HOME_EMBED_SORT_KEYS = [
+  'displayGroup',
+  'feature',
+  'monetizationModel',
+  'focusTimeframe',
+  'priority',
+  'development',
+]
+
+/**
+ * @returns {{ initiative: string, categories: { category: string, rows: object[] }[] }[]}
+ */
+function buildInitiativeCategoryTree(rows) {
+  const initiativeOrder = []
+  const byInitiative = new Map()
+
+  for (const row of rows) {
+    const initiative = row.initiativeType?.trim() || '—'
+    const category = row.endUserCategory?.trim() || '—'
+
+    if (!byInitiative.has(initiative)) {
+      byInitiative.set(initiative, { categoryOrder: [], byCategory: new Map() })
+      initiativeOrder.push(initiative)
+    }
+    const node = byInitiative.get(initiative)
+    if (!node.byCategory.has(category)) {
+      node.categoryOrder.push(category)
+      node.byCategory.set(category, [])
+    }
+    node.byCategory.get(category).push(row)
+  }
+
+  return initiativeOrder.map((initiative) => {
+    const { categoryOrder, byCategory } = byInitiative.get(initiative)
+    return {
+      initiative,
+      categories: categoryOrder.map((category) => ({
+        category,
+        rows: byCategory.get(category),
+      })),
+    }
+  })
+}
+
+function applyWithinCategorySort(tree, sortKey, sortDir) {
+  if (sortKey == null || sortKey === '') return tree
+  return tree.map((block) => ({
+    ...block,
+    categories: block.categories.map((cat) => ({
+      ...cat,
+      rows: sortFeatureRows(cat.rows, sortKey, sortDir),
+    })),
+  }))
+}
+
+const COL_SPAN_HOME = 6
+
+function Fy26RoadmapEmbedHomeThead({ sortConfig, onSort }) {
+  return (
+    <thead>
+      <tr>
+        <FeaturesSortableTh sortKey="displayGroup" sortConfig={sortConfig} onSort={onSort}>
+          Feature / Function Group
+        </FeaturesSortableTh>
+        <FeaturesSortableTh sortKey="feature" sortConfig={sortConfig} onSort={onSort}>
+          Feature / Function
+        </FeaturesSortableTh>
+        <FeaturesSortableTh sortKey="monetizationModel" sortConfig={sortConfig} onSort={onSort}>
+          Monetization Model
+        </FeaturesSortableTh>
+        <FeaturesSortableTh
+          sortKey="focusTimeframe"
+          sortConfig={sortConfig}
+          onSort={onSort}
+          className="features-cell-timeframe"
+        >
+          Focus Timeframe
+        </FeaturesSortableTh>
+        <FeaturesSortableTh
+          sortKey="priority"
+          sortConfig={sortConfig}
+          onSort={onSort}
+          className="features-cell-priority"
+        >
+          Priority
+        </FeaturesSortableTh>
+        <FeaturesSortableTh
+          sortKey="development"
+          sortConfig={sortConfig}
+          onSort={onSort}
+          className="features-cell-development"
+        >
+          Development
+        </FeaturesSortableTh>
+      </tr>
+    </thead>
+  )
+}
+
+function Fy26RoadmapEmbedHomeTbody({ tree, formatFeature }) {
+  return (
+    <tbody>
+      {tree.flatMap((block, bi) => [
+        <tr key={`i-${bi}`} className="fy26-roadmap-embed-tier1">
+          <td colSpan={COL_SPAN_HOME}>
+            <span className="fy26-roadmap-embed-tier-label">Initiative Type</span>
+            {': '}
+            {block.initiative}
+          </td>
+        </tr>,
+        ...block.categories.flatMap((cat, ci) => [
+          <tr key={`c-${bi}-${ci}`} className="fy26-roadmap-embed-tier2">
+            <td colSpan={COL_SPAN_HOME}>
+              <span className="fy26-roadmap-embed-tier-label">End User Category</span>
+              {': '}
+              {cat.category}
+            </td>
+          </tr>,
+          ...cat.rows.map((row, ri) => (
+            <tr key={`r-${bi}-${ci}-${ri}`}>
+              <td className="features-cell-group">{row.displayGroup}</td>
+              <td className="features-cell-feature">{formatFeature(row.feature)}</td>
+              <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+              <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
+              <td className="features-cell-priority">{row.priority ?? '—'}</td>
+              <td className="features-cell-development">{row.development || '—'}</td>
+            </tr>
+          )),
+        ]),
+      ])}
+    </tbody>
+  )
+}
+
+function Fy26RoadmapEmbedCareThead({ sortConfig, onSort }) {
   return (
     <thead>
       <tr>
@@ -63,7 +201,7 @@ function Fy26RoadmapEmbedThead({ sortConfig, onSort }) {
   )
 }
 
-function Fy26RoadmapEmbedTbody({ rows, formatFeature }) {
+function Fy26RoadmapEmbedCareTbody({ rows, formatFeature }) {
   return (
     <tbody>
       {rows.map((row, i) => (
@@ -101,16 +239,20 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
   const homeRows = useMemo(() => getRowsWithGroups(featuresRows), [])
   const careRows = useMemo(() => getRowsWithGroups(skyportCareFeaturesRows), [])
 
-  const homeSorted = useMemo(
-    () => sortFeatureRows(homeRows, sortHome.key, sortHome.dir),
-    [homeRows, sortHome.key, sortHome.dir],
-  )
+  const homeSortKey = HOME_EMBED_SORT_KEYS.includes(sortHome.key) ? sortHome.key : null
+
+  const homeTree = useMemo(() => {
+    const tree = buildInitiativeCategoryTree(homeRows)
+    return applyWithinCategorySort(tree, homeSortKey, sortHome.dir)
+  }, [homeRows, homeSortKey, sortHome.dir])
+
   const careSorted = useMemo(
     () => sortFeatureRows(careRows, sortCare.key, sortCare.dir),
     [careRows, sortCare.key, sortCare.dir],
   )
 
   const toggleSortHome = (key) => {
+    if (!HOME_EMBED_SORT_KEYS.includes(key)) return
     setSortHome((prev) => {
       if (prev.key !== key) return { key, dir: 'asc' }
       return { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
@@ -147,9 +289,9 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
             aria-labelledby="fy26-roadmap-skyport-home-toggle"
           >
             <div className="features-table-wrap fy26-digital-apps-roadmap-table-wrap">
-              <table className="features-table fy26-roadmap-embed-table--grouped">
-                <Fy26RoadmapEmbedThead sortConfig={sortHome} onSort={toggleSortHome} />
-                <Fy26RoadmapEmbedTbody rows={homeSorted} formatFeature={formatFeatureCellContent} />
+              <table className="features-table fy26-roadmap-embed-table--grouped fy26-roadmap-embed-table--home-nested">
+                <Fy26RoadmapEmbedHomeThead sortConfig={sortHome} onSort={toggleSortHome} />
+                <Fy26RoadmapEmbedHomeTbody tree={homeTree} formatFeature={formatFeatureCellContent} />
               </table>
             </div>
           </div>
@@ -179,8 +321,8 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
           >
             <div className="features-table-wrap fy26-digital-apps-roadmap-table-wrap">
               <table className="features-table fy26-roadmap-embed-table--grouped">
-                <Fy26RoadmapEmbedThead sortConfig={sortCare} onSort={toggleSortCare} />
-                <Fy26RoadmapEmbedTbody rows={careSorted} formatFeature={formatSkyportCareFeatureCellContent} />
+                <Fy26RoadmapEmbedCareThead sortConfig={sortCare} onSort={toggleSortCare} />
+                <Fy26RoadmapEmbedCareTbody rows={careSorted} formatFeature={formatSkyportCareFeatureCellContent} />
               </table>
             </div>
           </div>
