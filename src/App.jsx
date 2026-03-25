@@ -20,6 +20,7 @@ import DemosCare from './pages/DemosCare'
 import ImagePage from './pages/ImagePage'
 import AppsPage from './pages/AppsPage'
 import StrategyPage from './pages/StrategyPage'
+import { FY26_BASE, FY26_DEFAULT_SECTION_ID } from './constants/fy26Nav'
 import TestXlsxDemo from './pages/TestXlsxDemo'
 
 export default function App() {
@@ -38,7 +39,10 @@ export default function App() {
         <Route path="/apps/skyport-care" element={<SkyportCare />} />
         <Route path="/apps/skyport-energy" element={<SkyportEnergy />} />
         <Route path="/strategy/fy25" element={<FY25 />} />
-        <Route path="/strategy/fy26" element={<Navigate to="/strategy/fy26/res-solutions" replace />} />
+        <Route
+          path="/strategy/fy26"
+          element={<Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />}
+        />
         <Route path="/strategy/fy26/:sectionId" element={<FY26 />} />
         <Route path="/strategy/operating" element={<Navigate to="/strategy/operating/overview" replace />} />
         <Route path="/strategy/operating/overview" element={<DigitalStrategy />} />

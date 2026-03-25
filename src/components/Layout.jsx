@@ -194,7 +194,7 @@ export default function Layout({ children }) {
                   className="app-nav-dropdown-item"
                   onClick={() => setStrategyOpen(false)}
                 >
-                  Operating Playbook
+                  Digital Strategy Principles
                 </NavLink>
               </div>
             )}
@@ -209,7 +209,7 @@ export default function Layout({ children }) {
         )}
       </header>
       {isOperatingPlaybook && (
-        <nav className="app-playbook-nav" aria-label="Operating Playbook">
+        <nav className="app-playbook-nav" aria-label="Digital Strategy Principles">
           <NavLink to={`${STRATEGY_OPERATING_BASE}/overview`} className={({ isActive }) => `app-playbook-nav-link ${isActive ? 'active' : ''}`} end>
             Overview
           </NavLink>

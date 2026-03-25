@@ -17,7 +17,7 @@ export const playbookMeta = {
 export const sections = [
   {
     title: "Creating the Digital Foundation for Scalable Growth",
-    content: `Digital Strategy & Digital Operating Playbook
+    content: `Digital Strategy Principles
 
 Purpose: Define the operating model that enables scalable growth through long‑term homeowner and dealer engagement.
 

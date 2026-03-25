@@ -1,0 +1,238 @@
+.fy26-present-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(165deg, #0b1220 0%, #0f172a 45%, #111827 100%);
+  color: #f1f5f9;
+  animation: fy26-present-fade-in 0.2s ease-out;
+}
+
+@keyframes fy26-present-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fy26-present-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.fy26-present-topbar-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.fy26-present-close {
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.fy26-present-close:hover {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.5);
+  color: #fecaca;
+}
+
+.fy26-present-close:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.fy26-present-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 0;
+  padding: 2rem 1.5rem 1rem;
+  overflow: hidden;
+}
+
+.fy26-present-slide {
+  width: 100%;
+  max-width: 52rem;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.fy26-present-slide-num {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #38bdf8;
+}
+
+.fy26-present-slide-title {
+  margin: 0 0 1.25rem 0;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.fy26-present-slide-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem 1.15rem;
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+  line-height: 1.65;
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Live DOM clone: match playbook styling (scoped under .fy26-page in FY26.css) */
+.fy26-present-slide-body--html {
+  white-space: normal;
+  text-align: left;
+}
+
+.fy26-present-slide-body--html .fy26-present-slide-clone-root {
+  pointer-events: none;
+  user-select: text;
+  background: #fff;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+}
+
+.fy26-present-slide-fallback {
+  margin: 0;
+  font-style: italic;
+  color: #94a3b8;
+}
+
+.fy26-present-slide-body--empty {
+  font-style: italic;
+  color: #64748b;
+}
+
+.fy26-present-slide-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fy26-present-slide-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 4px;
+}
+
+.fy26-present-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.fy26-present-nav-btn {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  background: #38bdf8;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.fy26-present-nav-btn:hover:not(:disabled) {
+  background: #7dd3fc;
+}
+
+.fy26-present-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.fy26-present-nav-btn:focus-visible {
+  outline: 2px solid #e2e8f0;
+  outline-offset: 2px;
+}
+
+.fy26-present-counter {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.fy26-present-hint {
+  display: none;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+@media (min-width: 640px) {
+  .fy26-present-hint {
+    display: block;
+  }
+}
+
+/* Sidebar Present control (hidden for now) */
+.fy26-page-nav-present {
+  display: none;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.fy26-present-nav-btn--sidebar {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: #fff;
+  background: var(--daikin-blue, #0097e0);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.fy26-present-nav-btn--sidebar:hover {
+  background: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-present-nav-btn--sidebar:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}

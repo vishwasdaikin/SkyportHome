@@ -20,7 +20,7 @@ export default function FY25() {
           </a>
         </p>
         <p className="fy25-back">
-          <Link to="/strategy/operating/overview">← Digital Operating Playbook</Link>
+          <Link to="/strategy/operating/overview">← Digital Strategy Principles</Link>
         </p>
       </header>
     </article>

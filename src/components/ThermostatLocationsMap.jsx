@@ -157,7 +157,7 @@ function SafeMapMarker({ coordinates, children, ...rest }) {
     return null
   }
   return (
-    <Marker coordinates={[lng, lat]} {...rest}>
+    <Marker coordinates={[lng, lat]} {...rest} style={{ pointerEvents: 'none' }}>
       {children}
     </Marker>
   )
@@ -370,11 +370,14 @@ function ThermostatLocationsMapInner({ aggregate, hidePlaceLabels = false }) {
                                 x: e.clientX,
                                 y: e.clientY,
                                 name,
+                                count,
                               })
                             }}
                             onMouseMove={(e) => {
                               setHover((h) =>
-                                h ? { ...h, x: e.clientX, y: e.clientY } : { x: e.clientX, y: e.clientY, name },
+                                h
+                                  ? { ...h, x: e.clientX, y: e.clientY, count }
+                                  : { x: e.clientX, y: e.clientY, name, count },
                               )
                             }}
                           />
@@ -403,6 +406,9 @@ function ThermostatLocationsMapInner({ aggregate, hidePlaceLabels = false }) {
             {regionTab === 'US' && hover && (
               <MapHoverTooltip x={hover.x} y={hover.y} className="fy25-thermostat-locations-map__tooltip--state">
                 <strong>{hover.name || 'Unknown'}</strong>
+                <div className="fy25-thermostat-locations-map__tooltip-count">
+                  {Number(hover.count ?? 0).toLocaleString()} locations
+                </div>
               </MapHoverTooltip>
             )}
 
@@ -513,13 +519,14 @@ function ThermostatLocationsMapInner({ aggregate, hidePlaceLabels = false }) {
                                     x: e.clientX,
                                     y: e.clientY,
                                     name: geoName,
+                                    count,
                                   })
                                 }}
                                 onMouseMove={(e) => {
                                   setCaHover((h) =>
                                     h
-                                      ? { ...h, x: e.clientX, y: e.clientY }
-                                      : { x: e.clientX, y: e.clientY, name: geoName },
+                                      ? { ...h, x: e.clientX, y: e.clientY, count }
+                                      : { x: e.clientX, y: e.clientY, name: geoName, count },
                                   )
                                 }}
                               />
@@ -548,6 +555,9 @@ function ThermostatLocationsMapInner({ aggregate, hidePlaceLabels = false }) {
                 {regionTab === 'CA' && caHover && (
                   <MapHoverTooltip x={caHover.x} y={caHover.y} className="fy25-thermostat-locations-map__tooltip--state">
                     <strong>{caHover.name || 'Unknown'}</strong>
+                    <div className="fy25-thermostat-locations-map__tooltip-count">
+                      {Number(caHover.count ?? 0).toLocaleString()} locations
+                    </div>
                   </MapHoverTooltip>
                 )}
 

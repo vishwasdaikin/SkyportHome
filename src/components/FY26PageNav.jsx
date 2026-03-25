@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FY26_BASE, getFy26PageNavGroups } from '../constants/fy26Nav'
+import { FY26_BASE, FY26_TOP_NAV_TITLES, getFy26PageNavGroups } from '../constants/fy26Nav'
+import { Fy26PresentMode } from './Fy26PresentMode'
 
-export default function FY26PageNav({ sectionId }) {
+export default function FY26PageNav({ sectionId, presentOpen, onPresentOpenChange }) {
   const location = useLocation()
   const groups = useMemo(() => getFy26PageNavGroups(sectionId), [sectionId])
   const flatItems = useMemo(() => groups.flatMap((g) => g.items), [groups])
@@ -63,6 +64,21 @@ export default function FY26PageNav({ sectionId }) {
           </ol>
         </div>
       ))}
+      <div className="fy26-page-nav-present">
+        <button
+          type="button"
+          className="fy26-present-nav-btn--sidebar"
+          onClick={() => onPresentOpenChange?.(true)}
+        >
+          Present
+        </button>
+      </div>
+      <Fy26PresentMode
+        open={presentOpen}
+        onClose={() => onPresentOpenChange?.(false)}
+        slides={flatItems}
+        deckTitle={`FY26 — ${FY26_TOP_NAV_TITLES[sectionId] ?? 'Playbook'}`}
+      />
     </nav>
   )
 }

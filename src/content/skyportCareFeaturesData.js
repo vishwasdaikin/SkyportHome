@@ -1,9 +1,9 @@
 /**
  * SkyportCare features: Feature Group, Feature / Function, Initiative Type, End User Category,
- * Monetization Model, Priority (1–3), Development (UI / Data / Algorithm scope).
+ * Monetization Model, Focus Timeframe, Priority (1–3), Development (UI / Data / Algorithm scope).
  * Empty featureGroup means same group as previous row.
  */
-export const skyportCareFeaturesRows = [
+const _skyportCareFeaturesRowsRaw = [
   { featureGroup: 'Dealer Operations & Experience', feature: 'Dealer On-boarding & Set-up', initiativeType: 'New Feature Introduction', endUserCategory: 'Trust, Security & Reliability', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
   { featureGroup: '', feature: 'Aggregated summary view', initiativeType: 'New Feature Introduction', endUserCategory: 'Ease of Use & Accessibility', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
   { featureGroup: '', feature: 'Dealer Report', initiativeType: 'New Feature Introduction', endUserCategory: 'Ease of Use & Accessibility', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
@@ -64,6 +64,53 @@ o EV pulse (heat/subcooling exchanger upper)`, initiativeType: 'New Feature Intr
   { featureGroup: 'Platform Maintenance', feature: 'Ongoing platform maintenance', initiativeType: 'Sustaining', endUserCategory: 'Trust, Security & Reliability', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
   { featureGroup: '', feature: 'Data accuracy, uptime & security', initiativeType: 'Sustaining', endUserCategory: 'Trust, Security & Reliability', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI + Data' },
 ]
+
+/** Execution focus / sequencing; index aligns with `_skyportCareFeaturesRowsRaw`. */
+const SKYPORT_CARE_FEATURE_FOCUS_TIMEFRAMES = [
+  'Q2 FY26',
+  'Q1 FY26',
+  'Q1 FY26',
+  'Q1 FY26',
+  'Q2 FY26',
+  'Q2 FY26',
+  'Q2 FY26',
+  'Q2 FY26',
+  'Q2 FY26',
+  'FY27+',
+  'FY27+',
+  'Q3 FY26',
+  'Q3 FY26',
+  'FY27+',
+  'FY27+',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q1 FY26',
+  'Q4 FY26',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q3 FY26',
+  'Q4 FY26',
+  'Q4 FY26',
+  'Q4 FY26',
+  'Q4 FY26',
+  'FY27+',
+  'FY27+',
+  'FY27+',
+  'FY27+',
+  'FY27+',
+  'FY27+',
+  'FY26 (ongoing)',
+  'FY26 (ongoing)',
+]
+
+export const skyportCareFeaturesRows = _skyportCareFeaturesRowsRaw.map((row, i) => ({
+  ...row,
+  focusTimeframe: SKYPORT_CARE_FEATURE_FOCUS_TIMEFRAMES[i] ?? '—',
+}))
 
 export const skyportCareFeaturesDone = new Set([])
 export const skyportCareFeaturesPartial = new Set([

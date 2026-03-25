@@ -50,7 +50,7 @@ describe('Layout top nav', () => {
 
     expect(screen.getByRole('link', { name: 'All strategy' })).toHaveAttribute('href', '/strategy')
     expect(screen.getByRole('link', { name: 'FY26' })).toHaveAttribute('href', '/strategy/fy26')
-    expect(screen.getByRole('link', { name: 'Operating Playbook' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Digital Strategy Principles' })).toHaveAttribute(
       'href',
       '/strategy/operating/overview'
     )
@@ -63,11 +63,11 @@ describe('Layout top nav', () => {
     await user.click(within(nav).getByRole('button', { name: /strategy/i }))
 
     expect(
-      screen.getByRole('menuitem', { name: 'Res Solutions', hidden: true })
-    ).toHaveAttribute('href', '/strategy/fy26/res-solutions')
-    expect(
-      screen.getByRole('menuitem', { name: 'Digital Platform', hidden: true })
+      screen.getByRole('menuitem', { name: 'Digital Apps & Services', hidden: true })
     ).toHaveAttribute('href', '/strategy/fy26/digital-platform')
+    expect(
+      screen.getByRole('menuitem', { name: 'Digital Tools', hidden: true })
+    ).toHaveAttribute('href', '/strategy/fy26/digital-tools-services')
     expect(screen.getByRole('menu', { name: 'FY26 playbook sections', hidden: true })).toBeInTheDocument()
   })
 })

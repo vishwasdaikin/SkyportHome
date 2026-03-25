@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react'
 import { featuresRows, featuresDone, featuresPartial } from '../content/featuresData'
 import { FeaturesCategoryChart } from '../components/FeaturesCategoryChart'
+import { FeaturesSortableTh } from '../components/FeaturesSortableTh'
 import { useFeatureProgress } from '../hooks/useFeatureProgress'
 import { formatFeatureCellContent } from '../utils/formatFeatureCellContent'
+import { createDefaultSortConfig, sortFeatureRows } from '../utils/featuresRoadmapSort'
 import './SkyportHome.css'
 import './Features.css'
 
@@ -37,13 +39,20 @@ function filterRows(rows, query) {
       (r.endUserCategory && r.endUserCategory.toLowerCase().includes(q)) ||
       (r.initiativeType && r.initiativeType.toLowerCase().includes(q)) ||
       (r.monetizationModel && r.monetizationModel.toLowerCase().includes(q)) ||
+      (r.focusTimeframe && r.focusTimeframe.toLowerCase().includes(q)) ||
       (r.development && r.development.toLowerCase().includes(q)) ||
       (r.priority != null && String(r.priority).includes(q))
   )
 }
 
+function roadmapFilterSummary(search) {
+  if (!search?.trim()) return ''
+  return ` (search "${search.trim()}")`
+}
+
 export default function SkyportHome() {
   const [search, setSearch] = useState('')
+  const [sortConfig, setSortConfig] = useState(createDefaultSortConfig)
   const [viewMode, setViewMode] = useState('grouped') // 'grouped' | 'table'
   const [openGroups, setOpenGroups] = useState(new Set())
   const [showCategoryChart, setShowCategoryChart] = useState(false)
@@ -54,7 +63,19 @@ export default function SkyportHome() {
 
   const rowsWithGroups = useMemo(() => getRowsWithGroups(featuresRows), [])
   const filteredRows = useMemo(() => filterRows(rowsWithGroups, search), [rowsWithGroups, search])
-  const groups = useMemo(() => buildGroups(filteredRows), [filteredRows])
+  const sortedRows = useMemo(
+    () => sortFeatureRows(filteredRows, sortConfig.key, sortConfig.dir),
+    [filteredRows, sortConfig.key, sortConfig.dir],
+  )
+  const groups = useMemo(() => buildGroups(sortedRows), [sortedRows])
+  const filterSummary = roadmapFilterSummary(search)
+
+  const toggleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key !== key) return { key, dir: 'asc' }
+      return { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
+    })
+  }
 
   const toggleGroup = (groupName) => {
     setOpenGroups((prev) => {
@@ -94,8 +115,8 @@ export default function SkyportHome() {
       <section id="roadmap" className="skyport-home-section skyport-home-section-features">
         <h2 className="skyport-home-section-title">Roadmap</h2>
         <p className="skyport-home-section-desc">
-          Feature / Function groups, initiative types, end user categories, monetization, priority, and development
-          scope.
+          Feature / Function groups, initiative types, end user categories, monetization, focus timeframe, priority,
+          and development scope.
         </p>
 
         {!showCategoryChart ? (
@@ -182,8 +203,8 @@ export default function SkyportHome() {
         {viewMode === 'grouped' ? (
           <div className="features-grouped">
             <p className="features-result-count">
-              {filteredRows.length} feature{filteredRows.length !== 1 ? 's' : ''}
-              {search ? ` matching "${search}"` : ''} in {groups.length} group{groups.length !== 1 ? 's' : ''}
+              {sortedRows.length} feature{sortedRows.length !== 1 ? 's' : ''}
+              {filterSummary} in {groups.length} group{groups.length !== 1 ? 's' : ''}
             </p>
             <div className="features-accordion">
               {groups.map(({ groupName, rows: groupRows }) => (
@@ -210,15 +231,45 @@ export default function SkyportHome() {
                     hidden={!openGroups.has(groupName)}
                   >
                     <div className="features-panel-table-wrap">
-                      <table className="features-table features-panel-table">
+                      <table className="features-table features-panel-table features-panel-table--cols-7">
                         <thead>
                           <tr>
-                            <th>Feature / Function</th>
-                            <th>Initiative Type</th>
-                            <th>End User Category</th>
-                            <th>Monetization</th>
-                            <th className="features-cell-priority">Priority</th>
-                            <th>Development</th>
+                            <FeaturesSortableTh sortKey="feature" sortConfig={sortConfig} onSort={toggleSort}>
+                              Feature / Function
+                            </FeaturesSortableTh>
+                            <FeaturesSortableTh sortKey="initiativeType" sortConfig={sortConfig} onSort={toggleSort}>
+                              Initiative Type
+                            </FeaturesSortableTh>
+                            <FeaturesSortableTh sortKey="endUserCategory" sortConfig={sortConfig} onSort={toggleSort}>
+                              End User Category
+                            </FeaturesSortableTh>
+                            <FeaturesSortableTh sortKey="monetizationModel" sortConfig={sortConfig} onSort={toggleSort}>
+                              Monetization
+                            </FeaturesSortableTh>
+                            <FeaturesSortableTh
+                              sortKey="focusTimeframe"
+                              sortConfig={sortConfig}
+                              onSort={toggleSort}
+                              className="features-cell-timeframe"
+                            >
+                              Focus Timeframe
+                            </FeaturesSortableTh>
+                            <FeaturesSortableTh
+                              sortKey="priority"
+                              sortConfig={sortConfig}
+                              onSort={toggleSort}
+                              className="features-cell-priority"
+                            >
+                              Priority
+                            </FeaturesSortableTh>
+                            <FeaturesSortableTh
+                              sortKey="development"
+                              sortConfig={sortConfig}
+                              onSort={toggleSort}
+                              className="features-cell-development"
+                            >
+                              Development
+                            </FeaturesSortableTh>
                           </tr>
                         </thead>
                         <tbody>
@@ -230,6 +281,7 @@ export default function SkyportHome() {
                               <td className="features-cell-type">{row.initiativeType}</td>
                               <td className="features-cell-category">{row.endUserCategory}</td>
                               <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+                              <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
                               <td className="features-cell-priority">{row.priority ?? '—'}</td>
                               <td className="features-cell-development">{row.development || '—'}</td>
                             </tr>
@@ -246,23 +298,55 @@ export default function SkyportHome() {
         ) : (
           <div className="features-table-wrap">
             <p className="features-result-count">
-              {filteredRows.length} feature{filteredRows.length !== 1 ? 's' : ''}
-              {search ? ` matching "${search}"` : ''}
+              {sortedRows.length} feature{sortedRows.length !== 1 ? 's' : ''}
+              {filterSummary}
             </p>
             <table className="features-table">
               <thead>
                 <tr>
-                  <th>Feature / Function Group</th>
-                  <th>Feature / Function</th>
-                  <th>Initiative Type</th>
-                  <th>End User Category</th>
-                  <th>Monetization Model</th>
-                  <th className="features-cell-priority">Priority</th>
-                  <th>Development</th>
+                  <FeaturesSortableTh sortKey="displayGroup" sortConfig={sortConfig} onSort={toggleSort}>
+                    Feature / Function Group
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh sortKey="feature" sortConfig={sortConfig} onSort={toggleSort}>
+                    Feature / Function
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh sortKey="initiativeType" sortConfig={sortConfig} onSort={toggleSort}>
+                    Initiative Type
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh sortKey="endUserCategory" sortConfig={sortConfig} onSort={toggleSort}>
+                    End User Category
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh sortKey="monetizationModel" sortConfig={sortConfig} onSort={toggleSort}>
+                    Monetization Model
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh
+                    sortKey="focusTimeframe"
+                    sortConfig={sortConfig}
+                    onSort={toggleSort}
+                    className="features-cell-timeframe"
+                  >
+                    Focus Timeframe
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh
+                    sortKey="priority"
+                    sortConfig={sortConfig}
+                    onSort={toggleSort}
+                    className="features-cell-priority"
+                  >
+                    Priority
+                  </FeaturesSortableTh>
+                  <FeaturesSortableTh
+                    sortKey="development"
+                    sortConfig={sortConfig}
+                    onSort={toggleSort}
+                    className="features-cell-development"
+                  >
+                    Development
+                  </FeaturesSortableTh>
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.map((row, i) => {
+                {sortedRows.map((row, i) => {
                   const status = getStatus(row.feature)
                   return (
                   <tr key={i} className={status ? `features-row--${status}` : undefined}>
@@ -271,6 +355,7 @@ export default function SkyportHome() {
                     <td className="features-cell-type">{row.initiativeType}</td>
                     <td className="features-cell-category">{row.endUserCategory}</td>
                     <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
+                    <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
                     <td className="features-cell-priority">{row.priority ?? '—'}</td>
                     <td className="features-cell-development">{row.development || '—'}</td>
                   </tr>

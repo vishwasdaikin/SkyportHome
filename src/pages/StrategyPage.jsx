@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FY26_BASE, FY26_DEFAULT_SECTION_ID } from '../constants/fy26Nav'
 import { getFy25PlaybookPdfUrl } from '../utils/fy25PlaybookPdfUrl'
 import './AppsPage.css'
 import './StrategyPage.css'
@@ -7,16 +8,16 @@ const base = import.meta.env.BASE_URL || '/'
 
 const STRATEGY_TILES = [
   {
-    to: '/strategy/fy26/res-solutions',
+    to: `${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`,
     title: 'FY26',
     description:
-      'FY26 roadmap across Res Solutions, Digital Platform, tools & services, controls, VRV/LC solutions, IAQ & Energy, and hot water.',
+      'FY26 roadmap for Digital Apps & Services and Digital Tools.',
     image: `${base}images/fy26-strategy.png`,
     imageAlt: 'Marketing strategy — light bulb and strategic planning concept',
   },
   {
     to: '/strategy/operating/overview',
-    title: 'Digital Operating Playbook',
+    title: 'Digital Strategy Principles',
     description:
       'Digital strategy overview, platform, homeowner & dealer experiences, lifecycle & growth, and reference material.',
     image: `${base}images/home-repository-hero.png`,
@@ -66,7 +67,7 @@ export default function StrategyPage() {
       <header className="apps-page-header">
         <h1>Strategy</h1>
         <p className="apps-page-intro strategy-page-intro">
-          FY25 playbook (PDF), FY26 sectioned roadmap, and the Digital Operating Playbook — pick an entry
+          FY25 playbook (PDF), FY26 sectioned roadmap, and Digital Strategy Principles — pick an entry
           point below.
         </p>
       </header>

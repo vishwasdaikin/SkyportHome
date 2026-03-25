@@ -30,7 +30,7 @@ export default function Overview() {
         <div className="info-card deck-card">
           <h3>Full playbook deck</h3>
           <p>
-            The complete <strong>Digital Strategy &amp; Digital Operating Playbook</strong> is available as a PowerPoint deck for offline use or presentation.
+            The complete <strong>Digital Strategy Principles</strong> PowerPoint is available for offline use or presentation.
           </p>
           <a
             href="/Digital-Strategy-Operating-Playbook.pptx"

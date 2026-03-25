@@ -1036,6 +1036,15 @@
   font-size: 0.8rem;
 }
 
+.fy25-thermostat-locations-map__tooltip-count {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #f8fafc;
+  letter-spacing: 0.01em;
+}
+
 .fy25-thermostat-locations-map__hotspot-region {
   font-size: 0.68rem;
   opacity: 0.9;
@@ -1449,6 +1458,168 @@
   margin-top: 0.35rem;
   padding-top: 0.35rem;
   padding-bottom: 0.25rem;
+}
+
+/* SkyportHome — store review + UX theme tables (below charts, above takeaway) */
+.fy25-skyport-home-review-tables {
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy25-skyport-home-review-tables-legend {
+  margin: 0 0 0.65rem 0;
+  font-size: inherit;
+  line-height: 1.45;
+  color: var(--text-secondary, #475569);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+}
+
+.fy25-sh-legend-label {
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  margin-right: 0.25rem;
+}
+
+.fy25-sh-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.fy25-sh-legend-swatch {
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+.fy25-sh-issue-default {
+  color: var(--text-primary, #0f172a);
+}
+
+.fy25-sh-issue-partial {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+.fy25-sh-issue-resolved {
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* Reviews table first, UX / engagement table second — stacked */
+.fy25-skyport-home-review-tables-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  align-items: stretch;
+}
+
+.fy25-sh-table-panel {
+  min-width: 0;
+}
+
+.fy25-sh-table-title {
+  margin: 0 0 0.5rem 0;
+  font-size: var(--fy26-card-title, var(--text-base));
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.3;
+}
+
+.fy25-sh-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  background: var(--bg-card, #fff);
+}
+
+.fy25-sh-table {
+  width: 100%;
+  min-width: 520px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: inherit;
+  line-height: 1.45;
+  color: var(--text-primary, #0f172a);
+}
+
+.fy25-sh-table th,
+.fy25-sh-table td {
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem 0.45rem;
+  vertical-align: top;
+  text-align: left;
+  font-weight: 400;
+}
+
+.fy25-sh-table thead th {
+  background: #f1f5f9;
+  font-weight: 600;
+  font-size: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.fy25-sh-table thead th:first-child,
+.fy25-sh-table tbody th[scope='row'] {
+  width: 13%;
+}
+
+.fy25-sh-table tbody th[scope='row'] {
+  font-weight: 600;
+  background: #f8fafc;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Frequency (3) and impact (4) — narrow; header text may wrap */
+.fy25-sh-table thead th:nth-child(3),
+.fy25-sh-table tbody td:nth-child(3),
+.fy25-sh-table thead th:nth-child(4),
+.fy25-sh-table tbody td:nth-child(4) {
+  width: 7%;
+  max-width: 5.25rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  box-sizing: border-box;
+}
+
+.fy25-sh-table thead th:nth-child(3),
+.fy25-sh-table thead th:nth-child(4) {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+/* Complaints column (6) — reviews table only */
+.fy25-sh-table thead th:nth-child(6),
+.fy25-sh-table tbody td:nth-child(6) {
+  width: 6.5%;
+  max-width: 5rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  box-sizing: border-box;
+}
+
+.fy25-sh-table thead th:nth-child(6) {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.fy25-sh-table-metric {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.fy25-sh-table-col-num,
+.fy25-sh-table-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* Public sentiment (left) + Observed Sentiment / Support & Help (right), equal width */
@@ -3002,6 +3173,179 @@ ul.fy25-feature-desc li {
   font-size: 15px;
   line-height: 1.55;
   color: #000;
+}
+
+/* Digital Apps & Services playbook — expandable full roadmap tables (same data as product pages) */
+.fy26-digital-apps-roadmap-embeds {
+  margin: 1rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fy26-digital-apps-roadmap-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--daikin-blue, #0097e0);
+  background: #fff;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.fy26-digital-apps-roadmap-toggle-label {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+}
+
+.fy26-digital-apps-roadmap-toggle:hover {
+  border-color: var(--daikin-blue, #0097e0);
+  background: rgba(0, 151, 224, 0.06);
+  color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-digital-apps-roadmap-toggle:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+}
+
+.fy26-digital-apps-roadmap-toggle-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--daikin-blue, #0097e0);
+}
+
+.fy26-digital-apps-roadmap-panel {
+  padding: 0.25rem 0 0 0;
+}
+
+.fy26-digital-apps-roadmap-table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fy26-digital-apps-roadmap-table-wrap.features-table-wrap {
+  margin-top: 0;
+}
+
+/* Match .fy26-execution-plan-table typography (this page only) */
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped {
+  font-size: 15px;
+  font-family: inherit;
+  border-collapse: collapse;
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped th,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped td {
+  padding: 0.65rem 0.75rem;
+  color: #000;
+  border: 1px solid var(--border);
+  vertical-align: top;
+  text-align: left;
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped thead th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #000;
+  padding: 0;
+  vertical-align: bottom;
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped thead th .features-sort-header-btn {
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--daikin-blue, #0097e0);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--daikin-blue, #0097e0);
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped thead th .features-sort-header-btn:hover {
+  color: var(--daikin-blue-dark, #0077b8);
+  text-decoration-color: var(--daikin-blue-dark, #0077b8);
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped thead th .features-sort-header-btn:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: -2px;
+  border-radius: 2px;
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped tbody td strong {
+  color: #000;
+}
+
+/* Override Features.css smaller / accent styles so body matches execution-plan tables */
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-group,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-feature,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-type,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-category,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-monetization,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-timeframe,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-priority,
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-development {
+  font-size: 15px;
+  color: #000;
+}
+
+.fy26-digital-apps-roadmap-table-wrap .features-table.fy26-roadmap-embed-table--grouped .features-cell-group {
+  font-weight: 600;
+}
+
+/* FY26 embed: same columns as main Roadmap table (8 data columns) */
+.fy26-roadmap-embed-table--grouped {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-group {
+  width: 8%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-feature {
+  width: 22%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-type {
+  width: 9%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-category {
+  width: 10%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-monetization {
+  width: 9%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-timeframe {
+  width: 10%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-priority {
+  width: 6%;
+}
+
+.fy26-roadmap-embed-table--grouped .features-cell-development {
+  width: 18%;
 }
 
 .fy26-execution-plan-product-link {

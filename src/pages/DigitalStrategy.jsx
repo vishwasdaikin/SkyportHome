@@ -14,7 +14,7 @@ const NAV_LABELS = {
 }
 
 const FORMATS = [
-  { match: 'Digital Strategy & Digital Operating Playbook', fn: (s, k) => <strong key={k}><u>{s}</u></strong> },
+  { match: 'Digital Strategy Principles', fn: (s, k) => <strong key={k}><u>{s}</u></strong> },
   { match: 'SkyportHome', fn: (s, k) => <strong key={k}>{s}</strong> },
   { match: 'SkyportCare', fn: (s, k) => <strong key={k}>{s}</strong> },
   { match: 'SkyportEnergy', fn: (s, k) => <strong key={k}>{s}</strong> },
@@ -112,7 +112,7 @@ export default function DigitalStrategy() {
   return (
     <article className="digital-strategy-page">
       <header className="ds-header">
-        <h1>Digital Strategy & Digital Operating Playbook</h1>
+        <h1>Digital Strategy Principles</h1>
         <p className="ds-tagline">A leadership view of the digital operating model and what it enables.</p>
       </header>
       <div className="ds-layout">

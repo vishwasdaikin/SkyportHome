@@ -11,7 +11,7 @@ export default function MainPage() {
           <p className="main-playbook-label">Go to playbook</p>
           <div className="main-playbook-links">
             <Link to="/strategy/fy26" className="main-playbook-link">FY26</Link>
-            <Link to="/playbook/operating/overview" className="main-playbook-link main-playbook-link-primary">Digital Operating Playbook</Link>
+            <Link to="/playbook/operating/overview" className="main-playbook-link main-playbook-link-primary">Digital Strategy Principles</Link>
           </div>
         </div>
       </div>

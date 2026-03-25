@@ -2,15 +2,12 @@
 export const FY26_BASE = '/strategy/fy26'
 
 export const FY26_NAV_ITEMS = [
-  { sectionId: 'res-solutions', label: 'Res Solutions' },
-  { sectionId: 'digital-platform', label: 'Digital Platform' },
-  { sectionId: 'digital-tools-services', label: 'Digital Tools & Services' },
-  { sectionId: 'res-controls-thermostats', label: 'Res Controls & Thermostats' },
-  { sectionId: 'vrv-controls-solutions', label: 'VRV Controls & Solutions' },
-  { sectionId: 'lc-controls-solutions', label: 'LC Controls & Solutions' },
-  { sectionId: 'iaq-energy', label: 'IAQ & Energy' },
-  { sectionId: 'hot-water-solutions', label: 'Hot Water Solutions' },
+  { sectionId: 'digital-platform', label: 'Digital Apps & Services' },
+  { sectionId: 'digital-tools-services', label: 'Digital Tools' },
 ]
+
+/** Default FY26 route when `/strategy/fy26` or an unknown `sectionId` is used. */
+export const FY26_DEFAULT_SECTION_ID = FY26_NAV_ITEMS[0].sectionId
 
 export const FY26_TOP_NAV_IDS = FY26_NAV_ITEMS.map((item) => item.sectionId)
 

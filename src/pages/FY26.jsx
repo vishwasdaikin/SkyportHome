@@ -1,6 +1,12 @@
 import { useState, useLayoutEffect, useEffect, useRef, useId } from 'react'
 import { useParams, Navigate, Link, NavLink, useLocation } from 'react-router-dom'
-import { FY26_BASE, FY26_NAV_ITEMS, FY26_TOP_NAV_IDS, FY26_TOP_NAV_TITLES } from '../constants/fy26Nav'
+import {
+  FY26_BASE,
+  FY26_DEFAULT_SECTION_ID,
+  FY26_NAV_ITEMS,
+  FY26_TOP_NAV_IDS,
+  FY26_TOP_NAV_TITLES,
+} from '../constants/fy26Nav'
 import {
   ComposedChart,
   LineChart,
@@ -26,6 +32,7 @@ import {
 } from '../components/ThermostatLocationsMap'
 import { DigitalPlatformsBusinessModelTable } from '../components/DigitalPlatformsBusinessModelTable'
 import FY26PageNav from '../components/FY26PageNav'
+import { Fy26DigitalAppsRoadmapEmbeds } from '../components/Fy26DigitalAppsRoadmapEmbeds'
 
 /** FY2023 units sold + active SkyportCare licenses (Apr'23–Mar'24). */
 const FY23_THERMOSTAT_MONTHLY_DATA = [
@@ -368,8 +375,11 @@ const PAID_ANNUAL_LICENSE_PENETRATION_TIP =
 const PAID_LIFETIME_LICENSE_PENETRATION_TIP =
   'This is the total active paid lifetime licenses as a % of Connected Systems.'
 
-function InstalledBaseFunnelTable({ allTimeFunnel }) {
+function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
   const [licenseBreakdownOpen, setLicenseBreakdownOpen] = useState(false)
+  useLayoutEffect(() => {
+    if (presentExpandAll) setLicenseBreakdownOpen(true)
+  }, [presentExpandAll])
   const activeLicensesTipId = useId()
   const activeLicensePenetrationTipId = useId()
   const paidAnnualLicensePenetrationTipId = useId()
@@ -1102,8 +1112,252 @@ function SkyportSupportHelpFeedbackSimple({ className = '' }) {
   )
 }
 
-function SkyportHomeUserFeedbackCard() {
+/** @param {{ pairs: Array<[string, 'd' | 'p' | 'r']> }} props */
+function SkyportHomeReviewIssueSpans({ pairs }) {
+  return pairs.map(([text, tone], i) => {
+    const cls =
+      tone === 'p'
+        ? 'fy25-sh-issue-partial'
+        : tone === 'r'
+          ? 'fy25-sh-issue-resolved'
+          : 'fy25-sh-issue-default'
+    return (
+      <span key={i} className={cls}>
+        {text}
+      </span>
+    )
+  })
+}
+
+const SKYPORTHOME_STORE_REVIEWS_ROWS = [
+  {
+    category: 'Wi‑Fi / Cloud Issues',
+    segments: [
+      ['Offline devices, cloud not connecting, ', 'd'],
+      ['frequent disconnect cycles', 'p'],
+      ['; cloud handshake failures; ', 'd'],
+      [
+        'devices appear offline in app even when Wi‑Fi connected; 6‑digit pairing code not showing',
+        'p',
+      ],
+    ],
+    frequency: 'Very High',
+    impact: 'Critical',
+    action:
+      'Strengthen connectivity engine; implement robust auto‑recover logic; improve cloud handshake diagnostics',
+    complaints: 1406,
+  },
+  {
+    category: 'Login / Account',
+    segments: [
+      [
+        'Users unable to log in; password reset failures; app/thermostat account mismatch',
+        'r',
+      ],
+      ['; cannot add secondary users', 'd'],
+    ],
+    frequency: 'High',
+    impact: 'High',
+    action:
+      'Modernize identity system; improve recovery flows; add multi‑user onboarding; unify app and device account logic',
+    complaints: 855,
+  },
+  {
+    category: 'App UX / Reliability',
+    segments: [
+      ['Energy usage not loading; ', 'd'],
+      ['app freezes', 'p'],
+      ['; confusion on the right Skyport app', 'd'],
+    ],
+    frequency: 'High',
+    impact: 'High',
+    action:
+      'Strengthen app QA; improve device discovery; provide clearer migration steps; improve update reliability',
+    complaints: 633,
+  },
+  {
+    category: 'Geofencing / Away Logic',
+    segments: [
+      [
+        'Away triggers when any single person leaves; geofence fails to detect return; app requires being open to work; OS background permissions issues',
+        'p',
+      ],
+    ],
+    frequency: 'Medium',
+    impact: 'High',
+    action:
+      'Implement household‑aware presence (“anyone home” logic); add background permission diagnostics; improve geofence stability',
+    complaints: 169,
+  },
+  {
+    category: 'Scheduling / Controls',
+    segments: [
+      ['Can’t add schedule events; ', 'p'],
+      ['setpoint ranges confusing; overrides cancel schedules', 'p'],
+      ['; time zone inconsistencies', 'd'],
+    ],
+    frequency: 'Medium',
+    impact: 'Medium',
+    action:
+      'Redesign scheduling UX; add single‑setpoint option; fix override logic; normalize time zone behavior',
+    complaints: 259,
+  },
+]
+
+const SKYPORTHOME_UX_ENGAGEMENT_ROWS = [
+  {
+    category: 'Feature Gaps Impacting Core UX',
+    issues:
+      'Limited energy report functionality, no humidity granularity; limited fan control (“run fan for X minutes”); missing advanced schedules; weak smart‑home integrations (HomeKit, improved Google/Alexa)',
+    frequency: 'High',
+    impact: 'High',
+    action:
+      'Build feature parity with leading thermostats (Nest/Ecobee); introduce usage analytics; add remote sensors; enhance ecosystem integrations; expand scheduling modes',
+  },
+  {
+    category: 'Thermostat Interaction & Interface Friction',
+    issues:
+      'Hard‑to‑use hardware UI; slow or unresponsive touch; wheel control inconsistent; thermostat and app UI mismatch; inaccurate temperature readings hurt trust',
+    frequency: 'Medium',
+    impact: 'High',
+    action:
+      'Improve hardware responsiveness; unify thermostat + app UI logic; add calibration tools; simplify on‑device controls',
+  },
+  {
+    category: 'Setup & Onboarding Pain Points',
+    issues:
+      'Difficult pairing; repeated code failures; geofence setup unclear; address validation problems; frequent need to re‑enter credentials; initial setup not intuitive',
+    frequency: 'High',
+    impact: 'High',
+    action:
+      'Redesign onboarding flow; simplify pairing; add auto‑verification; improve error messaging; stabilize initial Wi‑Fi and account setup',
+  },
+  {
+    category: 'Navigation & Transparency Issues',
+    issues:
+      'Too many steps for simple actions; back button behavior inconsistent; schedule timeline removed; app does not show system status (aux heat, compressor level, runtime, current mode)',
+    frequency: 'Medium',
+    impact: 'High',
+    action:
+      'Simplify navigation; reintroduce schedule timeline; surface real‑time HVAC insights; improve dashboard clarity',
+  },
+  {
+    category: 'Household & Multi‑User Experience Gaps',
+    issues:
+      'Must share same login; no secondary profiles; geofence only tied to one device; away mode misfires when one user leaves; no user‑level permissions',
+    frequency: 'Medium',
+    impact: 'High',
+    action:
+      'Implement true multi‑user support; household‑aware geofencing; individual user settings; better presence logic',
+  },
+  {
+    category: 'Localization & Regional Support Issues',
+    issues:
+      'Celsius/Fahrenheit mismatches; location or address bugs; app not aligned with international regions; inconsistent outdoor/indoor reporting',
+    frequency: 'Low–Medium',
+    impact: 'Medium',
+    action:
+      'Expand localization capabilities; fix ZIP/address validation; ensure metric/imperial consistency; improve region detection',
+  },
+]
+
+function SkyportHomeReviewTablesBlock() {
+  return (
+    <div className="fy25-skyport-home-review-tables" aria-label="SkyportHome store review and UX themes">
+      <p className="fy25-skyport-home-review-tables-legend" role="note">
+        <span className="fy25-sh-legend-label">Key issues</span>
+        <span className="fy25-sh-legend-item">
+          <span className="fy25-sh-issue-partial fy25-sh-legend-swatch" aria-hidden>
+            ●
+          </span>{' '}
+          Partially resolved
+        </span>
+        <span className="fy25-sh-legend-item">
+          <span className="fy25-sh-issue-resolved fy25-sh-legend-swatch" aria-hidden>
+            ●
+          </span>{' '}
+          Resolved
+        </span>
+        <span className="fy25-sh-legend-item">
+          <span className="fy25-sh-issue-default fy25-sh-legend-swatch" aria-hidden>
+            ●
+          </span>{' '}
+          Not resolved
+        </span>
+      </p>
+      <div className="fy25-skyport-home-review-tables-grid">
+        <div className="fy25-sh-table-panel">
+          <h5 className="fy25-sh-table-title">App Store and Play&nbsp;Store Reviews</h5>
+          <div className="fy25-sh-table-scroll">
+            <table className="fy25-sh-table">
+              <thead>
+                <tr>
+                  <th scope="col">Category</th>
+                  <th scope="col">Key issues / requests</th>
+                  <th scope="col">Frequency</th>
+                  <th scope="col">Impact</th>
+                  <th scope="col">Recommended action</th>
+                  <th scope="col" className="fy25-sh-table-col-num">
+                    # complaints
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {SKYPORTHOME_STORE_REVIEWS_ROWS.map((row) => (
+                  <tr key={row.category}>
+                    <th scope="row">{row.category}</th>
+                    <td>
+                      <SkyportHomeReviewIssueSpans pairs={row.segments} />
+                    </td>
+                    <td className="fy25-sh-table-metric">{row.frequency}</td>
+                    <td className="fy25-sh-table-metric">{row.impact}</td>
+                    <td>{row.action}</td>
+                    <td className="fy25-sh-table-num">{row.complaints.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="fy25-sh-table-panel">
+          <h5 className="fy25-sh-table-title">
+            App Store and Play&nbsp;Store: UX &amp; Engagement Feedback
+          </h5>
+          <div className="fy25-sh-table-scroll">
+            <table className="fy25-sh-table">
+              <thead>
+                <tr>
+                  <th scope="col">Category</th>
+                  <th scope="col">Key issues / requests</th>
+                  <th scope="col">Frequency</th>
+                  <th scope="col">Impact</th>
+                  <th scope="col">Recommended action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SKYPORTHOME_UX_ENGAGEMENT_ROWS.map((row) => (
+                  <tr key={row.category}>
+                    <th scope="row">{row.category}</th>
+                    <td>{row.issues}</td>
+                    <td className="fy25-sh-table-metric">{row.frequency}</td>
+                    <td className="fy25-sh-table-metric">{row.impact}</td>
+                    <td>{row.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SkyportHomeUserFeedbackCard({ presentExpandAll }) {
   const [showFeedbackBreakdown, setShowFeedbackBreakdown] = useState(false)
+  useLayoutEffect(() => {
+    if (presentExpandAll) setShowFeedbackBreakdown(true)
+  }, [presentExpandAll])
   const expandBtnId = 'skyport-home-feedback-expand-btn'
   const expandPanelId = 'skyport-home-feedback-expand-panel'
 
@@ -1147,6 +1401,7 @@ function SkyportHomeUserFeedbackCard() {
               <SkyportSupportHelpFeedbackSimple className="fy25-skyport-home-support-block--split-col" />
             </div>
           </div>
+          <SkyportHomeReviewTablesBlock />
         </div>
       )}
 
@@ -1595,12 +1850,21 @@ export default function FY26() {
     outcomeExpanded.c &&
     outcomeExpanded.d
   const isValid = FY26_TOP_NAV_IDS.includes(sectionId)
-  if (!isValid) return <Navigate to={`${FY26_BASE}/res-solutions`} replace />
+  if (!isValid) return <Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />
 
   const isDigitalPlatform = sectionId === 'digital-platform'
 
   const allTimeFunnel = enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
   const businessModelDetailsRef = useRef(null)
+  const [presentModeOpen, setPresentModeOpen] = useState(false)
+
+  useLayoutEffect(() => {
+    if (!presentModeOpen) return undefined
+    setShowPlannedDetails(true)
+    setOutcomeExpanded({ a: true, b: true, c: true, d: true })
+    if (businessModelDetailsRef.current) businessModelDetailsRef.current.open = true
+    return undefined
+  }, [presentModeOpen])
 
   useLayoutEffect(() => {
     const id = location.hash.replace(/^#/, '')
@@ -1630,7 +1894,11 @@ export default function FY26() {
       </header>
       <div key={sectionId} className="fy26-page-transition-surface">
         <div className="ds-layout fy26-layout">
-        <FY26PageNav sectionId={sectionId} />
+        <FY26PageNav
+          sectionId={sectionId}
+          presentOpen={presentModeOpen}
+          onPresentOpenChange={setPresentModeOpen}
+        />
         <div className="ds-sections">
           <section className="ds-section ds-section-single">
             <div className="ds-section-header" id="fy25-review">
@@ -1647,7 +1915,10 @@ export default function FY26() {
                   <h5 className="fy25-visual-title fy25-funnel-combined-title">
                     Installed Base Activation Funnel
                   </h5>
-                  <InstalledBaseFunnelTable allTimeFunnel={allTimeFunnel} />
+                  <InstalledBaseFunnelTable
+                    allTimeFunnel={allTimeFunnel}
+                    presentExpandAll={presentModeOpen}
+                  />
                   <p className="fy25-funnel-thermostat-footprint-line" role="note">
                     {'Thermostat Locations ('}
                     <ThermostatLocationsMapInlineLink>see map</ThermostatLocationsMapInlineLink>
@@ -1739,7 +2010,7 @@ export default function FY26() {
               </div>
 
               <div className="fy25-skyport-home-wrap" id="skyport-home">
-                <SkyportHomeUserFeedbackCard />
+                <SkyportHomeUserFeedbackCard presentExpandAll={presentModeOpen} />
               </div>
 
               <div className="fy25-planned-full">
@@ -2359,17 +2630,7 @@ export default function FY26() {
                       &ldquo;Ongoing&rdquo; items represent operating model changes and cadence, not discrete
                       feature delivery milestones.
                     </p>
-                    <p className="fy26-execution-plan-footnote">
-                      Detailed{' '}
-                      <Link to="/apps/skyport-home" className="fy26-execution-plan-product-link">
-                        <strong>SkyportHome</strong>
-                      </Link>{' '}
-                      and{' '}
-                      <Link to="/apps/skyport-care" className="fy26-execution-plan-product-link">
-                        <strong>SkyportCare</strong>
-                      </Link>{' '}
-                      features and capabilities are documented on the product pages and are not repeated here.
-                    </p>
+                    <Fy26DigitalAppsRoadmapEmbeds forceExpandRoadmaps={presentModeOpen} />
                   </div>
                   <div className="fy26-mini-card" id="fy26-interaction-alignment">
                     <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
