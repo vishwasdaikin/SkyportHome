@@ -3,8 +3,20 @@
  * Monetization Model, Target, Priority (1–3), Development (UI / Data / Algorithm scope).
  * Empty featureGroup means same group as previous row.
  */
+export const SKYPORT_CARE_FEATURE_DEALER_REQUEST_SUBMISSION =
+  'Ability for dealers to submit feature requests intuitively'
+
 const _skyportCareFeaturesRowsRaw = [
   { featureGroup: 'Dealer Operations & Experience', feature: 'Dealer On-boarding & Set-up', initiativeType: 'New Feature Introduction', endUserCategory: 'Trust, Security & Reliability', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
+  {
+    featureGroup: '',
+    feature: SKYPORT_CARE_FEATURE_DEALER_REQUEST_SUBMISSION,
+    initiativeType: 'New Feature Introduction',
+    endUserCategory: 'Engagement & Personalization',
+    monetizationModel: 'Basic (Free)',
+    priority: 1,
+    development: 'UI + Data',
+  },
   { featureGroup: '', feature: 'Aggregated summary view', initiativeType: 'New Feature Introduction', endUserCategory: 'Ease of Use & Accessibility', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
   { featureGroup: '', feature: 'Dealer Report', initiativeType: 'New Feature Introduction', endUserCategory: 'Ease of Use & Accessibility', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
   { featureGroup: '', feature: 'Homeowner Report', initiativeType: 'New Feature Introduction', endUserCategory: 'Trust, Security & Reliability', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
@@ -67,6 +79,7 @@ o EV pulse (heat/subcooling exchanger upper)`, initiativeType: 'New Feature Intr
 
 /** Execution focus / sequencing; index aligns with `_skyportCareFeaturesRowsRaw`. */
 const SKYPORT_CARE_FEATURE_FOCUS_TIMEFRAMES = [
+  'Q2 FY26',
   'Q2 FY26',
   'Q1 FY26',
   'Q1 FY26',

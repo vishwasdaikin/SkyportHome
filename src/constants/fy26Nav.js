@@ -30,10 +30,14 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
   {
     label: 'FY25 REVIEW',
     items: [
-      { id: 'fy25-review', label: 'FY25 Review', num: 1 },
       {
         id: 'fy25-thermostat-sales-skyportcare',
-        label: 'Thermostat Sales & Connectivity, SkyportHome Users, SkyportCare Active Licenses',
+        label: 'Results',
+        num: 1,
+      },
+      {
+        id: 'fy25-planned-vs-actual',
+        label: 'Planned vs Actual initiatives',
         num: 2,
       },
       {
@@ -41,31 +45,39 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
         label: 'SkyportHome Experience Quality & Sentiment',
         num: 3,
       },
-      {
-        id: 'fy25-planned-vs-actual',
-        label: 'Planned vs Actual initiatives',
-        num: 4,
-      },
     ],
   },
   {
     label: 'FY26 TRACKER',
     items: [
-      { id: 'fy26-plan', label: 'FY26 Review', num: 5 },
-      { id: 'fy26-outcomes', label: 'Goals', num: 6 },
-      { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 7 },
-      { id: 'fy26-execution-plan', label: 'Execution Plan', num: 8 },
+      { id: 'fy26-outcomes', label: 'Goals', num: 4 },
+      {
+        id: 'fy26-goals-business-model-tracking',
+        label: 'FY26 plan vs actual (model)',
+        num: 5,
+      },
+      { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 6 },
+      { id: 'fy26-execution-plan', label: 'Execution Plan', num: 7 },
       {
         id: 'fy26-interaction-alignment',
         label: 'Interaction & Alignment with Other Teams',
-        num: 9,
+        num: 8,
       },
     ],
   },
   {
     label: 'FUSION30',
     items: [
-      { id: 'fusion30-summary', label: 'Fusion30 Summary', num: 10 },
+      {
+        id: 'fusion30-forecast-outlook',
+        label: '5-Year Forecast',
+        num: 9,
+      },
+      {
+        id: 'fusion30-strategic-aims',
+        label: 'Outcomes & Execution',
+        num: 10,
+      },
       { id: 'digital-platforms-business-model', label: 'Business model', num: 11 },
     ],
   },

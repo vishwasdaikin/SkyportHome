@@ -33,6 +33,7 @@ import {
 import { DigitalPlatformsBusinessModelTable } from '../components/DigitalPlatformsBusinessModelTable'
 import FY26PageNav from '../components/FY26PageNav'
 import { Fy26DigitalAppsRoadmapEmbeds } from '../components/Fy26DigitalAppsRoadmapEmbeds'
+import { Fy26GoalsBusinessModelTracking } from '../components/Fy26GoalsBusinessModelTracking'
 import {
   getDigitalPlatformsForecastYearlyChartData,
   getDigitalPlatformsForecastCumulativeChartData,
@@ -647,11 +648,7 @@ function BusinessModelForecastAllTimeCumulativeChart() {
   )
 }
 
-function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
-  const [licenseBreakdownOpen, setLicenseBreakdownOpen] = useState(false)
-  useLayoutEffect(() => {
-    if (presentExpandAll) setLicenseBreakdownOpen(true)
-  }, [presentExpandAll])
+function InstalledBaseFunnelTable({ allTimeFunnel, licenseBreakdownOpen, onLicenseBreakdownOpenChange }) {
   const activeLicensesTipId = useId()
   const activeLicensePenetrationTipId = useId()
   const paidAnnualLicensePenetrationTipId = useId()
@@ -715,7 +712,7 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
               Thermostats Connected
             </th>
             {fyCols.map(({ id, m }) => (
-              <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+              <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--connected">
                 {m ? (
                   <>
                     {m.connectedNew.toLocaleString('en-US')}{' '}
@@ -728,7 +725,7 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
                 )}
               </td>
             ))}
-            <td className="fy25-funnel-table-num fy25-funnel-table-num--count">
+            <td className="fy25-funnel-table-num fy25-funnel-table-num--connected">
               {allTimeFunnel.connected.toLocaleString('en-US')}{' '}
               <span className="fy25-funnel-table-inline-paren">
                 ({formatFunnelPctForDisplay(allTimeFunnel.pctConnected)})
@@ -762,7 +759,7 @@ function InstalledBaseFunnelTable({ allTimeFunnel, presentExpandAll }) {
                       ? 'Hide Active Licenses breakdown and paid license penetration rows'
                       : 'Show Active Licenses breakdown and paid license penetration rows'
                   }
-                  onClick={() => setLicenseBreakdownOpen((o) => !o)}
+                  onClick={() => onLicenseBreakdownOpenChange(!licenseBreakdownOpen)}
                 >
                   {licenseBreakdownOpen ? '[-]' : '[+]'}
                 </button>
@@ -979,7 +976,7 @@ function InstalledBaseForecastFunnelTable({ presentExpandAll }) {
               Thermostats Connected
             </th>
             {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
-              <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
+              <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--connected">
                 {col.fyConnectedNew.toLocaleString('en-US')}{' '}
                 <span className="fy25-funnel-table-inline-paren">
                   ({formatFunnelPctForDisplay(col.connectedPct)})
@@ -1168,12 +1165,14 @@ function averageMonthlyUnitsSold(rows) {
 
 const FY26_INPAGE_HASH_IDS = [
   'fy25-review',
+  'fy25-installed-base-activation-funnel',
   'skyport-home',
   'fy25-thermostat-sales-skyportcare',
   'fy25-skyporthome-experience-sentiment',
   'fy25-planned-vs-actual',
   'fy26-plan',
   'fy26-outcomes',
+  'fy26-goals-business-model-tracking',
   'fy26-strategic-themes',
   'fy26-execution-plan',
   'fy26-interaction-alignment',
@@ -1182,6 +1181,8 @@ const FY26_INPAGE_HASH_IDS = [
   'fy26-outcome-trigger-c',
   'fy26-outcome-trigger-d',
   'fusion30-summary',
+  'fusion30-forecast-outlook',
+  'fusion30-strategic-aims',
   'digital-platforms-business-model',
 ]
 
@@ -2379,14 +2380,16 @@ export default function FY26() {
   const allTimeFunnel = enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
   const businessModelDetailsRef = useRef(null)
   const [presentModeOpen, setPresentModeOpen] = useState(false)
+  const [installedFunnelLicenseBreakdownOpen, setInstalledFunnelLicenseBreakdownOpen] = useState(false)
 
   useLayoutEffect(() => {
     if (!presentModeOpen) return undefined
     setShowPlannedDetails(true)
     setOutcomeExpanded({ a: true, b: true, c: true, d: true })
     if (businessModelDetailsRef.current) businessModelDetailsRef.current.open = true
+    if (isDigitalPlatform) setInstalledFunnelLicenseBreakdownOpen(true)
     return undefined
-  }, [presentModeOpen])
+  }, [presentModeOpen, isDigitalPlatform])
 
   useLayoutEffect(() => {
     const id = location.hash.replace(/^#/, '')
@@ -2420,6 +2423,12 @@ export default function FY26() {
           sectionId={sectionId}
           presentOpen={presentModeOpen}
           onPresentOpenChange={setPresentModeOpen}
+          installedFunnelLicenseBreakdownOpen={
+            isDigitalPlatform ? installedFunnelLicenseBreakdownOpen : undefined
+          }
+          onInstalledFunnelLicenseBreakdownOpenChange={
+            isDigitalPlatform ? setInstalledFunnelLicenseBreakdownOpen : undefined
+          }
         />
         <div className="ds-sections">
           <section className="ds-section ds-section-single">
@@ -2434,13 +2443,24 @@ export default function FY26() {
             <div className="fy25-review-body">
               <div className="fy25-graphs-row">
                 <div className="fy25-visual fy25-funnel fy25-funnel--combined">
-                  <h5 className="fy25-visual-title fy25-funnel-combined-title">
-                    Installed Base Activation Funnel
-                  </h5>
-                  <InstalledBaseFunnelTable
-                    allTimeFunnel={allTimeFunnel}
-                    presentExpandAll={presentModeOpen}
-                  />
+                  <div id="fy25-installed-base-activation-funnel">
+                    <h5 className="fy25-visual-title fy25-funnel-combined-title">
+                      Installed Base Activation Funnel
+                    </h5>
+                    <InstalledBaseFunnelTable
+                      allTimeFunnel={allTimeFunnel}
+                      licenseBreakdownOpen={installedFunnelLicenseBreakdownOpen}
+                      onLicenseBreakdownOpenChange={setInstalledFunnelLicenseBreakdownOpen}
+                    />
+                    <div className="fy25-funnel-activation-takeaway" role="note">
+                      <p className="fy25-funnel-activation-takeaway__p">
+                        <strong className="fy25-funnel-activation-takeaway__lead">Takeaway:</strong>{' '}
+                        FY25 showed continued hardware scale, but declining connectivity rates highlight
+                        execution gaps at install and commissioning. FY26 focus must shift to tightening
+                        activation and conversion to turn installed systems into a monetizable digital base.
+                      </p>
+                    </div>
+                  </div>
                   <p className="fy25-funnel-thermostat-footprint-line" role="note">
                     {'Thermostat Locations ('}
                     <ThermostatLocationsMapInlineLink>see map</ThermostatLocationsMapInlineLink>
@@ -2531,10 +2551,6 @@ export default function FY26() {
                 </div>
               </div>
 
-              <div className="fy25-skyport-home-wrap" id="skyport-home">
-                <SkyportHomeUserFeedbackCard presentExpandAll={presentModeOpen} />
-              </div>
-
               <div className="fy25-planned-full">
                 <div className="fy25-planned-card">
                   <div className="fy25-planned-header">
@@ -2608,6 +2624,10 @@ export default function FY26() {
                   </>
                   )}
                 </div>
+              </div>
+
+              <div className="fy25-skyport-home-wrap" id="skyport-home">
+                <SkyportHomeUserFeedbackCard presentExpandAll={presentModeOpen} />
               </div>
 
               <div className="fy25-takeaway">
@@ -2936,58 +2956,12 @@ export default function FY26() {
                         )}
                       </div>
                     </div>
-                    <div className="fy26-forecast-installed-funnel">
-                      <h5 className="fy26-forecast-installed-funnel-title">Installed Base Forecast Funnel</h5>
-                      <InstalledBaseForecastFunnelTable presentExpandAll={presentModeOpen} />
-                    </div>
-                    <div
-                      className="fy26-goals-outlook-chart"
-                      aria-label="Forecast outlook: left chart, FY26–FY30 activity bars including FY net-new active licenses; right chart, FY25–FY30 cumulative installed base (lines)"
-                    >
-                      <h5 className="fy26-goals-outlook-chart-title">
-                        Forecast: Thermostat Sales &amp; Connectivity, SkyportHome Users, SkyportCare Active Licenses
-                      </h5>
-                      <div className="fy25-chart-dual-row fy26-goals-outlook-chart-dual">
-                        <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--fy">
-                          <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
-                            <span
-                              className="fy25-chart-split-panel-label fy25-chart-split-panel-label--monthly"
-                              id="fy26-forecast-fy-chart-heading"
-                            >
-                              FY26–FY30 (by year)
-                            </span>
-                          </div>
-                          <div
-                            className="fy25-thermostat-recharts-root fy26-goals-outlook-chart-wrap"
-                            role="region"
-                            aria-labelledby="fy26-forecast-fy-chart-heading"
-                          >
-                            <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
-                              <BusinessModelForecastFyBarsChart />
-                            </ResponsiveContainer>
-                          </div>
-                        </div>
-                        <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--alltime">
-                          <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
-                            <span
-                              className="fy25-chart-split-panel-label fy25-chart-split-panel-label--alltime"
-                              id="fy26-forecast-alltime-chart-heading"
-                            >
-                              FY25 - FY30 (Cumulative)
-                            </span>
-                          </div>
-                          <div
-                            className="fy25-thermostat-recharts-root fy26-goals-outlook-chart-wrap"
-                            role="region"
-                            aria-labelledby="fy26-forecast-alltime-chart-heading"
-                          >
-                            <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
-                              <BusinessModelForecastAllTimeCumulativeChart />
-                            </ResponsiveContainer>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  </div>
+                  <div
+                    className="fy26-mini-card fy26-goals-bm-tracking-card"
+                    id="fy26-goals-business-model-tracking"
+                  >
+                    <Fy26GoalsBusinessModelTracking />
                   </div>
                   <div className="fy26-mini-card fy26-strategic-themes-box" id="fy26-strategic-themes">
                     <div className="fy26-strategic-themes-header">
@@ -3254,66 +3228,124 @@ export default function FY26() {
               </div>
             )}
           </section>
-          <section className="ds-section ds-section-single">
+          <section className="ds-section ds-section-single fy26-fusion30-section">
             <div className="ds-section-header" id="fusion30-summary">
               <span className="ds-section-badge">3</span>
               <h2 className="ds-section-title ds-section-title-single">Fusion30 Summary - Strategic Horizon</h2>
             </div>
             {isDigitalPlatform ? (
-              <div className="ds-content fy26-fusion30-content">
-                <p className="ds-subheading">
-                  <strong>What we aim to accomplish</strong>
-                </p>
-                <p className="fy26-fusion30-aims-intro">
-                  By the Fusion30 horizon, digital platforms become a core growth engine that compounds value
-                  across Daikin&apos;s installed base.
-                </p>
-                <ul className="fy26-fusion30-aims-list">
-                  <li>
-                    Reach 2M+ connected homeowners across <strong>SkyportHome</strong>
-                  </li>
-                  <li>
-                    Achieve digital ubiquity across the installed base (~80% connected), with ~18% of systems
-                    participating in active, dealer‑led <strong>SkyportCare</strong> workflows.
-                  </li>
-                  <li>
-                    Build a $100M+ recurring digital revenue stream driven by paid services, renewals, and
-                    lifecycle monetization.
-                  </li>
-                  <li>
-                    Shift value capture from one‑time installs to multi‑year, per‑home value
-                  </li>
-                  <li>
-                    Establish a scalable foundation for energy, electrification, and whole‑home services
-                  </li>
-                </ul>
-                <p className="ds-subheading fy26-fusion30-how-heading">
-                  <strong>How we will accomplish this</strong>
-                </p>
-                <ul className="fy26-fusion30-aims-list fy26-fusion30-how-list">
-                  <li>
-                    Execute across the full lifecycle: install → operate → service → replace
-                  </li>
-                  <li>
-                    Use <strong>SkyportHome</strong> for homeowner engagement and <strong>SkyportCare</strong> for
-                    dealer execution
-                  </li>
-                  <li>
-                    Operate with product‑led ownership and outcome‑based prioritization
-                  </li>
-                  <li>
-                    Convert connectivity into sustained engagement, dealer activation, and monetization across ~2M
-                    connected homes.
-                  </li>
-                  <li>
-                    Reduce fragmentation through shared platform services and UX‑first execution
-                  </li>
-                  <li>
-                    Enable next‑generation business models—energy services, electrification, and whole‑home
-                    solutions—once a scalable digital engagement and monetization foundation is in place.
-                  </li>
-                </ul>
-              </div>
+              <>
+                <div className="fy26-mini-card fy26-fusion30-forecast-card" id="fusion30-forecast-outlook">
+                  <div className="fy26-forecast-installed-funnel fy26-fusion30-forecast-card__funnel">
+                    <h5 className="fy26-forecast-installed-funnel-title">Installed Base Forecast Funnel</h5>
+                    <InstalledBaseForecastFunnelTable presentExpandAll={presentModeOpen} />
+                  </div>
+                  <div
+                    className="fy26-goals-outlook-chart fy26-fusion30-forecast-card__charts"
+                    aria-label="Forecast outlook: left chart, FY26–FY30 activity bars including FY net-new active licenses; right chart, FY25–FY30 cumulative installed base (lines)"
+                  >
+                    <h5 className="fy26-goals-outlook-chart-title">
+                      Forecast: Thermostat Sales &amp; Connectivity, SkyportHome Users, SkyportCare Active Licenses
+                    </h5>
+                    <div className="fy25-chart-dual-row fy26-goals-outlook-chart-dual">
+                      <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--fy">
+                        <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
+                          <span
+                            className="fy25-chart-split-panel-label fy25-chart-split-panel-label--monthly"
+                            id="fy26-forecast-fy-chart-heading"
+                          >
+                            FY26–FY30 (by year)
+                          </span>
+                        </div>
+                        <div
+                          className="fy25-thermostat-recharts-root fy26-goals-outlook-chart-wrap"
+                          role="region"
+                          aria-labelledby="fy26-forecast-fy-chart-heading"
+                        >
+                          <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                            <BusinessModelForecastFyBarsChart />
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                      <div className="fy25-chart-dual-cell fy25-chart-split-panel fy25-chart-split-panel--alltime">
+                        <div className="fy25-chart-split-header fy25-chart-split-header--alltime-only">
+                          <span
+                            className="fy25-chart-split-panel-label fy25-chart-split-panel-label--alltime"
+                            id="fy26-forecast-alltime-chart-heading"
+                          >
+                            FY25 - FY30 (Cumulative)
+                          </span>
+                        </div>
+                        <div
+                          className="fy25-thermostat-recharts-root fy26-goals-outlook-chart-wrap"
+                          role="region"
+                          aria-labelledby="fy26-forecast-alltime-chart-heading"
+                        >
+                          <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                            <BusinessModelForecastAllTimeCumulativeChart />
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="fy26-mini-card fy26-fusion30-aims-card" id="fusion30-strategic-aims">
+                  <div className="ds-content fy26-fusion30-content">
+                    <p className="ds-subheading">
+                      <strong>What we aim to accomplish</strong>
+                    </p>
+                    <p className="fy26-fusion30-aims-intro">
+                      By the Fusion30 horizon, digital platforms become a core growth engine that compounds value
+                      across Daikin&apos;s installed base.
+                    </p>
+                    <ul className="fy26-fusion30-aims-list">
+                      <li>
+                        Reach 2M+ connected homeowners across <strong>SkyportHome</strong>
+                      </li>
+                      <li>
+                        Achieve digital ubiquity across the installed base (~80% connected), with ~18% of systems
+                        participating in active, dealer‑led <strong>SkyportCare</strong> workflows.
+                      </li>
+                      <li>
+                        Build a $100M+ recurring digital revenue stream driven by paid services, renewals, and
+                        lifecycle monetization.
+                      </li>
+                      <li>
+                        Shift value capture from one‑time installs to multi‑year, per‑home value
+                      </li>
+                      <li>
+                        Establish a scalable foundation for energy, electrification, and whole‑home services
+                      </li>
+                    </ul>
+                    <p className="ds-subheading fy26-fusion30-how-heading">
+                      <strong>How we will accomplish this</strong>
+                    </p>
+                    <ul className="fy26-fusion30-aims-list fy26-fusion30-how-list">
+                      <li>
+                        Execute across the full lifecycle: install → operate → service → replace
+                      </li>
+                      <li>
+                        Use <strong>SkyportHome</strong> for homeowner engagement and <strong>SkyportCare</strong>{' '}
+                        for dealer execution
+                      </li>
+                      <li>
+                        Operate with product‑led ownership and outcome‑based prioritization
+                      </li>
+                      <li>
+                        Convert connectivity into sustained engagement, dealer activation, and monetization across
+                        ~2M connected homes.
+                      </li>
+                      <li>
+                        Reduce fragmentation through shared platform services and UX‑first execution
+                      </li>
+                      <li>
+                        Enable next‑generation business models—energy services, electrification, and whole‑home
+                        solutions—once a scalable digital engagement and monetization foundation is in place.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </>
             ) : (
               <div className="ds-content">
                 <p className="ds-subheading">

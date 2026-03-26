@@ -3,10 +3,28 @@ import { Link, useLocation } from 'react-router-dom'
 import { FY26_BASE, FY26_TOP_NAV_TITLES, getFy26PageNavGroups } from '../constants/fy26Nav'
 import { Fy26PresentMode } from './Fy26PresentMode'
 
-export default function FY26PageNav({ sectionId, presentOpen, onPresentOpenChange }) {
+export default function FY26PageNav({
+  sectionId,
+  presentOpen,
+  onPresentOpenChange,
+  installedFunnelLicenseBreakdownOpen,
+  onInstalledFunnelLicenseBreakdownOpenChange,
+}) {
   const location = useLocation()
   const groups = useMemo(() => getFy26PageNavGroups(sectionId), [sectionId])
   const flatItems = useMemo(() => groups.flatMap((g) => g.items), [groups])
+
+  /** Digital Apps: slide 1 is funnel + takeaway only; skip full `fy25-review` slice (would duplicate). */
+  const presentSlides = useMemo(() => {
+    if (sectionId !== 'digital-platform') return flatItems
+    const funnelSlide = {
+      id: 'fy25-installed-base-activation-funnel',
+      label: 'Installed Base Activation Funnel',
+      num: 1,
+    }
+    const rest = flatItems.filter((i) => i.id !== 'fy25-review')
+    return [funnelSlide, ...rest]
+  }, [sectionId, flatItems])
 
   const [activeId, setActiveId] = useState(() => {
     const h = location.hash.replace(/^#/, '')
@@ -76,8 +94,10 @@ export default function FY26PageNav({ sectionId, presentOpen, onPresentOpenChang
       <Fy26PresentMode
         open={presentOpen}
         onClose={() => onPresentOpenChange?.(false)}
-        slides={flatItems}
+        slides={presentSlides}
         deckTitle={`FY26 — ${FY26_TOP_NAV_TITLES[sectionId] ?? 'Playbook'}`}
+        installedFunnelLicenseBreakdownOpen={installedFunnelLicenseBreakdownOpen}
+        onInstalledFunnelLicenseBreakdownOpenChange={onInstalledFunnelLicenseBreakdownOpenChange}
       />
     </nav>
   )

@@ -71,7 +71,14 @@ function mountSlideClone(host, slides, index) {
 /**
  * Full-screen slide-style review of FY26 page sections (cloned live DOM, collapsibles expanded from parent).
  */
-export function Fy26PresentMode({ open, onClose, slides, deckTitle }) {
+export function Fy26PresentMode({
+  open,
+  onClose,
+  slides,
+  deckTitle,
+  installedFunnelLicenseBreakdownOpen,
+  onInstalledFunnelLicenseBreakdownOpenChange,
+}) {
   const titleId = useId()
   const [index, setIndex] = useState(0)
   const bodyHostRef = useRef(null)
@@ -148,6 +155,8 @@ export function Fy26PresentMode({ open, onClose, slides, deckTitle }) {
 
   if (!open) return null
 
+  const isInstalledFunnelSlide = slide?.id === 'fy25-installed-base-activation-funnel'
+
   return createPortal(
     <div
       className="fy26-present-overlay"
@@ -165,14 +174,35 @@ export function Fy26PresentMode({ open, onClose, slides, deckTitle }) {
       </div>
       <div className="fy26-present-stage">
         {slide && (
-          <div className="fy26-present-slide">
+          <div
+            className={`fy26-present-slide${isInstalledFunnelSlide ? ' fy26-present-slide--wide' : ''}`}
+          >
             <p className="fy26-present-slide-num">
               Slide {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
             </p>
             <h2 className="fy26-present-slide-title">{slide.label}</h2>
+            {isInstalledFunnelSlide &&
+              onInstalledFunnelLicenseBreakdownOpenChange != null &&
+              installedFunnelLicenseBreakdownOpen !== undefined && (
+                <div className="fy26-present-funnel-breakdown-bar">
+                  <button
+                    type="button"
+                    className="fy26-present-funnel-breakdown-bar-btn"
+                    onClick={() =>
+                      onInstalledFunnelLicenseBreakdownOpenChange(!installedFunnelLicenseBreakdownOpen)
+                    }
+                  >
+                    {installedFunnelLicenseBreakdownOpen
+                      ? 'Hide Active License breakdown'
+                      : 'Show Active License breakdown'}
+                  </button>
+                </div>
+              )}
             <div
               ref={bodyHostRef}
-              className="fy26-present-slide-body fy26-present-slide-body--html"
+              className={`fy26-present-slide-body fy26-present-slide-body--html${
+                isInstalledFunnelSlide ? ' fy26-present-slide-body--installed-funnel' : ''
+              }`}
               tabIndex={0}
             />
           </div>

@@ -19,7 +19,8 @@
 .fy26-page .fy25-planned-card,
 .fy26-page .fy25-takeaway,
 .fy26-page .fy25-feature-item,
-.fy26-page .fy26-plan-cards .fy26-mini-card {
+.fy26-page .fy26-plan-cards .fy26-mini-card,
+.fy26-page .fy26-fusion30-section .fy26-mini-card {
   font-size: var(--fy26-card-body);
 }
 
@@ -265,10 +266,14 @@
 
 /* In-page anchors: clear fixed app header */
 .fy26-page .ds-section-header#fy25-review,
+.fy26-page #fy25-installed-base-activation-funnel,
 .fy26-page .ds-section-header#fy26-plan,
 .fy26-page .ds-section-header#fusion30-summary,
+.fy26-page #fusion30-forecast-outlook,
+.fy26-page #fusion30-strategic-aims,
 .fy26-page #skyport-home,
 .fy26-page #fy26-outcomes,
+.fy26-page #fy26-goals-business-model-tracking,
 .fy26-page #fy26-strategic-themes,
 .fy26-page #fy26-execution-plan,
 .fy26-page #fy26-interaction-alignment,
@@ -2222,6 +2227,29 @@
   color: #0077b3;
 }
 
+/* Installed Base funnel — insight callout below table (dark blue band, white type) */
+.fy25-funnel-activation-takeaway {
+  margin: 1rem 0 0 0;
+  padding: 0.85rem 1rem 0.95rem;
+  background: linear-gradient(135deg, #0c1929 0%, #0f172a 45%, #172554 100%);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-left: 4px solid #38bdf8;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.18);
+}
+
+.fy25-funnel-activation-takeaway__lead {
+  font-weight: 700;
+  color: #fff;
+}
+
+.fy25-funnel-activation-takeaway__p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #f8fafc;
+}
+
 /* Elegant data table — Installed Base funnel (no horizontal scroll; fits playbook width) */
 .fy25-funnel-table-scroll {
   overflow-x: visible;
@@ -2244,7 +2272,7 @@
 
 .fy25-funnel-table thead th {
   padding: 0.65rem 0.75rem;
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -2286,8 +2314,9 @@
   overflow-wrap: anywhere;
 }
 
+/* Breakdown under “Active Licenses”: bundled / 1-year / lifetime */
 .fy25-funnel-table-rowhead--sub {
-  padding-left: 1.35rem;
+  padding-left: 2.5rem;
   font-weight: 500;
   color: var(--text-primary, #0f172a);
 }
@@ -2438,6 +2467,15 @@
 
 .fy25-funnel-table-num--count {
   color: var(--daikin-blue, #0097e0);
+}
+
+/* Matches connected cumulative line on thermostat charts (`#0d9488`) */
+.fy25-funnel-table-num--connected {
+  color: #0d9488;
+}
+
+.fy25-funnel-table-num--connected .fy25-funnel-table-inline-paren {
+  color: #0f766e;
 }
 
 .fy25-funnel-table-num--paid-pct {
@@ -3623,6 +3661,230 @@ ul.fy25-feature-desc li {
   scroll-margin-top: 1rem;
 }
 
+/* Goals: plan vs monthly actual — chart left, summary + monthly table right */
+.fy26-goals-bm-tracking {
+  margin: 0;
+}
+
+.fy26-goals-bm-tracking-title {
+  margin: 0 0 1rem 0;
+  font-size: var(--fy26-card-title);
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--daikin-blue);
+}
+
+.fy26-goals-bm-tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .fy26-goals-bm-tracking-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
+    gap: 1.5rem;
+  }
+}
+
+.fy26-goals-bm-tracking-chart-panel {
+  min-width: 0;
+}
+
+.fy26-goals-bm-metric-tabs-header {
+  margin-bottom: 0.35rem;
+}
+
+.fy26-goals-bm-thermostat-monthly-chart-wrap {
+  position: relative;
+  margin-top: 0.25rem;
+}
+
+.fy26-goals-bm-monthly-empty-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.74);
+  border-radius: 6px;
+}
+
+.fy26-goals-bm-monthly-empty-overlay-text {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.45;
+  max-width: 19rem;
+}
+
+.fy26-goals-bm-tracking-metric-fullname {
+  margin: 0 0 0.5rem 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+  line-height: 1.4;
+}
+
+.fy26-goals-bm-chart-root {
+  margin-top: 0.25rem;
+}
+
+.fy26-goals-bm-tracking-table-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.fy26-goals-bm-side-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.35;
+}
+
+.fy26-goals-bm-side-title--monthly {
+  margin-top: 0.15rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-goals-bm-side-title--skyportcare {
+  margin-top: 0.15rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-goals-bm-side-title--dealer-ops {
+  margin-top: 0.15rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-goals-bm-skyportcare-roadmap-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 8px);
+  background: #fafafa;
+}
+
+.fy26-goals-bm-skyportcare-roadmap-table {
+  margin: 0;
+  min-width: 44rem;
+  font-size: 12px;
+}
+
+.fy26-goals-bm-skyportcare-roadmap-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f1f5f9;
+}
+
+.fy26-goals-bm-tracking-table-panel .fy26-goals-bm-summary-scroll {
+  max-height: min(30vh, 14rem);
+}
+
+.fy26-goals-bm-tracking-table-panel .fy26-goals-bm-summary-scroll.fy26-goals-bm-summary-scroll--skyportcare-no-y {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.fy26-goals-bm-summary-scroll,
+.fy26-goals-bm-monthly-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: min(42vh, 22rem);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 8px);
+  background: #fafafa;
+}
+
+.fy26-goals-bm-monthly-scroll {
+  max-height: min(50vh, 26rem);
+}
+
+.fy26-goals-bm-summary-table,
+.fy26-goals-bm-monthly-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.fy26-goals-bm-summary-table th,
+.fy26-goals-bm-summary-table td,
+.fy26-goals-bm-monthly-table th,
+.fy26-goals-bm-monthly-table td {
+  padding: 0.45rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  vertical-align: top;
+}
+
+.fy26-goals-bm-summary-table thead th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary, #64748b);
+  background: #f1f5f9;
+}
+
+.fy26-goals-bm-summary-table tbody tr:last-child th,
+.fy26-goals-bm-summary-table tbody tr:last-child td,
+.fy26-goals-bm-monthly-table tbody tr:last-child th,
+.fy26-goals-bm-monthly-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.fy26-goals-bm-summary-table th.fy26-goals-bm-summary-table-metric-col,
+.fy26-goals-bm-summary-table th[scope='row'] {
+  font-weight: 500;
+  color: var(--text-secondary, #475569);
+}
+
+.fy26-goals-bm-summary-table thead th.fy26-goals-bm-summary-table-metric-col {
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.fy26-goals-bm-summary-table th[scope='row'] {
+  max-width: 11rem;
+}
+
+.fy26-goals-bm-monthly-table th[scope='row'] {
+  font-weight: 500;
+  color: var(--text-secondary, #475569);
+  width: 58%;
+}
+
+.fy26-goals-bm-summary-table td,
+.fy26-goals-bm-monthly-table td {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary, #0f172a);
+  white-space: nowrap;
+}
+
+.fy26-goals-bm-monthly-table thead th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary, #64748b);
+  background: #f1f5f9;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .fy26-outcomes-header {
   display: flex;
   flex-wrap: wrap;
@@ -3808,6 +4070,27 @@ ul.fy25-feature-desc li {
   margin-top: 1.25rem;
   padding-top: 1.1rem;
   border-top: 1px solid var(--border, #e2e8f0);
+}
+
+/* Fusion30: forecast funnel + charts in one mini-card */
+.fy26-fusion30-section > .fy26-fusion30-forecast-card {
+  margin-top: 0.35rem;
+}
+
+.fy26-fusion30-forecast-card .fy26-fusion30-forecast-card__funnel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.fy26-fusion30-forecast-card .fy26-fusion30-forecast-card__charts {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-fusion30-aims-card {
+  margin-top: 1.06rem;
 }
 
 .fy26-forecast-installed-funnel-title {
