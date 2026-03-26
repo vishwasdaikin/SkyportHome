@@ -3,14 +3,11 @@
  * Monetization Model, Target, Priority (1–3), Development (UI / Data / Algorithm scope).
  * Empty featureGroup means same group as previous row.
  */
-export const SKYPORT_CARE_FEATURE_DEALER_REQUEST_SUBMISSION =
-  'Ability for dealers to submit feature requests intuitively'
-
 const _skyportCareFeaturesRowsRaw = [
   { featureGroup: 'Dealer Operations & Experience', feature: 'Dealer On-boarding & Set-up', initiativeType: 'New Feature Introduction', endUserCategory: 'Trust, Security & Reliability', monetizationModel: 'Basic (Free)', priority: 1, development: 'UI only' },
   {
     featureGroup: '',
-    feature: SKYPORT_CARE_FEATURE_DEALER_REQUEST_SUBMISSION,
+    feature: 'Ability for dealers to submit feature requests intuitively',
     initiativeType: 'New Feature Introduction',
     endUserCategory: 'Engagement & Personalization',
     monetizationModel: 'Basic (Free)',

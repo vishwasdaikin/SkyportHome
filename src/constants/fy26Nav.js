@@ -53,7 +53,7 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
       { id: 'fy26-outcomes', label: 'Goals', num: 4 },
       {
         id: 'fy26-goals-business-model-tracking',
-        label: 'FY26 plan vs actual (model)',
+        label: 'Target Metrics',
         num: 5,
       },
       { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 6 },

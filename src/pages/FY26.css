@@ -3761,33 +3761,6 @@ ul.fy25-feature-desc li {
   border-top: 1px solid var(--border, #e2e8f0);
 }
 
-.fy26-goals-bm-side-title--dealer-ops {
-  margin-top: 0.15rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border, #e2e8f0);
-}
-
-.fy26-goals-bm-skyportcare-roadmap-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  border: 1px solid var(--border, #e2e8f0);
-  border-radius: var(--radius, 8px);
-  background: #fafafa;
-}
-
-.fy26-goals-bm-skyportcare-roadmap-table {
-  margin: 0;
-  min-width: 44rem;
-  font-size: 12px;
-}
-
-.fy26-goals-bm-skyportcare-roadmap-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: #f1f5f9;
-}
-
 .fy26-goals-bm-tracking-table-panel .fy26-goals-bm-summary-scroll {
   max-height: min(30vh, 14rem);
 }

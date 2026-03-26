@@ -22,12 +22,6 @@ import {
   getFy26GoalsKeyMetricsRows,
   getFy26GoalsSkyportCareKeyMetricsRows,
 } from '../content/fy26GoalsBusinessModelTracking'
-import {
-  SKYPORT_CARE_FEATURE_DEALER_REQUEST_SUBMISSION,
-  skyportCareFeaturesRows,
-} from '../content/skyportCareFeaturesData'
-import { formatSkyportCareFeatureCellContent } from '../utils/formatSkyportCareFeatureCellContent'
-import '../pages/Features.css'
 
 const THERMOSTAT_MONTHLY_CHART_HEIGHT = 400
 const ACTIVE_LICENSES_LINE_COLOR = '#c25621'
@@ -246,11 +240,6 @@ export function Fy26GoalsBusinessModelTracking() {
   )
   const keyMetricsRows = useMemo(() => getFy26GoalsKeyMetricsRows(), [])
   const skyportCareKeyMetricsRows = useMemo(() => getFy26GoalsSkyportCareKeyMetricsRows(), [])
-  const skyportCareDealerOpsSpotlightRows = useMemo(
-    () =>
-      skyportCareFeaturesRows.filter((r) => r.feature === SKYPORT_CARE_FEATURE_DEALER_REQUEST_SUBMISSION),
-    [],
-  )
 
   const thermostatMonthlyRows = useMemo(() => buildFy26MonthlyThermostatChartRows(), [])
   const thermostatMonthlyHasData = useMemo(
@@ -408,43 +397,6 @@ export function Fy26GoalsBusinessModelTracking() {
                     <th scope="row">{row.label}</th>
                     <td>{row.target}</td>
                     <td>{row.actual ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <h5 className="fy26-goals-bm-side-title fy26-goals-bm-side-title--dealer-ops">
-            Dealer Operations &amp; Experience
-          </h5>
-          <div className="fy26-goals-bm-skyportcare-roadmap-scroll">
-            <table className="features-table features-panel-table features-panel-table--cols-7 fy26-goals-bm-skyportcare-roadmap-table">
-              <thead>
-                <tr>
-                  <th scope="col">Feature / Function</th>
-                  <th scope="col">Initiative Type</th>
-                  <th scope="col">End User Category</th>
-                  <th scope="col">Monetization</th>
-                  <th scope="col" className="features-cell-timeframe">
-                    Target
-                  </th>
-                  <th scope="col" className="features-cell-priority">
-                    Priority
-                  </th>
-                  <th scope="col" className="features-cell-development">
-                    Development
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {skyportCareDealerOpsSpotlightRows.map((row, i) => (
-                  <tr key={`${row.feature}-${i}`}>
-                    <td className="features-cell-feature">{formatSkyportCareFeatureCellContent(row.feature)}</td>
-                    <td className="features-cell-type">{row.initiativeType}</td>
-                    <td className="features-cell-category">{row.endUserCategory}</td>
-                    <td className="features-cell-monetization">{row.monetizationModel || '—'}</td>
-                    <td className="features-cell-timeframe">{row.focusTimeframe ?? '—'}</td>
-                    <td className="features-cell-priority">{row.priority ?? '—'}</td>
-                    <td className="features-cell-development">{row.development || '—'}</td>
                   </tr>
                 ))}
               </tbody>
