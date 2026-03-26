@@ -12,19 +12,30 @@ export default function FY26PageNav({
 }) {
   const location = useLocation()
   const groups = useMemo(() => getFy26PageNavGroups(sectionId), [sectionId])
-  const flatItems = useMemo(() => groups.flatMap((g) => g.items), [groups])
+  /** Leaf targets for hash match, scroll spy, and observers (expands Results subitems). */
+  const flatItems = useMemo(
+    () =>
+      groups.flatMap((g) =>
+        g.items.flatMap((item) => (item.subitems?.length ? item.subitems : [item])),
+      ),
+    [groups],
+  )
+  /** Top-level nav rows only — Results stays one slide even when it has subitems. */
+  const presentSlideItems = useMemo(
+    () =>
+      groups.flatMap((g) =>
+        g.items.map((item) =>
+          item.subitems?.length ? { id: item.id, label: item.label, num: item.num } : item,
+        ),
+      ),
+    [groups],
+  )
 
-  /** Digital Apps: slide 1 is funnel + takeaway only; skip full `fy25-review` slice (would duplicate). */
+  /** Digital Apps: skip full `fy25-review` slice (would duplicate section header). */
   const presentSlides = useMemo(() => {
-    if (sectionId !== 'digital-platform') return flatItems
-    const funnelSlide = {
-      id: 'fy25-installed-base-activation-funnel',
-      label: 'Installed Base Activation Funnel',
-      num: 1,
-    }
-    const rest = flatItems.filter((i) => i.id !== 'fy25-review')
-    return [funnelSlide, ...rest]
-  }, [sectionId, flatItems])
+    if (sectionId !== 'digital-platform') return presentSlideItems
+    return presentSlideItems.filter((i) => i.id !== 'fy25-review')
+  }, [sectionId, presentSlideItems])
 
   const [activeId, setActiveId] = useState(() => {
     const h = location.hash.replace(/^#/, '')
@@ -68,17 +79,41 @@ export default function FY26PageNav({
         <div key={group.label} className="ds-nav-group">
           <p className="ds-nav-group-title">{group.label}</p>
           <ol className="ds-nav-list">
-            {group.items.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={{ pathname: base, hash: `#${item.id}` }}
-                  className={`ds-nav-link ${activeId === item.id ? 'active' : ''}`}
-                >
-                  <span className="ds-nav-num">{String(item.num).padStart(2, '0')}</span>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {group.items.map((item) =>
+              item.subitems?.length ? (
+                <li key={item.id}>
+                  <Link
+                    to={{ pathname: base, hash: `#${item.id}` }}
+                    className={`ds-nav-link ${activeId === item.id ? 'active' : ''}`}
+                  >
+                    <span className="ds-nav-num">{String(item.num).padStart(2, '0')}</span>
+                    {item.label}
+                  </Link>
+                  <ol className="ds-nav-sublist">
+                    {item.subitems.map((sub) => (
+                      <li key={`${item.id}-${sub.id}-${sub.label}`}>
+                        <Link
+                          to={{ pathname: base, hash: `#${sub.id}` }}
+                          className={`ds-nav-link ds-nav-link--sub ${activeId === sub.id ? 'active' : ''}`}
+                        >
+                          {sub.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                </li>
+              ) : (
+                <li key={item.id}>
+                  <Link
+                    to={{ pathname: base, hash: `#${item.id}` }}
+                    className={`ds-nav-link ${activeId === item.id ? 'active' : ''}`}
+                  >
+                    <span className="ds-nav-num">{String(item.num).padStart(2, '0')}</span>
+                    {item.label}
+                  </Link>
+                </li>
+              ),
+            )}
           </ol>
         </div>
       ))}

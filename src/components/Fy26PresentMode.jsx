@@ -155,7 +155,7 @@ export function Fy26PresentMode({
 
   if (!open) return null
 
-  const isInstalledFunnelSlide = slide?.id === 'fy25-installed-base-activation-funnel'
+  const isResultsChartsSlide = slide?.id === 'fy25-thermostat-sales-skyportcare'
 
   return createPortal(
     <div
@@ -181,7 +181,7 @@ export function Fy26PresentMode({
               Slide {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
             </p>
             <h2 className="fy26-present-slide-title">{slide.label}</h2>
-            {isInstalledFunnelSlide &&
+            {isResultsChartsSlide &&
               onInstalledFunnelLicenseBreakdownOpenChange != null &&
               installedFunnelLicenseBreakdownOpen !== undefined && (
                 <div className="fy26-present-funnel-breakdown-bar">
@@ -193,15 +193,15 @@ export function Fy26PresentMode({
                     }
                   >
                     {installedFunnelLicenseBreakdownOpen
-                      ? 'Hide Active License breakdown'
-                      : 'Show Active License breakdown'}
+                      ? 'Hide Active License type breakdown'
+                      : 'Show Active License type breakdown'}
                   </button>
                 </div>
               )}
             <div
               ref={bodyHostRef}
               className={`fy26-present-slide-body fy26-present-slide-body--html${
-                isInstalledFunnelSlide ? ' fy26-present-slide-body--installed-funnel' : ''
+                isResultsChartsSlide ? ' fy26-present-slide-body--installed-funnel' : ''
               }`}
               tabIndex={0}
             />

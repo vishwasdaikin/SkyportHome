@@ -100,6 +100,58 @@
   outline-offset: 2px;
 }
 
+/* Care competitor matrix: light green header, equal 7 columns, centered cells */
+#competitor-comparison .skyport-care-competitor-table {
+  min-width: 56rem;
+  table-layout: fixed;
+}
+
+#competitor-comparison .skyport-care-competitor-table thead tr:first-child th {
+  width: calc(100% / 7);
+}
+
+#competitor-comparison .skyport-care-competitor-table thead th {
+  background: #bbf7d0;
+  color: #14532d;
+  border: 1px solid #86efac;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+}
+
+#competitor-comparison .skyport-care-competitor-table .skyport-care-competitor-th-corner {
+  background: #bbf7d0;
+}
+
+#competitor-comparison .skyport-care-competitor-table tbody th,
+#competitor-comparison .skyport-care-competitor-table tbody td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#competitor-comparison .skyport-care-competitor-focus-row td {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+}
+
+#competitor-comparison .skyport-care-competitor-table .competitor-cell {
+  justify-content: center;
+}
+
+#competitor-comparison .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @media (min-width: 640px) {
   .skyport-care-page {
     padding: 2.5rem 2rem;

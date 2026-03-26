@@ -1,10 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useLayoutEffect, Fragment } from 'react'
+import { useLocation } from 'react-router-dom'
 import { featuresRows, featuresDone, featuresPartial } from '../content/featuresData'
 import { FeaturesCategoryChart } from '../components/FeaturesCategoryChart'
 import { FeaturesSortableTh } from '../components/FeaturesSortableTh'
 import { useFeatureProgress } from '../hooks/useFeatureProgress'
 import { formatFeatureCellContent } from '../utils/formatFeatureCellContent'
 import { sortFeatureRows } from '../utils/featuresRoadmapSort'
+import { SKYPORT_HOME_NEST_ECOBEE_COMPARISON } from '../content/skyportHomeCompetitorComparison'
+import { CompetitorComparisonCell } from '../components/CompetitorComparisonCell'
 import './SkyportHome.css'
 import './Features.css'
 
@@ -51,6 +54,11 @@ function roadmapFilterSummary(search) {
 }
 
 export default function SkyportHome() {
+  const location = useLocation()
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [location.key])
+
   const [search, setSearch] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: 'priority', dir: 'asc' })
   const [viewMode, setViewMode] = useState('grouped') // 'grouped' | 'table'
@@ -109,6 +117,7 @@ export default function SkyportHome() {
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
           <a href="#demo">Concept Demo</a>
+          <a href="#competitor-comparison">Competitive Analysis</a>
         </nav>
       </header>
 
@@ -383,6 +392,57 @@ export default function SkyportHome() {
             Open interactive demo ↗
           </a>
         </p>
+      </section>
+
+      <section
+        id="competitor-comparison"
+        className="skyport-home-section skyport-home-section-competitor"
+        aria-labelledby="skyport-home-competitor-title"
+      >
+        <h2 id="skyport-home-competitor-title" className="skyport-home-section-title">
+          Competitive Analysis — Nest, Ecobee &amp; Trane
+        </h2>
+        <div className="skyport-home-competitor-wrap">
+          <table className="skyport-home-competitor-table">
+            <thead>
+              <tr>
+                <th scope="col" className="skyport-home-competitor-th-feature">
+                  Companies
+                </th>
+                <th scope="col">Nest</th>
+                <th scope="col">Ecobee</th>
+                <th scope="col">Trane</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SKYPORT_HOME_NEST_ECOBEE_COMPARISON.map((block) => (
+                <Fragment key={block.title}>
+                  <tr className="skyport-home-competitor-section-row">
+                    <th scope="colgroup" colSpan={4} className="skyport-home-competitor-section-th">
+                      {block.title}
+                    </th>
+                  </tr>
+                  {block.rows.map((row) => (
+                    <tr key={`${block.title}-${row.feature}`}>
+                      <th scope="row" className="skyport-home-competitor-th-feature">
+                        {row.feature}
+                      </th>
+                      <td>
+                        <CompetitorComparisonCell>{row.nest}</CompetitorComparisonCell>
+                      </td>
+                      <td>
+                        <CompetitorComparisonCell>{row.ecobee}</CompetitorComparisonCell>
+                      </td>
+                      <td>
+                        <CompetitorComparisonCell>{row.trane}</CompetitorComparisonCell>
+                      </td>
+                    </tr>
+                  ))}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </article>
   )

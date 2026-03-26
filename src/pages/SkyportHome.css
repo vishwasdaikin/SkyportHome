@@ -684,6 +684,114 @@
   overflow-wrap: break-word;
 }
 
+/* Nest / Ecobee / Trane comparison (after Concept Demo) */
+.skyport-home-competitor-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 8px);
+  background: #fff;
+}
+
+.skyport-home-competitor-table {
+  width: 100%;
+  min-width: 44rem;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--text-sm, 0.875rem);
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+/* SkyportHome: Companies + Nest + Ecobee + Trane — equal column width */
+.skyport-home-section-competitor .skyport-home-competitor-table thead tr:first-child th {
+  width: 25%;
+}
+
+.skyport-home-competitor-table thead th {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  background: #15803d;
+  color: #f0fdf4;
+  border: 1px solid #166534;
+}
+
+/* SkyportHome competitor: slightly larger green header + blue section bars (uniform, modest bump) */
+.skyport-home-section-competitor .skyport-home-competitor-table thead th {
+  font-size: 0.9375rem;
+}
+
+.skyport-home-competitor-table thead th:first-child {
+  border-radius: 0;
+}
+
+.skyport-home-competitor-section-row .skyport-home-competitor-section-th {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+  background: #e0f2fe;
+  color: #0c4a6e;
+  border: 1px solid #bae6fd;
+}
+
+.skyport-home-section-competitor .skyport-home-competitor-section-row .skyport-home-competitor-section-th {
+  font-size: 0.9375rem;
+}
+
+.skyport-home-competitor-th-feature {
+  font-weight: 600;
+  text-align: left;
+  background: #f8fafc;
+}
+
+.skyport-home-competitor-table tbody th,
+.skyport-home-competitor-table tbody td {
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border, #e2e8f0);
+  vertical-align: top;
+}
+
+/* Competitor matrix: replace emoji check/x with SVG icons (SkyportHome + SkyportCare) */
+.competitor-cell {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: 100%;
+}
+
+.competitor-cell-icon {
+  flex-shrink: 0;
+  line-height: 0;
+  margin-top: 0.06rem;
+}
+
+.competitor-cell-icon .competitor-cell-svg {
+  display: block;
+}
+
+.competitor-cell-note {
+  min-width: 0;
+  flex: 1;
+}
+
+.competitor-cell-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @media (min-width: 640px) {
   .skyport-home-page {
     padding: 2.5rem 2rem;

@@ -34,34 +34,43 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
         id: 'fy25-thermostat-sales-skyportcare',
         label: 'Results',
         num: 1,
+        subitems: [
+          {
+            id: 'fy25-thermostat-sales-skyportcare',
+            label: 'a — Thermostats: Sales & Connected',
+          },
+          {
+            id: 'fy25-skyport-home-charts',
+            label: 'b — SkyportHome',
+          },
+          {
+            id: 'fy25-skyportcare-charts',
+            label: 'c — SkyportCare',
+          },
+        ],
       },
       {
         id: 'fy25-planned-vs-actual',
         label: 'Planned vs Actual initiatives',
         num: 2,
       },
-      {
-        id: 'fy25-skyporthome-experience-sentiment',
-        label: 'SkyportHome Experience Quality & Sentiment',
-        num: 3,
-      },
     ],
   },
   {
     label: 'FY26 TRACKER',
     items: [
-      { id: 'fy26-outcomes', label: 'Goals', num: 4 },
+      { id: 'fy26-outcomes', label: 'Goals', num: 3 },
       {
         id: 'fy26-goals-business-model-tracking',
         label: 'Target Metrics',
-        num: 5,
+        num: 4,
       },
-      { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 6 },
-      { id: 'fy26-execution-plan', label: 'Execution Plan', num: 7 },
+      { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 5 },
+      { id: 'fy26-execution-plan', label: 'Execution Plan', num: 6 },
       {
         id: 'fy26-interaction-alignment',
         label: 'Interaction & Alignment with Other Teams',
-        num: 8,
+        num: 7,
       },
     ],
   },
@@ -71,14 +80,14 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
       {
         id: 'fusion30-forecast-outlook',
         label: '5-Year Forecast',
-        num: 9,
+        num: 8,
       },
       {
         id: 'fusion30-strategic-aims',
         label: 'Outcomes & Execution',
-        num: 10,
+        num: 9,
       },
-      { id: 'digital-platforms-business-model', label: 'Business model', num: 11 },
+      { id: 'digital-platforms-business-model', label: 'Business model', num: 10 },
     ],
   },
 ]

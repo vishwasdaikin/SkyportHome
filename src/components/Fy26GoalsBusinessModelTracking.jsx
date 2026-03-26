@@ -176,7 +176,7 @@ function Fy26ThermostatMonthlyComposedChart({ rows }) {
         <ReferenceLine
           yAxisId="left"
           y={avgSold}
-          stroke="#0d9488"
+          stroke="#1e40af"
           strokeWidth={2}
           strokeDasharray="6 4"
           name="Avg monthly sold"
@@ -188,7 +188,7 @@ function Fy26ThermostatMonthlyComposedChart({ rows }) {
               <text
                 x={x + width - 6}
                 y={y - 20}
-                fill="#0f766e"
+                fill="#1e3a8a"
                 fontSize={11}
                 fontWeight={600}
                 textAnchor="end"

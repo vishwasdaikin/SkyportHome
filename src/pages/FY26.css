@@ -16,6 +16,7 @@
 .fy26-page .fy25-visual,
 .fy26-page .fy25-monthly-chart-wrap,
 .fy26-page .fy25-skyport-home-card,
+.fy26-page .fy25-skyport-home-feedback-embedded,
 .fy26-page .fy25-planned-card,
 .fy26-page .fy25-takeaway,
 .fy26-page .fy25-feature-item,
@@ -228,6 +229,18 @@
   top: calc(var(--app-header-height, 60px) + 0.75rem);
 }
 
+.fy26-page-nav .ds-nav-sublist {
+  list-style: none;
+  margin: 0.2rem 0 0.45rem 0;
+  padding: 0 0 0 0.25rem;
+}
+
+.fy26-page-nav .ds-nav-link--sub {
+  padding: 0.28rem 0 0.28rem 0.85rem;
+  font-size: 0.8125rem;
+  line-height: 1.38;
+}
+
 @media (max-width: 639px) {
   .fy26-header-title-row {
     flex-direction: column;
@@ -266,7 +279,6 @@
 
 /* In-page anchors: clear fixed app header */
 .fy26-page .ds-section-header#fy25-review,
-.fy26-page #fy25-installed-base-activation-funnel,
 .fy26-page .ds-section-header#fy26-plan,
 .fy26-page .ds-section-header#fusion30-summary,
 .fy26-page #fusion30-forecast-outlook,
@@ -279,6 +291,8 @@
 .fy26-page #fy26-interaction-alignment,
 .fy26-page #digital-platforms-business-model,
 .fy26-page #fy25-thermostat-sales-skyportcare,
+.fy26-page #fy25-skyport-home-charts,
+.fy26-page #fy25-skyportcare-charts,
 .fy26-page #fy25-skyporthome-experience-sentiment,
 .fy26-page #fy25-planned-vs-actual,
 .fy26-page .fy26-outcome-collapse-trigger[id^='fy26-outcome-trigger-'] {
@@ -678,10 +692,151 @@
   border: 1px solid var(--border);
 }
 
-/* SkyportHome card — below Monthly + All-Time charts */
-.fy25-skyport-home-wrap {
+/* FY25: first dual-chart row only — mini card title + charts */
+.fy25-thermostats-sales-connected-mini {
+  margin-bottom: 1.15rem;
+  padding: 1rem 1.15rem 0.65rem;
+}
+
+.fy25-thermostats-sales-connected-mini .fy25-thermostat-funnel-hardware-with-footnote {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.fy25-skyportcare-charts-mini .fy25-funnel-activation-in-skyportcare-card {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.fy26-page .fy25-thermostats-sales-connected-mini-title {
+  font-size: var(--fy26-card-title);
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.35;
+}
+
+/* FY25: SkyportHome — same chart row as former bottom pair, between Thermostats and callouts */
+.fy25-skyport-home-charts-mini {
+  margin-bottom: 1.15rem;
+  padding: 1rem 1.15rem 1.1rem;
+}
+
+.fy25-app-mini-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.fy25-app-mini-card-head--skyport-home {
+  flex-wrap: nowrap;
+}
+
+.fy25-app-mini-card-head--skyport-home .fy25-skyport-home-feedback-details-link {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.fy25-app-mini-card-thumb {
+  width: 3.35rem;
+  height: 3.35rem;
+  object-fit: cover;
+  border-radius: 0.6rem;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+}
+
+.fy25-app-mini-card-head .fy26-mini-card-title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.fy26-page .fy25-skyport-home-charts-mini-title {
+  font-size: var(--fy26-card-title);
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.35;
+}
+
+.fy25-skyport-home-data-summary__list {
+  font-size: var(--fy26-card-body);
+  line-height: 1.55;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  padding-left: 1.35rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.fy25-skyport-home-data-summary__list li {
+  margin: 0 0 0.45rem 0;
+  padding-left: 0.15rem;
+}
+
+.fy25-skyport-home-data-summary__list li:last-child {
+  margin-bottom: 0;
+}
+
+.fy25-skyport-home-charts-mini .fy25-skyport-home-data-summary__list {
+  margin-bottom: 0.85rem;
+}
+
+.fy25-skyportcare-charts-mini {
+  margin-bottom: 1.15rem;
+  padding: 1rem 1.15rem 0.2rem;
+}
+
+.fy25-skyportcare-dealer-bullets {
+  font-size: var(--fy26-card-body, 0.9375rem);
+  line-height: 1.5;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 0.85rem 0;
+  padding-left: 1.3rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.fy25-skyportcare-dealer-bullets li {
+  margin: 0 0 0.4rem 0;
+  padding-left: 0.1rem;
+}
+
+.fy25-skyportcare-dealer-bullets li:last-child {
+  margin-bottom: 0;
+}
+
+.fy25-skyportcare-dual-charts-block .fy25-skyportcare-dealer-bullets {
+  margin-bottom: 0;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.fy25-skyportcare-dual-charts-block .fy25-skyportcare-dual-grid {
+  padding-top: 0.85rem;
+}
+
+.fy26-page .fy25-skyportcare-charts-mini-title {
+  font-size: var(--fy26-card-title);
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.35;
+}
+
+
+/* SkyportHome mini card + embedded experience block (FY25 Review) */
+.fy25-skyport-home-mini-stack {
   width: 100%;
   margin-top: 0;
+}
+
+.fy25-skyport-home-feedback-embedded {
+  margin-top: 0.85rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+  background: transparent;
 }
 
 .fy25-skyport-home-card {
@@ -1426,7 +1581,8 @@
 }
 
 /* SkyportHome: takeaway below sentiment graphs — tight gap, no extra band */
-.fy25-skyport-home-card .fy25-takeaway--skyport-after-charts {
+.fy25-skyport-home-card .fy25-takeaway--skyport-after-charts,
+.fy25-skyport-home-feedback-embedded .fy25-takeaway--skyport-after-charts {
   margin-top: 0.35rem;
   margin-bottom: 0;
 }
@@ -1483,25 +1639,21 @@
 
 .fy25-skyport-home-review-tables-legend {
   margin: 0 0 0.65rem 0;
-  font-size: inherit;
-  line-height: 1.45;
+  font-size: 0.8125rem;
+  line-height: 1.4;
   color: var(--text-secondary, #475569);
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 1rem;
-}
-
-.fy25-sh-legend-label {
-  font-weight: 600;
-  color: var(--text-primary, #0f172a);
-  margin-right: 0.25rem;
+  gap: 0.35rem 0.9rem;
 }
 
 .fy25-sh-legend-item {
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
+  white-space: nowrap;
 }
 
 .fy25-sh-legend-swatch {
@@ -1523,12 +1675,19 @@
   font-weight: 600;
 }
 
-/* Reviews table first, UX / engagement table second — stacked */
+/* Reviews table first, UX / engagement table second — stacked (full width below legend) */
 .fy25-skyport-home-review-tables-grid {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 1.35rem;
   align-items: stretch;
+}
+
+@media (max-width: 720px) {
+  .fy25-sh-legend-item {
+    white-space: normal;
+  }
 }
 
 .fy25-sh-table-panel {
@@ -1536,7 +1695,7 @@
 }
 
 .fy25-sh-table-title {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1rem 0;
   font-size: var(--fy26-card-title, var(--text-base));
   font-weight: 700;
   color: var(--text-primary, #0f172a);
@@ -1855,6 +2014,151 @@
   justify-content: space-between;
 }
 
+/* SkyportCare + Thermostats dual charts: 2×2 grid — row 1 equal header height; row 2 aligned legends + 400px charts */
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: 1.25rem;
+  row-gap: 0.75rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Thermostats: don’t stretch row 2 — avoids empty band below both charts */
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid {
+  grid-template-rows: auto auto;
+}
+
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid > .fy25-thermostat-sales-dual-grid-panel--left,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid > .fy25-thermostat-sales-dual-grid-panel--right {
+  align-self: start;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-header--left,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-header--left {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-header--right,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-header--right {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  padding-left: 1rem;
+  margin-left: -0.25rem;
+  border-left: 1px solid var(--border, #e2e8f0);
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-panel--left,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-panel--left {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-panel--right,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-panel--right {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-left: 1rem;
+  margin-left: -0.25rem;
+  border-left: 1px solid var(--border, #e2e8f0);
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-header .fy25-chart-split-header,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-header .fy25-chart-split-header {
+  margin-bottom: 0;
+  min-height: 100%;
+  align-items: center;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-chart-panel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-thermostat-chart-panel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid .fy25-skyportcare-monthly-chart-stack,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid .fy25-skyportcare-monthly-chart-stack {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid .fy25-skyportcare-license-legend-row--top,
+.fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid .fy25-skyportcare-license-legend-row--top {
+  flex-wrap: wrap;
+  min-height: 2.75rem;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  align-items: center;
+  align-content: center;
+}
+
+@media (max-width: 639px) {
+  .fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid,
+  .fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    row-gap: 0.5rem;
+  }
+
+  .fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-header--left,
+  .fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-header--left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-panel--left,
+  .fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-panel--left {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-header--right,
+  .fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-header--right {
+    grid-column: 1;
+    grid-row: 3;
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    border-top: 1px solid var(--border, #e2e8f0);
+    padding-top: 1rem;
+    margin-top: 0.35rem;
+  }
+
+  .fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid-panel--right,
+  .fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid-panel--right {
+    grid-column: 1;
+    grid-row: 4;
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+  }
+}
+
+.fy25-monthly-chart-wrap > .fy25-chart-dual-row + .fy25-chart-dual-row {
+  margin-top: 1.25rem;
+}
+
 .fy25-monthly-chart-wrap .fy25-takeaway--thermostat-opportunity {
   margin-top: 1rem;
 }
@@ -2076,6 +2380,73 @@
   stroke: #c25621 !important;
 }
 
+/* SkyportCare monthly: legend above plot + Recharts; gap below FY tab row */
+.fy25-monthly-chart-wrap .fy25-skyportcare-monthly-chart-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  margin: 1.15rem 0 0;
+  padding: 0;
+  width: 100%;
+  height: fit-content;
+  min-height: 0;
+}
+
+.fy25-monthly-chart-wrap #thermostat-fy-chart-panel-skyport-care {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-monthly-recharts {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-monthly-recharts .recharts-responsive-container {
+  display: block;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-monthly-recharts .recharts-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-license-legend-row--top {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem 1.25rem;
+  margin: 0 0 10px;
+  padding: 2px 0 0;
+  line-height: 1.15;
+  flex-shrink: 0;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-license-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.fy25-monthly-chart-wrap .fy25-skyportcare-license-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
 .fy25-chart-annotation {
   margin: 0.25rem 0 0 0;
   color: var(--text-secondary);
@@ -2166,16 +2537,29 @@
   margin-bottom: 0;
 }
 
-.fy25-monthly-chart-wrap .fy25-skyportcare-dealer-adoption {
-  margin-top: 1.15rem;
-}
-
 .fy25-funnel--combined {
   width: 100%;
 }
 
 .fy25-funnel-combined-title {
   margin-bottom: 0.75rem !important;
+}
+
+/* Installed Base funnel: two stacked tables (sold/connected vs license rows), chart-style subheads */
+.fy25-funnel-tables-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  width: 100%;
+}
+
+.fy25-funnel-table-block {
+  min-width: 0;
+}
+
+.fy26-page .fy25-chart-split-header--funnel-table {
+  margin-bottom: 0.4rem;
+  justify-content: flex-start;
 }
 
 .fy25-funnel-forecast-note {
@@ -2204,8 +2588,7 @@
   line-height: 1.45;
 }
 
-.fy25-funnel-dealer-callout,
-.fy25-funnel-thermostat-footprint-line {
+.fy25-funnel-dealer-callout {
   margin: 0.85rem 0 0 0;
   padding: 0.5rem 0.7rem;
   font-size: 0.8125rem;
@@ -2217,37 +2600,23 @@
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
-.fy25-funnel-thermostat-footprint-line .fy25-thermostat-locations-map__see-locations--inline {
+/* Plain note between hardware table and grey divider (no blue callout band) */
+.fy25-thermostat-funnel-hardware-with-footnote .fy25-thermostat-footprint-note {
+  margin: 0.55rem 0 0 0;
+  padding: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #475569);
+}
+
+.fy25-thermostat-footprint-note .fy25-thermostat-locations-map__see-locations--inline {
   font-weight: 600;
   color: var(--daikin-blue, #0097e0);
   cursor: pointer;
 }
 
-.fy25-funnel-thermostat-footprint-line .fy25-thermostat-locations-map__see-locations--inline:hover {
+.fy25-thermostat-footprint-note .fy25-thermostat-locations-map__see-locations--inline:hover {
   color: #0077b3;
-}
-
-/* Installed Base funnel — insight callout below table (dark blue band, white type) */
-.fy25-funnel-activation-takeaway {
-  margin: 1rem 0 0 0;
-  padding: 0.85rem 1rem 0.95rem;
-  background: linear-gradient(135deg, #0c1929 0%, #0f172a 45%, #172554 100%);
-  border: 1px solid rgba(56, 189, 248, 0.22);
-  border-left: 4px solid #38bdf8;
-  border-radius: 0 10px 10px 0;
-  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.18);
-}
-
-.fy25-funnel-activation-takeaway__lead {
-  font-weight: 700;
-  color: #fff;
-}
-
-.fy25-funnel-activation-takeaway__p {
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.55;
-  color: #f8fafc;
 }
 
 /* Elegant data table — Installed Base funnel (no horizontal scroll; fits playbook width) */
@@ -2315,8 +2684,8 @@
 }
 
 /* Breakdown under “Active Licenses”: bundled / 1-year / lifetime */
-.fy25-funnel-table-rowhead--sub {
-  padding-left: 2.5rem;
+.fy25-funnel-table tbody th.fy25-funnel-table-rowhead--sub {
+  padding-inline-start: 2.75rem;
   font-weight: 500;
   color: var(--text-primary, #0f172a);
 }
@@ -2620,6 +2989,13 @@
   background: var(--daikin-blue-light);
   border-radius: var(--radius);
   border-left: 4px solid var(--daikin-blue);
+}
+
+/* Thermostats mini card: tuck takeaway under dual charts (less empty band) */
+.fy25-takeaway.fy25-takeaway--thermostat-after-dual-charts {
+  margin-top: 0.35rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .fy25-takeaway-title {
@@ -3158,6 +3534,10 @@ ul.fy25-feature-desc li {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem 1.25rem;
+}
+
+.fy26-mini-card.fy25-thermostats-sales-connected-mini {
+  padding: 1rem 1.15rem 0.35rem;
 }
 
 .fy26-plan-strategy-preamble-text {

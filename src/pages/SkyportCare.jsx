@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useLayoutEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
   skyportCareFeaturesRows,
   skyportCareFeaturesDone,
@@ -9,6 +10,12 @@ import { FeaturesSortableTh } from '../components/FeaturesSortableTh'
 import { useFeatureProgress } from '../hooks/useFeatureProgress'
 import { sortFeatureRows } from '../utils/featuresRoadmapSort'
 import { formatSkyportCareFeatureCellContent } from '../utils/formatSkyportCareFeatureCellContent'
+import {
+  SKYPORT_CARE_COMPETITOR_COLUMNS,
+  SKYPORT_CARE_COMPETITOR_ROWS,
+  SKYPORT_CARE_FOCUS_ROW,
+} from '../content/skyportCareCompetitorComparison'
+import { CompetitorComparisonCell } from '../components/CompetitorComparisonCell'
 import './SkyportCare.css'
 import './Features.css'
 import './SkyportHome.css'
@@ -101,6 +108,11 @@ function formatFeatureContent(featureText) {
 }
 
 export default function SkyportCare() {
+  const location = useLocation()
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [location.key])
+
   const [search, setSearch] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: 'priority', dir: 'asc' })
   const [viewMode, setViewMode] = useState('grouped')
@@ -159,6 +171,7 @@ export default function SkyportCare() {
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
           <a href="#demo">Concept Demo</a>
+          <a href="#competitor-comparison">Competitive Analysis</a>
         </nav>
       </header>
 
@@ -433,6 +446,54 @@ export default function SkyportCare() {
             Open interactive demo ↗
           </a>
         </p>
+      </section>
+
+      <section
+        id="competitor-comparison"
+        className="skyport-care-section skyport-care-section-competitor"
+        aria-labelledby="skyport-care-competitor-title"
+      >
+        <h2 id="skyport-care-competitor-title" className="skyport-care-section-title">
+          Competitive Analysis
+        </h2>
+        <div className="skyport-home-competitor-wrap skyport-care-competitor-wrap">
+          <table className="skyport-home-competitor-table skyport-care-competitor-table">
+            <thead>
+              <tr>
+                <th scope="col" className="skyport-care-competitor-th-corner skyport-home-competitor-th-feature">
+                  <span className="sr-only">Capability</span>
+                </th>
+                {SKYPORT_CARE_COMPETITOR_COLUMNS.map((col) => (
+                  <th key={col.key} scope="col">
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="skyport-care-competitor-focus-row">
+                <th scope="row" className="skyport-home-competitor-th-feature">
+                  {SKYPORT_CARE_FOCUS_ROW.feature}
+                </th>
+                {SKYPORT_CARE_COMPETITOR_COLUMNS.map((col) => (
+                  <td key={col.key}>{SKYPORT_CARE_FOCUS_ROW[col.key]}</td>
+                ))}
+              </tr>
+              {SKYPORT_CARE_COMPETITOR_ROWS.map((row) => (
+                <tr key={row.feature}>
+                  <th scope="row" className="skyport-home-competitor-th-feature">
+                    {row.feature}
+                  </th>
+                  {SKYPORT_CARE_COMPETITOR_COLUMNS.map((col) => (
+                    <td key={col.key}>
+                      <CompetitorComparisonCell>{row[col.key]}</CompetitorComparisonCell>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </article>
   )
