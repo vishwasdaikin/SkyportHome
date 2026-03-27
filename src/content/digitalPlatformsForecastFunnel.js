@@ -188,7 +188,7 @@ export function getDigitalPlatformsForecastFunnelColumnsForTable() {
 /**
  * FY26–FY30 only: one point per fiscal year. FY activity: sold, connected, net‑new users, net‑new active licenses
  * (users & licenses vs prior FY EOY); right chart carries EOY cumulative totals.
- * @returns {{ period: string, fyThermostatsAllBrands: number, fyConnectedThermostats: number, fySkyportHomeUsers: number, fyActiveLicensesNetNew: number }[]}
+ * @returns {{ period: string, fyThermostatsAllBrands: number, fyConnectedThermostats: number, fySkyportHomeUsers: number, fyActiveLicensesNetNew: number, fyBundledActiveLicensesNetNew: number, fyOneYearActiveLicensesNetNew: number, fyLifetimeActiveLicensesNetNew: number }[]}
  */
 export function getDigitalPlatformsForecastYearlyChartData() {
   const fyByKey = Object.fromEntries(DP_FUNNEL_FORECAST_COLUMNS.map((c) => [c.id, c]))
@@ -197,6 +197,15 @@ export function getDigitalPlatformsForecastYearlyChartData() {
     const snapIdx = YEAR_END_SNAPSHOTS.findIndex((x) => x.key === s.key)
     const prevSnap = snapIdx > 0 ? YEAR_END_SNAPSHOTS[snapIdx - 1] : null
     const fySkyportHomeUsers = prevSnap ? Math.max(0, s.totalUsers - prevSnap.totalUsers) : 0
+    const fyBundledActiveLicensesNetNew = prevSnap
+      ? Math.max(0, s.bundledActiveLicenses - prevSnap.bundledActiveLicenses)
+      : 0
+    const fyOneYearActiveLicensesNetNew = prevSnap
+      ? Math.max(0, s.oneYearActiveLicenses - prevSnap.oneYearActiveLicenses)
+      : 0
+    const fyLifetimeActiveLicensesNetNew = prevSnap
+      ? Math.max(0, s.lifetimeActiveLicenses - prevSnap.lifetimeActiveLicenses)
+      : 0
     const fyActiveLicensesNetNew = prevSnap ? Math.max(0, s.activeLicenses - prevSnap.activeLicenses) : 0
     return {
       period: s.key,
@@ -204,13 +213,16 @@ export function getDigitalPlatformsForecastYearlyChartData() {
       fyConnectedThermostats: fy?.fyConnectedNew ?? 0,
       fySkyportHomeUsers,
       fyActiveLicensesNetNew,
+      fyBundledActiveLicensesNetNew,
+      fyOneYearActiveLicensesNetNew,
+      fyLifetimeActiveLicensesNetNew,
     }
   })
 }
 
 /**
  * FY25–FY30 fiscal year‑end cumulative snapshots (model + historical FY25). Right “All‑Time” outlook chart.
- * @returns {{ period: string, cumulative: number, connectedCumulative: number, usersCumulative: number, activeLicensesCumulative: number }[]}
+ * @returns {{ period: string, cumulative: number, connectedCumulative: number, usersCumulative: number, activeLicensesCumulative: number, bundledActiveLicensesCumulative: number, oneYearActiveLicensesCumulative: number, lifetimeActiveLicensesCumulative: number }[]}
  */
 export function getDigitalPlatformsForecastCumulativeChartData() {
   return YEAR_END_SNAPSHOTS.map((s) => ({
@@ -219,5 +231,8 @@ export function getDigitalPlatformsForecastCumulativeChartData() {
     connectedCumulative: s.totalConnected,
     usersCumulative: s.totalUsers,
     activeLicensesCumulative: s.activeLicenses,
+    bundledActiveLicensesCumulative: s.bundledActiveLicenses,
+    oneYearActiveLicensesCumulative: s.oneYearActiveLicenses,
+    lifetimeActiveLicensesCumulative: s.lifetimeActiveLicenses,
   }))
 }

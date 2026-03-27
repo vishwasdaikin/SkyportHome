@@ -15,9 +15,13 @@ function SectionHeadRow({ title }) {
   )
 }
 
-function SubHeadRow({ title }) {
+function SubHeadRow({ title, pillar }) {
   return (
-    <tr className="fy26-bm-subhead">
+    <tr
+      className={['fy26-bm-subhead', pillar ? `fy26-bm-subhead--${pillar}` : '']
+        .filter(Boolean)
+        .join(' ')}
+    >
       <th colSpan={COLS.length + 1} scope="colgroup">
         {title}
       </th>
@@ -25,17 +29,20 @@ function SubHeadRow({ title }) {
   )
 }
 
-function DataRow({ label, values, labelClass = '' }) {
+function DataRow({ label, values, labelClass = '', getCellClassName }) {
   return (
     <tr>
       <th scope="row" className={labelClass}>
         {label}
       </th>
-      {values.map((v, i) => (
-        <td key={COLS[i]} className="fy26-bm-num">
-          {cell(v)}
-        </td>
-      ))}
+      {values.map((v, i) => {
+        const extra = getCellClassName?.(i) ?? ''
+        return (
+          <td key={COLS[i]} className={['fy26-bm-num', extra].filter(Boolean).join(' ')}>
+            {cell(v)}
+          </td>
+        )
+      })}
     </tr>
   )
 }
@@ -91,7 +98,7 @@ export function DigitalPlatformsBusinessModelTable() {
             values={['341,000', '485,000', '712,500', '1,062,500', '1,512,500', '2,072,500']}
           />
 
-          <SubHeadRow title="SkyportHome" />
+          <SubHeadRow title="SkyportHome" pillar="skyport-home" />
           <DataRow
             label="Users (%) – FIT"
             values={['', '60%', '65%', '70%', '75%', '80%']}
@@ -110,18 +117,21 @@ export function DigitalPlatformsBusinessModelTable() {
             values={['317,130', '451,050', '662,625', '988,125', '1,406,625', '1,927,425']}
           />
 
-          <SubHeadRow title="SkyportCare" />
+          <SubHeadRow title="SkyportCare" pillar="skyport-care" />
           <DataRow
             label="Bundled active licenses"
             values={['9,545', '27,063', '53,010', '108,694', '196,928', '346,937']}
+            getCellClassName={() => 'fy26-skyport-license-cell--bundled'}
           />
           <DataRow
             label="1-year active licenses"
             values={['318', '2,706', '9,939', '24,703', '49,232', '96,371']}
+            getCellClassName={() => 'fy26-skyport-license-cell--one-year'}
           />
           <DataRow
             label="Lifetime active licenses"
             values={['3,320', '6,315', '16,566', '34,584', '63,298', '134,920']}
+            getCellClassName={() => 'fy26-skyport-license-cell--lifetime'}
           />
           <DataRow
             label="Active licenses"
@@ -142,7 +152,7 @@ export function DigitalPlatformsBusinessModelTable() {
           />
 
           <SectionHeadRow title="Revenue" />
-          <SubHeadRow title="#1 SkyportCare license revenue" />
+          <SubHeadRow title="#1 SkyportCare license revenue" pillar="skyport-care" />
           <DataRow
             label="Annual license fee"
             values={['', '$60', '$60', '$60', '$60', '$60']}
@@ -190,7 +200,7 @@ export function DigitalPlatformsBusinessModelTable() {
             labelClass="fy26-bm-emphasis"
           />
 
-          <SubHeadRow title="#2 SkyportCare enterprise license revenue" />
+          <SubHeadRow title="#2 SkyportCare enterprise license revenue" pillar="skyport-care" />
           <DataRow
             label="Per-unit annual license fee"
             values={['', '$30', '$30', '$30', '$30', '$30']}

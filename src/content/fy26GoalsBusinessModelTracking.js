@@ -190,6 +190,38 @@ export function getFy26GoalsKeyMetricsRows() {
 /** Dealer participation count shown as Target on the first SkyportCare Metrics row. */
 const FY26_SKYPORTCARE_DEALER_PARTICIPATION_TARGET = 2718
 
+/**
+ * FY26 Target Metrics card (Digital Apps playbook): source columns for the combined Target / Actual row table.
+ * `actual` is placeholder until reported; display as em dash in UI.
+ */
+export const FY26_TARGET_METRICS_THERMOSTATS = [
+  { id: 'thermostatsSold', label: 'Thermostats sold', target: '240,000', actual: null },
+  { id: 'connectedThermostats', label: 'Connected thermostats', target: '144,000', actual: null },
+  { id: 'connectedPenetration', label: 'Connected Penetration', target: '60%', actual: null },
+]
+
+export const FY26_TARGET_METRICS_SKYPORTHOME = [
+  { id: 'users', label: 'Users', target: '133,920', actual: null },
+]
+
+export const FY26_TARGET_METRICS_SKYPORTCARE = [
+  {
+    id: 'dealerParticipation',
+    label: 'Dealer participation',
+    target: FY26_SKYPORTCARE_DEALER_PARTICIPATION_TARGET.toLocaleString('en-US'),
+    actual: null,
+  },
+  { id: 'oneYearActiveLicenses', label: '1-Year Active Licenses', target: '2,706', actual: null },
+  { id: 'lifetimeActiveLicenses', label: 'Lifetime Active Licenses', target: '6,315', actual: null },
+]
+
+/** Single table: columns = metrics below; rows = Target and Actual. */
+export const FY26_TARGET_METRICS_ALL_COLUMNS = [
+  ...FY26_TARGET_METRICS_THERMOSTATS,
+  ...FY26_TARGET_METRICS_SKYPORTHOME,
+  ...FY26_TARGET_METRICS_SKYPORTCARE,
+]
+
 /** SkyportCare Metrics table (dealer participation + license EOY targets from funnel). */
 export function getFy26GoalsSkyportCareKeyMetricsRows() {
   const col = getFy26FunnelCol()

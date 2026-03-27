@@ -37,7 +37,7 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
         subitems: [
           {
             id: 'fy25-thermostat-sales-skyportcare',
-            label: 'a — Thermostats: Sales & Connected',
+            label: 'a — Thermostats',
           },
           {
             id: 'fy25-skyport-home-charts',
@@ -59,18 +59,23 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
   {
     label: 'FY26 TRACKER',
     items: [
-      { id: 'fy26-outcomes', label: 'Goals', num: 3 },
       {
-        id: 'fy26-goals-business-model-tracking',
-        label: 'Target Metrics',
-        num: 4,
+        id: 'fy26-outcomes',
+        label: 'Goals',
+        num: 3,
+        subitems: [
+          {
+            id: 'fy26-goals-business-model-tracking',
+            label: 'a — Target Metrics',
+          },
+        ],
       },
-      { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 5 },
-      { id: 'fy26-execution-plan', label: 'Execution Plan', num: 6 },
+      { id: 'fy26-strategic-themes', label: 'Strategic Themes', num: 4 },
+      { id: 'fy26-execution-plan', label: 'Execution Plan', num: 5 },
       {
         id: 'fy26-interaction-alignment',
         label: 'Interaction & Alignment with Other Teams',
-        num: 7,
+        num: 6,
       },
     ],
   },
@@ -80,14 +85,28 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
       {
         id: 'fusion30-forecast-outlook',
         label: '5-Year Forecast',
-        num: 8,
+        num: 7,
+        subitems: [
+          {
+            id: 'fusion30-fy26-pillar-thermostats',
+            label: 'a — Thermostats',
+          },
+          {
+            id: 'fusion30-fy26-pillar-skyport-home',
+            label: 'b — SkyportHome',
+          },
+          {
+            id: 'fusion30-fy26-pillar-skyport-care',
+            label: 'c — SkyportCare',
+          },
+        ],
       },
       {
         id: 'fusion30-strategic-aims',
         label: 'Outcomes & Execution',
-        num: 9,
+        num: 8,
       },
-      { id: 'digital-platforms-business-model', label: 'Business model', num: 10 },
+      { id: 'digital-platforms-business-model', label: 'Business model', num: 9 },
     ],
   },
 ]

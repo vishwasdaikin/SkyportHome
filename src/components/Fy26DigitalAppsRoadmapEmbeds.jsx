@@ -51,7 +51,7 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
 
   return (
     <div className="fy26-digital-apps-roadmap-embeds">
-      <div className="fy26-digital-apps-roadmap-embed">
+      <div className="fy26-digital-apps-roadmap-embed fy26-digital-apps-roadmap-embed--skyport-home">
         <button
           type="button"
           className="fy26-digital-apps-roadmap-toggle"
@@ -85,7 +85,7 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
         )}
       </div>
 
-      <div className="fy26-digital-apps-roadmap-embed">
+      <div className="fy26-digital-apps-roadmap-embed fy26-digital-apps-roadmap-embed--skyport-care">
         <button
           type="button"
           className="fy26-digital-apps-roadmap-toggle"
