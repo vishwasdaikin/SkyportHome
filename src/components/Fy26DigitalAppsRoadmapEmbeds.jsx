@@ -63,7 +63,7 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
             {homeOpen ? '▾' : '+'}
           </span>
           <span className="fy26-digital-apps-roadmap-toggle-label">
-            See detailed SkyportHome features and capabilities
+            Detailed SkyportHome Roadmap
           </span>
         </button>
         {homeOpen && (
@@ -97,7 +97,7 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
             {careOpen ? '▾' : '+'}
           </span>
           <span className="fy26-digital-apps-roadmap-toggle-label">
-            See detailed SkyportCare features and capabilities
+            Detailed SkyportCare Roadmap
           </span>
         </button>
         {careOpen && (

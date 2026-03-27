@@ -79,8 +79,8 @@ export const FY26_GOALS_TRACKING_METRICS = [
   },
   {
     id: 'fyConnectedThermostats',
-    label: 'FY connected thermostats',
-    shortLabel: 'Connected',
+    label: 'FY Wi-Fi Connected Thermostats',
+    shortLabel: 'Wi-Fi Connected Thermostats',
     strokePlan: '#0d9488',
     strokeActual: '#0f766e',
   },
@@ -168,13 +168,13 @@ export function getFy26GoalsKeyMetricsRows() {
     },
     {
       id: 'fyConnectedThermostats',
-      label: 'FY connected thermostats',
+      label: 'FY Wi-Fi Connected Thermostats',
       target: act.fyConnectedThermostats.toLocaleString('en-US'),
       actual: formatKeyMetricActual(FY26_GOALS_KEY_METRICS_ACTUALS.fyConnectedThermostats),
     },
     {
       id: 'fyConnectedPct',
-      label: '% of FY thermostats connected',
+      label: '% of FY Wi-Fi Connected Thermostats',
       target: `${Math.round(col.connectedPct)}%`,
       actual: formatKeyMetricActual(FY26_GOALS_KEY_METRICS_ACTUALS.fyConnectedPct),
     },
@@ -196,8 +196,18 @@ const FY26_SKYPORTCARE_DEALER_PARTICIPATION_TARGET = 2718
  */
 export const FY26_TARGET_METRICS_THERMOSTATS = [
   { id: 'thermostatsSold', label: 'Thermostats sold', target: '240,000', actual: null },
-  { id: 'connectedThermostats', label: 'Connected thermostats', target: '144,000', actual: null },
-  { id: 'connectedPenetration', label: 'Connected Penetration', target: '60%', actual: null },
+  {
+    id: 'connectedThermostats',
+    label: 'Wi-Fi Connected Thermostats',
+    target: '144,000',
+    actual: null,
+  },
+  {
+    id: 'connectedPenetration',
+    label: 'Wi-Fi Connected Thermostat Penetration',
+    target: '60%',
+    actual: null,
+  },
 ]
 
 export const FY26_TARGET_METRICS_SKYPORTHOME = [
@@ -211,8 +221,8 @@ export const FY26_TARGET_METRICS_SKYPORTCARE = [
     target: FY26_SKYPORTCARE_DEALER_PARTICIPATION_TARGET.toLocaleString('en-US'),
     actual: null,
   },
-  { id: 'oneYearActiveLicenses', label: '1-Year Active Licenses', target: '2,706', actual: null },
-  { id: 'lifetimeActiveLicenses', label: 'Lifetime Active Licenses', target: '6,315', actual: null },
+  { id: 'oneYearActiveLicenses', label: '1-Year Active Licenses', target: '2,804', actual: null },
+  { id: 'lifetimeActiveLicenses', label: 'Lifetime Active Licenses', target: '6,543', actual: null },
 ]
 
 /** Single table: columns = metrics below; rows = Target and Actual. */
@@ -220,6 +230,19 @@ export const FY26_TARGET_METRICS_ALL_COLUMNS = [
   ...FY26_TARGET_METRICS_THERMOSTATS,
   ...FY26_TARGET_METRICS_SKYPORTHOME,
   ...FY26_TARGET_METRICS_SKYPORTCARE,
+]
+
+/**
+ * Numeric FY26 targets for Target Metrics monthly plan bars (same as Target column).
+ * Left chart order: Thermostats sold, Wi‑Fi Connected Thermostats, Users.
+ * Right chart order: Dealer participation, 1‑Year Active Licenses, Lifetime Active Licenses.
+ */
+export const FY26_TARGET_METRICS_MONTHLY_CHART_LEFT = [240_000, 144_000, 133_920]
+
+export const FY26_TARGET_METRICS_MONTHLY_CHART_RIGHT = [
+  FY26_SKYPORTCARE_DEALER_PARTICIPATION_TARGET,
+  2804,
+  6543,
 ]
 
 /** SkyportCare Metrics table (dealer participation + license EOY targets from funnel). */

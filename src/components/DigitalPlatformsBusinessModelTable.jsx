@@ -75,8 +75,14 @@ export function DigitalPlatformsBusinessModelTable() {
             label="Total FIT volume"
             values={['', '240,000', '350,000', '500,000', '600,000', '700,000']}
           />
-          <DataRow label="RA volume" values={['', '', '', '', '', '']} />
-          <DataRow label="Altherma volume" values={['', '', '', '', '', '']} />
+          <DataRow
+            label="RA volume"
+            values={['', '325,000', '400,000', '500,000', '700,000', '750,000']}
+          />
+          <DataRow
+            label="Altherma volume"
+            values={['', '700', '4,000', '11,500', '20,000', '25,000']}
+          />
           <DataRow
             label="FY thermostats (all brands)"
             values={['', '240,000', '350,000', '500,000', '600,000', '700,000']}
@@ -86,56 +92,79 @@ export function DigitalPlatformsBusinessModelTable() {
             values={['610,064', '850,064', '1,200,064', '1,700,064', '2,300,064', '3,000,064']}
           />
           <DataRow
-            label="FY connected thermostats"
+            label="FY Wi-Fi Connected Thermostats"
             values={['', '144,000', '227,500', '350,000', '450,000', '560,000']}
           />
           <DataRow
-            label="% of FY connected thermostats"
+            label="% of FY Wi-Fi Connected Thermostats"
             values={['56%', '60%', '65%', '70%', '75%', '80%']}
           />
           <DataRow
-            label="Total connected thermostats"
+            label="Total Wi-Fi Connected Thermostats"
             values={['341,000', '485,000', '712,500', '1,062,500', '1,512,500', '2,072,500']}
           />
 
           <SubHeadRow title="SkyportHome" pillar="skyport-home" />
           <DataRow
             label="Users (%) – FIT"
-            values={['', '60%', '65%', '70%', '75%', '80%']}
+            values={['', '93%', '93%', '93%', '93%', '93%']}
           />
-          <DataRow label="Users (%) – RA" values={['', '5%', '10%', '20%', '30%', '40%']} />
+          <DataRow
+            label="Users (%) – DENEB Wi‑Fi to SkyportHome Direct"
+            values={['', '5%', '10%', '20%', '30%', '40%']}
+          />
           <DataRow
             label="Users (%) – Altherma"
             values={['', '5%', '10%', '20%', '30%', '40%']}
           />
           <DataRow
-            label="Users only for the FY"
+            label="FIT users only for the FY"
             values={['', '133,920', '211,575', '325,500', '418,500', '520,800']}
           />
           <DataRow
+            label="RA users"
+            values={['', '16,250', '40,000', '100,000', '210,000', '300,000']}
+          />
+          <DataRow
+            label="Altherma users"
+            values={['', '35', '400', '2,300', '6,000', '10,000']}
+          />
+          <DataRow
             label="Total users"
-            values={['317,130', '451,050', '662,625', '988,125', '1,406,625', '1,927,425']}
+            values={['317,130', '467,335', '719,310', '1,147,110', '1,781,610', '2,612,410']}
           />
 
           <SubHeadRow title="SkyportCare" pillar="skyport-care" />
           <DataRow
+            label="Total dealers"
+            values={['18,123', '', '', '', '', '']}
+          />
+          <DataRow
+            label="Dealer participation"
+            values={['1,978', '2,718', '3,625', '4,531', '5,437', '6,343']}
+          />
+          <DataRow
+            label="Dealer participation (%)"
+            values={['11%', '15%', '20%', '25%', '30%', '35%']}
+          />
+          <DataRow
             label="Bundled active licenses"
-            values={['9,545', '27,063', '53,010', '108,694', '196,928', '346,937']}
+            values={['9,545', '28,040', '57,544', '126,182', '249,426', '470,233']}
             getCellClassName={() => 'fy26-skyport-license-cell--bundled'}
           />
           <DataRow
             label="1-year active licenses"
-            values={['318', '2,706', '9,939', '24,703', '49,232', '96,371']}
+            values={['318', '2,804', '10,790', '28,678', '62,356', '130,621']}
             getCellClassName={() => 'fy26-skyport-license-cell--one-year'}
           />
           <DataRow
             label="Lifetime active licenses"
-            values={['3,320', '6,315', '16,566', '34,584', '63,298', '134,920']}
+            values={['3,320', '6,543', '17,983', '40,149', '80,172', '182,869']}
             getCellClassName={() => 'fy26-skyport-license-cell--lifetime'}
           />
           <DataRow
             label="Active licenses"
-            values={['13,183', '36,084', '79,515', '167,981', '309,458', '578,228']}
+            values={['13,183', '37,387', '86,317', '195,009', '391,954', '783,723']}
             labelClass="fy26-bm-emphasis"
           />
           <DataRow
@@ -169,33 +198,33 @@ export function DigitalPlatformsBusinessModelTable() {
             label="1-year active licenses ($)"
             values={[
               '',
-              '$162,378',
-              '$596,363',
-              '$1,482,188',
-              '$2,953,913',
-              '$5,782,275',
+              '$168,241',
+              '$647,379',
+              '$1,720,665',
+              '$3,741,381',
+              '$7,837,230',
             ]}
           />
           <DataRow
             label="Lifetime active licenses ($)"
             values={[
               '',
-              '$2,525,880',
-              '$6,626,250',
-              '$13,833,750',
-              '$25,319,250',
-              '$53,967,900',
+              '$2,617,076',
+              '$7,193,100',
+              '$16,059,540',
+              '$32,068,980',
+              '$73,147,480',
             ]}
           />
           <DataRow
             label="Total ($)"
             values={[
               '',
-              '$17,088,258',
-              '$28,222,613',
-              '$45,315,938',
-              '$64,273,163',
-              '$101,750,175',
+              '$17,185,317',
+              '$28,840,479',
+              '$47,780,205',
+              '$71,810,361',
+              '$122,984,710',
             ]}
             labelClass="fy26-bm-emphasis"
           />
@@ -218,40 +247,14 @@ export function DigitalPlatformsBusinessModelTable() {
             values={['', '$30,000', '$120,000', '$480,000', '$1,920,000', '$7,680,000']}
           />
 
-          <SubHeadRow title="#3 SkyportEnergy revenue" />
-          <DataRow
-            label="Homeowner enrollment %"
-            values={['', '', '', '1.0%', '5.0%', '10.0%']}
-          />
-          <DataRow
-            label="Homeowners enrolled"
-            values={['', '', '', '9,881', '70,331', '192,743']}
-          />
-          <DataRow
-            label="TOU revenue ($)"
-            values={['', '', '', '$666,984', '$4,747,359', '$13,010,119']}
-          />
-          <DataRow
-            label="VPP revenue ($)"
-            values={['', '', '', '', '$4,219,875', '$11,564,550']}
-          />
-          <DataRow
-            label="Complete ($)"
-            values={['', '', '', '', '', '$130,293,930']}
-          />
-          <DataRow
-            label="Total ($)"
-            values={['', '$0', '$0', '$666,984', '$8,967,234', '$154,868,599']}
-          />
-
           <tr className="fy26-bm-total-row">
             <th scope="row">Total revenue ($)</th>
             <td className="fy26-bm-num">—</td>
-            <td className="fy26-bm-num">$17,118,258</td>
-            <td className="fy26-bm-num">$28,342,613</td>
-            <td className="fy26-bm-num">$46,462,922</td>
-            <td className="fy26-bm-num">$75,160,397</td>
-            <td className="fy26-bm-num">$264,298,774</td>
+            <td className="fy26-bm-num">$17,215,317</td>
+            <td className="fy26-bm-num">$28,960,479</td>
+            <td className="fy26-bm-num">$48,260,205</td>
+            <td className="fy26-bm-num">$73,730,361</td>
+            <td className="fy26-bm-num">$130,664,710</td>
           </tr>
         </tbody>
       </table>

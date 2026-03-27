@@ -46,7 +46,7 @@ const CUMULATIVE_DATA = [
 export function CloudConnectionsChart() {
   return (
     <div className="fy25-chart-wrap">
-      <h3 className="fy25-chart-title">Thermostats Connected to Daikin Cloud</h3>
+      <h3 className="fy25-chart-title">Wi-Fi Connected Thermostats to Daikin Cloud</h3>
       <ResponsiveContainer width="100%" height={320}>
         <BarChart data={CLOUD_BY_BRAND} margin={{ top: 16, right: 16, left: 16, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eee" />

@@ -1,7 +1,7 @@
 /**
  * Digital Platforms business model — FY26–FY30 funnel columns + yearly forecast chart (FY26–FY30).
- * SkyportCare “Bundled active licenses” (FY26–FY30) = total users × active license penetration (rounded);
- * 1‑year / lifetime EOY values stay as modeled inputs. Inception‑to‑FY25 column uses historical snapshot totals.
+ * SkyportHome total users and SkyportCare bundled / 1‑year / lifetime EOY counts match the business model sheet;
+ * bundled counts are stored explicitly so totals align with penetration display. Inception‑to‑FY25 uses historical snapshots.
  */
 
 export const DP_BUSINESS_MODEL_COLUMN_LABELS = [
@@ -19,8 +19,8 @@ function parsePctLabelToDecimal(label) {
 }
 
 /**
- * FY26–FY30 forecast inputs (EOY). Bundled active licenses = round(total users × active license penetration),
- * e.g. FY26: 6% × 451,050 = 27,063 — same basis as the business model SkyportCare table.
+ * FY26–FY30 forecast inputs (EOY). SkyportHome total users + SkyportCare license EOYs match the Digital Platforms
+ * business model sheet. Bundled active licenses use explicit counts where listed; otherwise round(users × penetration).
  */
 const DP_FUNNEL_FORECAST_INPUTS_FY26_FY30 = [
   {
@@ -28,10 +28,11 @@ const DP_FUNNEL_FORECAST_INPUTS_FY26_FY30 = [
     label: 'FY26',
     fyThermostatsSold: 240_000,
     fyConnectedNew: 144_000,
-    totalUsers: 451_050,
+    totalUsers: 467_335,
     activeLicensePenetrationLabel: '6%',
-    oneYearActiveLicensesEoy: 2_706,
-    lifetimeActiveLicensesEoy: 6_315,
+    bundledActiveLicensesEoy: 28_040,
+    oneYearActiveLicensesEoy: 2_804,
+    lifetimeActiveLicensesEoy: 6_543,
     paidAnnualPenetrationLabel: '0.6%',
     paidLifetimePenetrationLabel: '1.4%',
   },
@@ -40,10 +41,11 @@ const DP_FUNNEL_FORECAST_INPUTS_FY26_FY30 = [
     label: 'FY27',
     fyThermostatsSold: 350_000,
     fyConnectedNew: 227_500,
-    totalUsers: 662_625,
+    totalUsers: 719_310,
     activeLicensePenetrationLabel: '8%',
-    oneYearActiveLicensesEoy: 9_939,
-    lifetimeActiveLicensesEoy: 16_566,
+    bundledActiveLicensesEoy: 57_544,
+    oneYearActiveLicensesEoy: 10_790,
+    lifetimeActiveLicensesEoy: 17_983,
     paidAnnualPenetrationLabel: '1.5%',
     paidLifetimePenetrationLabel: '2.5%',
   },
@@ -52,10 +54,11 @@ const DP_FUNNEL_FORECAST_INPUTS_FY26_FY30 = [
     label: 'FY28',
     fyThermostatsSold: 500_000,
     fyConnectedNew: 350_000,
-    totalUsers: 988_125,
+    totalUsers: 1_147_110,
     activeLicensePenetrationLabel: '11%',
-    oneYearActiveLicensesEoy: 24_703,
-    lifetimeActiveLicensesEoy: 34_584,
+    bundledActiveLicensesEoy: 126_182,
+    oneYearActiveLicensesEoy: 28_678,
+    lifetimeActiveLicensesEoy: 40_149,
     paidAnnualPenetrationLabel: '2.5%',
     paidLifetimePenetrationLabel: '3.5%',
   },
@@ -64,10 +67,11 @@ const DP_FUNNEL_FORECAST_INPUTS_FY26_FY30 = [
     label: 'FY29',
     fyThermostatsSold: 600_000,
     fyConnectedNew: 450_000,
-    totalUsers: 1_406_625,
+    totalUsers: 1_781_610,
     activeLicensePenetrationLabel: '14%',
-    oneYearActiveLicensesEoy: 49_232,
-    lifetimeActiveLicensesEoy: 63_298,
+    bundledActiveLicensesEoy: 249_426,
+    oneYearActiveLicensesEoy: 62_356,
+    lifetimeActiveLicensesEoy: 80_172,
     paidAnnualPenetrationLabel: '3.5%',
     paidLifetimePenetrationLabel: '4.5%',
   },
@@ -76,22 +80,23 @@ const DP_FUNNEL_FORECAST_INPUTS_FY26_FY30 = [
     label: 'FY30',
     fyThermostatsSold: 700_000,
     fyConnectedNew: 560_000,
-    totalUsers: 1_927_425,
+    totalUsers: 2_612_410,
     activeLicensePenetrationLabel: '18%',
-    oneYearActiveLicensesEoy: 96_371,
-    lifetimeActiveLicensesEoy: 134_920,
+    bundledActiveLicensesEoy: 470_233,
+    oneYearActiveLicensesEoy: 130_621,
+    lifetimeActiveLicensesEoy: 182_869,
     paidAnnualPenetrationLabel: '5.0%',
     paidLifetimePenetrationLabel: '7.0%',
   },
 ]
 
-/** FY26–FY30: `bundledActiveLicensesEoy` derived from total users × penetration (see module comment). */
+/** FY26–FY30: bundled EOY from inputs (sheet-aligned); falls back to round(users × penetration) if omitted. */
 export const DP_FUNNEL_FORECAST_COLUMNS = DP_FUNNEL_FORECAST_INPUTS_FY26_FY30.map((row) => {
-  const { totalUsers, ...rest } = row
-  const bundledActiveLicensesEoy = Math.round(
-    totalUsers * parsePctLabelToDecimal(row.activeLicensePenetrationLabel),
-  )
-  return { ...rest, bundledActiveLicensesEoy }
+  const { totalUsers, bundledActiveLicensesEoy: bundledIn, ...rest } = row
+  const bundledActiveLicensesEoy =
+    bundledIn ??
+    Math.round(totalUsers * parsePctLabelToDecimal(row.activeLicensePenetrationLabel))
+  return { ...rest, bundledActiveLicensesEoy, totalUsers }
 })
 
 export const DP_FUNNEL_FORECAST_BY_ID = Object.fromEntries(
@@ -113,7 +118,7 @@ const YEAR_END_SNAPSHOTS = [
     key: 'FY26',
     totalThermostatsSold: 850_064,
     totalConnected: 485_000,
-    totalUsers: 451_050,
+    totalUsers: DP_FUNNEL_FORECAST_COLUMNS[0].totalUsers,
     bundledActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[0].bundledActiveLicensesEoy,
     oneYearActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[0].oneYearActiveLicensesEoy,
     lifetimeActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[0].lifetimeActiveLicensesEoy,
@@ -122,7 +127,7 @@ const YEAR_END_SNAPSHOTS = [
     key: 'FY27',
     totalThermostatsSold: 1_200_064,
     totalConnected: 712_500,
-    totalUsers: 662_625,
+    totalUsers: DP_FUNNEL_FORECAST_COLUMNS[1].totalUsers,
     bundledActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[1].bundledActiveLicensesEoy,
     oneYearActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[1].oneYearActiveLicensesEoy,
     lifetimeActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[1].lifetimeActiveLicensesEoy,
@@ -131,7 +136,7 @@ const YEAR_END_SNAPSHOTS = [
     key: 'FY28',
     totalThermostatsSold: 1_700_064,
     totalConnected: 1_062_500,
-    totalUsers: 988_125,
+    totalUsers: DP_FUNNEL_FORECAST_COLUMNS[2].totalUsers,
     bundledActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[2].bundledActiveLicensesEoy,
     oneYearActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[2].oneYearActiveLicensesEoy,
     lifetimeActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[2].lifetimeActiveLicensesEoy,
@@ -140,7 +145,7 @@ const YEAR_END_SNAPSHOTS = [
     key: 'FY29',
     totalThermostatsSold: 2_300_064,
     totalConnected: 1_512_500,
-    totalUsers: 1_406_625,
+    totalUsers: DP_FUNNEL_FORECAST_COLUMNS[3].totalUsers,
     bundledActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[3].bundledActiveLicensesEoy,
     oneYearActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[3].oneYearActiveLicensesEoy,
     lifetimeActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[3].lifetimeActiveLicensesEoy,
@@ -149,7 +154,7 @@ const YEAR_END_SNAPSHOTS = [
     key: 'FY30',
     totalThermostatsSold: 3_000_064,
     totalConnected: 2_072_500,
-    totalUsers: 1_927_425,
+    totalUsers: DP_FUNNEL_FORECAST_COLUMNS[4].totalUsers,
     bundledActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[4].bundledActiveLicensesEoy,
     oneYearActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[4].oneYearActiveLicensesEoy,
     lifetimeActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[4].lifetimeActiveLicensesEoy,

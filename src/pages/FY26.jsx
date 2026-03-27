@@ -102,7 +102,7 @@ const FY23_TOTAL_THERMOSTAT_SALES_CUMULATIVE_MONTHLY = [
   288_980,
 ]
 
-/** FY23 (Apr'23–Mar'24): cumulative connected thermostats (cloud/app), by month. */
+/** FY23 (Apr'23–Mar'24): cumulative Wi-Fi Connected Thermostats (cloud/app), by month. */
 const FY23_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY = [
   99_826, 105_125, 114_981, 121_036, 127_251, 132_549, 131_437, 135_558, 139_286, 142_533, 146_026,
   149_689,
@@ -122,7 +122,7 @@ const FY24_TOTAL_THERMOSTAT_SALES_CUMULATIVE_MONTHLY = [
   447_756,
 ]
 
-/** FY24 (Apr'24–Mar'25): cumulative connected thermostats (cloud/app), by month. */
+/** FY24 (Apr'24–Mar'25): cumulative Wi-Fi Connected Thermostats (cloud/app), by month. */
 const FY24_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY = [
   156_063, 166_317, 172_806, 184_126, 193_334, 201_802, 205_000, 207_754, 216_362, 223_917, 229_685,
   246_796,
@@ -141,7 +141,7 @@ const FY25_TOTAL_THERMOSTAT_SALES_CUMULATIVE_MONTHLY = [
   463_195, 482_104, 503_170, 523_909, 539_362, 551_387, 564_135, 573_177, 586_576, 598_000, 610_064,
 ]
 
-/** FY25 in progress (Apr'25–Feb'26): cumulative connected thermostats, by month (11 months; Mar'26 not yet). */
+/** FY25 in progress (Apr'25–Feb'26): cumulative Wi-Fi Connected Thermostats, by month (11 months; Mar'26 not yet). */
 const FY25_CONNECTED_THERMOSTATS_CUMULATIVE_MONTHLY = [
   269_593, 294_481, 299_991, 304_528, 294_532, 302_743, 311_895, 318_949, 328_155, 335_302, 341_229,
 ]
@@ -155,7 +155,7 @@ const FY25_ACTIVE_LICENSES_CUMULATIVE_MONTHLY = [
 const FY_FISCAL_QUARTER_END_MONTH_INDEX = [2, 5, 8, 11]
 
 /** SkyportHome users count (dot between Q3 and Q4 FY25; value also on Q4 row for tooltip). */
-const SKYPORTHOME_ALL_TIME_VALUE = 317_000
+const SKYPORTHOME_ALL_TIME_VALUE = 317_130
 
 /**
  * Quarter-end points FY23 → FY24 → FY25. If fiscal Q4 (Mar) is missing but Jan/Feb exist,
@@ -242,10 +242,10 @@ const ALL_TIME_RIGHT_QUARTERLY_SPAN = (() => {
   return rows
 })()
 
-/** Tooltip / legend copy for SkyportHome users point (~317K). */
-const SKYPORTHOME_ALL_TIME_ACCOUNTS_CALLOUT = 'SkyportHome Accounts: ~317K'
+/** Tooltip / legend copy for SkyportHome users point (~317.1K). */
+const SKYPORTHOME_ALL_TIME_ACCOUNTS_CALLOUT = 'SkyportHome Accounts: ~317.1K'
 /** Inline label on the all-time chart: value line, then product name below. */
-const SKYPORTHOME_ALL_TIME_POINT_LABEL_VALUE = '~317K'
+const SKYPORTHOME_ALL_TIME_POINT_LABEL_VALUE = '~317.1K'
 const SKYPORTHOME_ALL_TIME_POINT_LABEL_NAME = 'SkyportHome'
 
 /** FY monthly series for thermostat chart (left). */
@@ -655,7 +655,7 @@ const ACTIVE_LICENSES_TIP =
   'This is equal to Bundled Active Licenses + 1-Year Active Licenses + Lifetime Active Licenses.'
 
 const ACTIVE_LICENSE_PENETRATION_TIP =
-  'This is the total active licenses as a % of Thermostats Connected — Active License Penetration reflects platform adoption and defines the monetizable pool.'
+  'This is the total active licenses as a % of Wi-Fi Connected Thermostats — Active License Penetration reflects platform adoption and defines the monetizable pool.'
 
 const PAID_ANNUAL_LICENSE_PENETRATION_TIP =
   'This is the total active paid 1-Year licenses as a % of Connected Systems.'
@@ -685,7 +685,11 @@ const FORECAST_CONNECTED_CUMULATIVE_BY_PERIOD = Object.fromEntries(
 const FORECAST_THERMOSTATS_SOLD_CUMULATIVE_BY_PERIOD = Object.fromEntries(
   FORECAST_CUMULATIVE_CHART_DATA.map((r) => [r.period, r.cumulative]),
 )
-/** FY-end cumulative connected ÷ cumulative sold (0–100), for Fusion30 3A penetration row. */
+
+/** Appended to Fusion30 user-facing thermostat labels (FIT product line scope). */
+const FUSION30_THERMOSTATS_FIT_ONLY = ' (FIT only)'
+
+/** FY-end cumulative connected ÷ cumulative sold (0–100), for Fusion30 3A Wi-Fi Connected Thermostat Penetration row. */
 function forecastCumulativeConnectedPenetrationPct(periodId) {
   const sold = FORECAST_THERMOSTATS_SOLD_CUMULATIVE_BY_PERIOD[periodId] ?? 0
   const conn = FORECAST_CONNECTED_CUMULATIVE_BY_PERIOD[periodId] ?? 0
@@ -817,6 +821,7 @@ function BusinessModelForecastFyBarsChart({
   omitSkyportHomeSeries = false,
   licenseNetNewStacked = false,
 }) {
+  const fitTherm = thermostatSeriesOnly ? FUSION30_THERMOSTATS_FIT_ONLY : ''
   const showThermostatBars = thermostatSeriesOnly || !omitThermostatSeries
   const showSkyportCareBars = !thermostatSeriesOnly
   const showGroupedLicenseNetNew =
@@ -862,7 +867,7 @@ function BusinessModelForecastFyBarsChart({
           <Bar
             yAxisId="left"
             dataKey="fyThermostatsAllBrands"
-            name="FY thermostats (all brands)"
+            name={`FY thermostats (all brands)${fitTherm}`}
             fill="rgba(0, 151, 224, 0.45)"
             radius={[3, 3, 0, 0]}
             maxBarSize={24}
@@ -874,13 +879,13 @@ function BusinessModelForecastFyBarsChart({
           <Bar
             yAxisId="left"
             dataKey="fyConnectedThermostats"
-            name="FY connected thermostats"
+            name={`FY Wi-Fi Connected Thermostats${fitTherm}`}
             fill="rgba(13, 148, 136, 0.5)"
             radius={[3, 3, 0, 0]}
             maxBarSize={24}
           >
             {!thermostatSeriesOnly ? (
-              <LabelList content={renderForecastLastBarValueLabel('#0f766e', 'Connected thermostats')} />
+              <LabelList content={renderForecastLastBarValueLabel('#0f766e', 'Wi-Fi Connected Thermostats')} />
             ) : null}
           </Bar>
         </>
@@ -953,6 +958,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
   omitSkyportHomeSeries = false,
   licenseNetNewStacked = false,
 }) {
+  const fitTherm = thermostatSeriesOnly ? FUSION30_THERMOSTATS_FIT_ONLY : ''
   const showThermostatLines = thermostatSeriesOnly || !omitThermostatSeries
   const showSkyportCareLines = !thermostatSeriesOnly
   const showLicenseComponentsCumulative =
@@ -999,7 +1005,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
             yAxisId="left"
             type="monotone"
             dataKey="cumulative"
-            name="Total thermostats sold (cumulative)"
+            name={`Total thermostats sold (cumulative)${fitTherm}`}
             stroke="#0097e0"
             strokeWidth={2.75}
             dot={{ r: 4, fill: '#0097e0', stroke: '#fff', strokeWidth: 2 }}
@@ -1020,7 +1026,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
             yAxisId="left"
             type="monotone"
             dataKey="connectedCumulative"
-            name="Connected thermostats (cumulative)"
+            name={`Wi-Fi Connected Thermostats (cumulative)${fitTherm}`}
             stroke="#0d9488"
             strokeWidth={2.5}
             dot={{ r: 4, fill: '#0d9488', stroke: '#fff', strokeWidth: 2 }}
@@ -1182,7 +1188,7 @@ function InstalledBaseFunnelThead({ allTimeColumnLabel = 'All‑Time' }) {
   )
 }
 
-/** Thermostats Sold + Connected (counts) + Connected Penetration (%): by fiscal year and ALL‑TIME cumulative. */
+/** Thermostats Sold + Wi-Fi Connected Thermostats (counts) + Wi-Fi Connected Thermostat Penetration (%): by fiscal year and ALL‑TIME cumulative. */
 function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
   const fyCols = THERMOSTAT_FY_TABS.map((tab) => ({
     ...tab,
@@ -1194,7 +1200,7 @@ function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
       <div className="fy25-funnel-table-scroll">
         <table
           className="fy25-funnel-table"
-          aria-label="Thermostats Sold, Thermostats Connected, and Connected Penetration by fiscal year and all-time cumulative"
+          aria-label="Thermostats Sold, Wi-Fi Connected Thermostats, and Wi-Fi Connected Thermostat Penetration by fiscal year and all-time cumulative"
         >
           <InstalledBaseFunnelThead allTimeColumnLabel="ALL‑TIME" />
           <tbody>
@@ -1213,7 +1219,7 @@ function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
             </tr>
             <tr>
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Thermostats Connected
+                Wi-Fi Connected Thermostats
               </th>
               {fyCols.map(({ id, m }) => (
                 <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--connected">
@@ -1226,7 +1232,7 @@ function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
             </tr>
             <tr>
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Connected Penetration
+                Wi-Fi Connected Thermostat Penetration
               </th>
               {fyCols.map(({ id, m }) => (
                 <td key={id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
@@ -1723,7 +1729,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
   )
 }
 
-/** FY26–FY30 forecast thermostats sold + connected (shown in Fusion30 pillar a; not duplicated in funnel table below). */
+/** FY26–FY30 forecast thermostats sold + Wi-Fi Connected Thermostats (shown in Fusion30 pillar a; not duplicated in funnel table below). */
 function Fusion30ForecastThermostatSoldConnectedTable() {
   const colSpan = 1 + FORECAST_FUNNEL_TABLE_COLS.length
   return (
@@ -1756,7 +1762,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
             </tr>
             <tr>
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Thermostats sold
+                Thermostats sold{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
               {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
@@ -1766,7 +1772,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
             </tr>
             <tr className="fy26-fusion30-forecast-metric-row--alt">
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Connected thermostats
+                Wi-Fi Connected Thermostats{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
               {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--connected">
@@ -1776,7 +1782,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
             </tr>
             <tr>
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Connected penetration
+                Wi-Fi Connected Thermostat Penetration{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
               {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
@@ -1796,7 +1802,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
             </tr>
             <tr>
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Thermostats sold
+                Thermostats sold{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
               {FORECAST_FUNNEL_TABLE_COLS.map((col) => {
                 const c = FORECAST_THERMOSTATS_SOLD_CUMULATIVE_BY_PERIOD[col.id]
@@ -1809,7 +1815,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
             </tr>
             <tr className="fy26-fusion30-forecast-metric-row--alt">
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Connected thermostats
+                Wi-Fi Connected Thermostats{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
               {FORECAST_FUNNEL_TABLE_COLS.map((col) => {
                 const c = FORECAST_CONNECTED_CUMULATIVE_BY_PERIOD[col.id]
@@ -1822,7 +1828,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
             </tr>
             <tr>
               <th scope="row" className="fy25-funnel-table-rowhead">
-                Connected penetration
+                Wi-Fi Connected Thermostat Penetration{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
               {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
@@ -3044,8 +3050,8 @@ function ThermostatAllTimeLegendRow({ simplified = false }) {
     },
     {
       key: 'connected',
-      label: 'Connected',
-      fullName: 'Connected thermostats (cumulative)',
+      label: 'Wi-Fi Connected Thermostats',
+      fullName: 'Wi-Fi Connected Thermostats (cumulative)',
       fill: '#0d9488',
     },
   ]
@@ -3084,14 +3090,14 @@ function BusinessModelForecastFyBarsLegendRow({
     ? [
         {
           key: 'fyThermostats',
-          label: 'Thermostats sold',
-          fullName: 'FY thermostats (all brands)',
+          label: `Thermostats sold${FUSION30_THERMOSTATS_FIT_ONLY}`,
+          fullName: `FY thermostats (all brands)${FUSION30_THERMOSTATS_FIT_ONLY}`,
           fill: 'rgba(0, 151, 224, 0.72)',
         },
         {
           key: 'fyConnected',
-          label: 'Connected thermostats',
-          fullName: 'FY connected thermostats',
+          label: `Wi-Fi Connected Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}`,
+          fullName: `FY Wi-Fi Connected Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}`,
           fill: 'rgba(13, 148, 136, 0.72)',
         },
       ]
@@ -3149,8 +3155,8 @@ function BusinessModelForecastFyBarsLegendRow({
           },
           {
             key: 'fyConnected',
-            label: 'Connected thermostats',
-            fullName: 'FY connected thermostats',
+            label: 'Wi-Fi Connected Thermostats',
+            fullName: 'FY Wi-Fi Connected Thermostats',
             fill: 'rgba(13, 148, 136, 0.72)',
           },
           {
@@ -3172,7 +3178,7 @@ function BusinessModelForecastFyBarsLegendRow({
       role="list"
       aria-label={
         thermostatOnly
-          ? 'Thermostats: FY26 through FY30 thermostats sold and connected'
+          ? `Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}: FY26 through FY30 thermostats sold and Wi-Fi Connected Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}`
           : omitThermostatSeries && omitSkyportHomeSeries && licenseNetNewStacked
             ? 'FY26 through FY30 net new bundled, 1-year, and lifetime active licenses by year (grouped bars)'
             : omitThermostatSeries && omitSkyportHomeSeries
@@ -3203,14 +3209,14 @@ function BusinessModelForecastCumulativeLegendRow({
     ? [
         {
           key: 'cumulative',
-          label: 'Thermostats sold',
-          fullName: 'Total thermostats sold (cumulative)',
+          label: `Thermostats sold${FUSION30_THERMOSTATS_FIT_ONLY}`,
+          fullName: `Total thermostats sold (cumulative)${FUSION30_THERMOSTATS_FIT_ONLY}`,
           fill: '#0097e0',
         },
         {
           key: 'connectedCumulative',
-          label: 'Connected',
-          fullName: 'Connected thermostats (cumulative)',
+          label: `Wi-Fi Connected Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}`,
+          fullName: `Wi-Fi Connected Thermostats (cumulative)${FUSION30_THERMOSTATS_FIT_ONLY}`,
           fill: '#0d9488',
         },
       ]
@@ -3268,8 +3274,8 @@ function BusinessModelForecastCumulativeLegendRow({
           },
           {
             key: 'connectedCumulative',
-            label: 'Connected',
-            fullName: 'Connected thermostats (cumulative)',
+            label: 'Wi-Fi Connected Thermostats',
+            fullName: 'Wi-Fi Connected Thermostats (cumulative)',
             fill: '#0d9488',
           },
           {
@@ -3291,7 +3297,7 @@ function BusinessModelForecastCumulativeLegendRow({
       role="list"
       aria-label={
         thermostatOnly
-          ? 'Thermostats: FY25 through FY30 cumulative thermostats sold and connected'
+          ? `Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}: FY25 through FY30 cumulative thermostats sold and Wi-Fi Connected Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}`
           : omitThermostatSeries && omitSkyportHomeSeries && licenseNetNewStacked
             ? 'FY25 through FY30 cumulative bundled, 1-year, and lifetime active licenses'
             : omitThermostatSeries && omitSkyportHomeSeries
@@ -3690,7 +3696,7 @@ function AllTimeSkyportHomeBetweenQ3Q4Overlay() {
 }
 
 /**
- * Right All-Time: thermostats sold + connected (+ optional active licenses + SkyportHome point).
+ * Right All-Time: thermostats sold + Wi-Fi Connected Thermostats (+ optional active licenses + SkyportHome point).
  * `simplified` (FY25 card top row only): omit red active-license line and purple SkyportHome overlay;
  * the duplicate row below keeps the full chart.
  */
@@ -3738,7 +3744,7 @@ function ThermostatRightAllTimeQuarterlyChart({ simplified = false }) {
         yAxisId="left"
         type="monotone"
         dataKey="connectedCumulative"
-        name="Connected thermostats (cumulative)"
+        name="Wi-Fi Connected Thermostats (cumulative)"
         stroke="#0d9488"
         strokeWidth={2.5}
         dot={{ r: 4, fill: '#0d9488', stroke: '#fff', strokeWidth: 2 }}
@@ -4091,14 +4097,14 @@ function Fusion30Fy26To30PillarMinis({
             className="fy26-mini-card-title fy25-thermostats-sales-connected-mini-title"
             id="fusion30-fy26-pillar-a-heading"
           >
-            Thermostats
+            Thermostats{FUSION30_THERMOSTATS_FIT_ONLY}
           </h4>
         </div>
         <Fusion30ForecastThermostatSoldConnectedTable />
         <div
           className="fy26-goals-outlook-chart fy26-fusion30-pillar-a-full-forecast"
           id="fusion30-forecast-outlook"
-          aria-label="Thermostats: FY25 through FY30 by-year and cumulative thermostats sold and connected"
+          aria-label={`Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}: FY25 through FY30 by-year and cumulative thermostats sold and Wi-Fi Connected Thermostats${FUSION30_THERMOSTATS_FIT_ONLY}`}
         >
           <div className="fy26-goals-outlook-chart-dual fy26-fusion30-pillar-forecast-dual">
             <div className="fy25-thermostat-sales-dual-grid">
@@ -4407,7 +4413,7 @@ export default function FY26() {
                       decoding="async"
                     />
                     <h4 className="fy26-mini-card-title fy25-thermostats-sales-connected-mini-title">
-                      Thermostats: Sales &amp; Connected
+                      Thermostats: Sales &amp; Wi-Fi Connected
                     </h4>
                   </div>
                   <div className="fy25-thermostat-funnel-hardware-with-footnote">
@@ -4472,6 +4478,7 @@ export default function FY26() {
                       <li>
                         Current SkyportHome Users:{' '}
                         <strong>~{SKYPORTHOME_ALL_TIME_VALUE.toLocaleString('en-US')}</strong>
+                        {' '}(93% of Wi-Fi Connected Thermostats)
                       </li>
                       <li>
                         User action/engagement analytics and MAU data capture{' '}
@@ -4615,7 +4622,7 @@ export default function FY26() {
           <section className="ds-section ds-section-single">
             <div className="ds-section-header" id="fy26-plan">
               <span className="ds-section-badge">2</span>
-              <h2 className="ds-section-title ds-section-title-single">FY26 – Operating Focus</h2>
+              <h2 className="ds-section-title ds-section-title-single">FY26 – Goals &amp; Objectives</h2>
             </div>
             {isDigitalPlatform ? (
               <div className="fy26-plan-cards">
@@ -5017,17 +5024,17 @@ export default function FY26() {
                             <td className="fy26-execution-plan-quarter">Q2–Q3 FY26</td>
                           </tr>
                           <tr>
+                            <td>Surface dealer‑initiated actions through consistent homeowner experiences</td>
+                            <td className="fy26-execution-plan-dependencies">UX design standards</td>
+                            <td className="fy26-execution-plan-quarter">Q2–Q3 FY26</td>
+                          </tr>
+                          <tr>
                             <td>
                               Establish recurring engagement loops across <strong>SkyportHome</strong> and{' '}
                               <strong>SkyportCare</strong>
                             </td>
                             <td className="fy26-execution-plan-dependencies">Notifications</td>
                             <td className="fy26-execution-plan-quarter">Q3–Q4 FY26</td>
-                          </tr>
-                          <tr>
-                            <td>Surface dealer‑initiated actions through consistent homeowner experiences</td>
-                            <td className="fy26-execution-plan-dependencies">UX design standards</td>
-                            <td className="fy26-execution-plan-quarter">Q2–Q3 FY26</td>
                           </tr>
                           <tr>
                             <td className="fy26-execution-plan-theme-name" rowSpan={3}>

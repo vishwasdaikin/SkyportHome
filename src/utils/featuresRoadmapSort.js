@@ -62,6 +62,16 @@ export function sortFeatureRows(rows, sortKey, sortDir) {
   return [...rows].sort((a, b) => {
     const cmp = compareFeatureRowsForSort(a, b, sortKey)
     if (cmp !== 0) return dir * cmp
+    // Same priority → order Target earlier → later (independent of priority asc/desc).
+    if (sortKey === 'priority') {
+      const tf = focusTimeframeRank(a.focusTimeframe) - focusTimeframeRank(b.focusTimeframe)
+      if (tf !== 0) return tf
+    }
+    // Same Target → lower priority number first (P1 before P2).
+    if (sortKey === 'focusTimeframe') {
+      const pr = priorityRank(a.priority) - priorityRank(b.priority)
+      if (pr !== 0) return pr
+    }
     return compareStrings(a.feature, b.feature)
   })
 }

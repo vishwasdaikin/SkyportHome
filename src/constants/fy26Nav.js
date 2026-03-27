@@ -20,7 +20,7 @@ const FY26_PAGE_NAV_SIMPLE = [
     label: 'FY26 PLAYBOOK',
     items: [
       { id: 'fy25-review', label: 'FY25 Review', num: 1 },
-      { id: 'fy26-plan', label: 'FY26 Tracker', num: 2 },
+      { id: 'fy26-plan', label: 'FY26 Goals & Objectives', num: 2 },
       { id: 'fusion30-summary', label: 'Fusion30 Summary', num: 3 },
     ],
   },
@@ -57,7 +57,7 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
     ],
   },
   {
-    label: 'FY26 TRACKER',
+    label: 'FY26 GOALS & OBJECTIVES',
     items: [
       {
         id: 'fy26-outcomes',
@@ -89,7 +89,7 @@ const FY26_PAGE_NAV_DIGITAL_PLATFORM = [
         subitems: [
           {
             id: 'fusion30-fy26-pillar-thermostats',
-            label: 'a — Thermostats',
+            label: 'a — Thermostats (FIT only)',
           },
           {
             id: 'fusion30-fy26-pillar-skyport-home',
