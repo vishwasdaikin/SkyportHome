@@ -1,4 +1,5 @@
-import { useState, useLayoutEffect, useEffect, useRef, useId } from 'react'
+import { useState, useLayoutEffect, useEffect, useRef, useId, createContext, useContext } from 'react'
+import { flushSync } from 'react-dom'
 import { useParams, Navigate, NavLink, useLocation } from 'react-router-dom'
 import {
   FY26_BASE,
@@ -88,6 +89,68 @@ const FY25_THERMOSTAT_MONTHLY_DATA = [
 
 /** Left FY monthly chart height (px). */
 const THERMOSTAT_FY_CHART_HEIGHT = 400
+
+/**
+ * Bumped on `beforeprint` / Download PDF so hosts re-measure width after print styles expand/collapse layout.
+ * (Recharts 3 no longer relies on remounting `ResponsiveContainer` — numeric size comes from measurement.)
+ */
+const Fy26PrintLayoutNonceContext = createContext(0)
+
+/**
+ * Recharts 3: `ResponsiveContainer` with width/height both as `%` waits on ResizeObserver; initial size is
+ * non-positive so charts render **null** until a resize — easy to stay blank in flex/`min-height:0` layouts and
+ * fragile around print. Supply **numeric** width × height so Recharts uses the fixed-dimension path immediately.
+ */
+function Fy26RechartsHost({ height: chartHeight, children }) {
+  const printNonce = useContext(Fy26PrintLayoutNonceContext)
+  const hostRef = useRef(null)
+  const [hostWidth, setHostWidth] = useState(0)
+
+  useLayoutEffect(() => {
+    const el = hostRef.current
+    if (!el) return undefined
+
+    const readWidth = () => {
+      const w = Math.round(el.getBoundingClientRect().width)
+      if (w > 0) {
+        setHostWidth((prev) => (prev !== w ? w : prev))
+      }
+    }
+
+    readWidth()
+    const raf = requestAnimationFrame(() => {
+      readWidth()
+    })
+
+    if (typeof ResizeObserver === 'undefined') {
+      return () => cancelAnimationFrame(raf)
+    }
+
+    const ro = new ResizeObserver(() => {
+      readWidth()
+    })
+    ro.observe(el)
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [chartHeight, printNonce])
+
+  return (
+    <div
+      ref={hostRef}
+      className="fy26-recharts-host"
+      style={{ height: chartHeight, minHeight: chartHeight, width: '100%' }}
+    >
+      {hostWidth > 0 ? (
+        <ResponsiveContainer width={hostWidth} height={chartHeight} debounce={0}>
+          {children}
+        </ResponsiveContainer>
+      ) : null}
+    </div>
+  )
+}
+
 /** Active licenses line — rusty orange (left monthly + All-Time charts, table accent). */
 const FY26_ACTIVE_LICENSES_LINE_COLOR = '#c25621'
 /** All-time chart: SkyportHome registered users (single point between Q3 and Q4 FY25). */
@@ -830,6 +893,7 @@ function BusinessModelForecastFyBarsChart({
     <ComposedChart
       data={FORECAST_YEARLY_CHART_DATA}
       margin={{ top: 22, right: 20, left: 16, bottom: 8 }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -967,6 +1031,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
     <LineChart
       data={FORECAST_CUMULATIVE_CHART_DATA}
       margin={{ top: 18, right: 20, left: 16, bottom: 4 }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -2231,11 +2296,12 @@ function SkyportPublicSentimentVerticalBars({ captionId = SKYPORT_PUBLIC_SENTIME
       aria-labelledby={captionId}
     >
       <div className="fy25-skyport-home-chart-inner fy25-skyport-home-chart-inner--public-vertical">
-        <ResponsiveContainer width="100%" height={288}>
+        <Fy26RechartsHost height={288}>
           <BarChart
             data={data}
             margin={{ top: 8, right: 8, left: 20, bottom: 4 }}
             barCategoryGap="18%"
+            isAnimationActive={false}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
@@ -2274,7 +2340,7 @@ function SkyportPublicSentimentVerticalBars({ captionId = SKYPORT_PUBLIC_SENTIME
               ))}
             </Bar>
           </BarChart>
-        </ResponsiveContainer>
+        </Fy26RechartsHost>
       </div>
     </div>
   )
@@ -2347,11 +2413,12 @@ function SkyportSupportHelpSentimentVerticalBars({ captionId = SKYPORT_SUPPORT_S
       aria-labelledby={captionId}
     >
       <div className="fy25-skyport-home-chart-inner fy25-skyport-home-chart-inner--support-vertical">
-        <ResponsiveContainer width="100%" height={288}>
+        <Fy26RechartsHost height={288}>
           <BarChart
             data={data}
             margin={{ top: 8, right: 8, left: 22, bottom: 4 }}
             barCategoryGap="18%"
+            isAnimationActive={false}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
@@ -2395,7 +2462,7 @@ function SkyportSupportHelpSentimentVerticalBars({ captionId = SKYPORT_SUPPORT_S
               ))}
             </Bar>
           </BarChart>
-        </ResponsiveContainer>
+        </Fy26RechartsHost>
       </div>
     </div>
   )
@@ -2563,6 +2630,35 @@ const SKYPORTHOME_UX_ENGAGEMENT_ROWS = [
   },
 ]
 
+function SkyportHomeUxEngagementFeedbackTable() {
+  return (
+    <div className="fy25-sh-table-scroll">
+      <table className="fy25-sh-table" aria-labelledby="fy25-sh-ux-engagement-heading">
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Key issues / requests</th>
+            <th scope="col">Frequency</th>
+            <th scope="col">Impact</th>
+            <th scope="col">Recommended action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {SKYPORTHOME_UX_ENGAGEMENT_ROWS.map((row) => (
+            <tr key={row.category}>
+              <th scope="row">{row.category}</th>
+              <td>{row.issues}</td>
+              <td className="fy25-sh-table-metric">{row.frequency}</td>
+              <td className="fy25-sh-table-metric">{row.impact}</td>
+              <td>{row.action}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 function SkyportHomeReviewTablesBlock() {
   return (
     <div className="fy25-skyport-home-review-tables" aria-label="SkyportHome store review and UX themes">
@@ -2594,74 +2690,45 @@ function SkyportHomeReviewTablesBlock() {
         </span>
       </p>
       <div className="fy25-skyport-home-review-tables-grid">
-          <div className="fy25-sh-table-panel">
-            <div className="fy25-sh-table-scroll">
-              <table
-                className="fy25-sh-table"
-                aria-labelledby="fy25-sh-store-reviews-heading"
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">Category</th>
-                    <th scope="col">Key issues / requests</th>
-                    <th scope="col">Frequency</th>
-                    <th scope="col">Impact</th>
-                    <th scope="col">Recommended action</th>
-                    <th scope="col" className="fy25-sh-table-col-num">
-                      # complaints
-                    </th>
+        <div className="fy25-sh-table-panel">
+          <div className="fy25-sh-table-scroll">
+            <table className="fy25-sh-table" aria-labelledby="fy25-sh-store-reviews-heading">
+              <thead>
+                <tr>
+                  <th scope="col">Category</th>
+                  <th scope="col">Key issues / requests</th>
+                  <th scope="col">Frequency</th>
+                  <th scope="col">Impact</th>
+                  <th scope="col">Recommended action</th>
+                  <th scope="col" className="fy25-sh-table-col-num">
+                    # complaints
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {SKYPORTHOME_STORE_REVIEWS_ROWS.map((row) => (
+                  <tr key={row.category}>
+                    <th scope="row">{row.category}</th>
+                    <td>
+                      <SkyportHomeReviewIssueSpans pairs={row.segments} />
+                    </td>
+                    <td className="fy25-sh-table-metric">{row.frequency}</td>
+                    <td className="fy25-sh-table-metric">{row.impact}</td>
+                    <td>{row.action}</td>
+                    <td className="fy25-sh-table-num">{row.complaints.toLocaleString()}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {SKYPORTHOME_STORE_REVIEWS_ROWS.map((row) => (
-                    <tr key={row.category}>
-                      <th scope="row">{row.category}</th>
-                      <td>
-                        <SkyportHomeReviewIssueSpans pairs={row.segments} />
-                      </td>
-                      <td className="fy25-sh-table-metric">{row.frequency}</td>
-                      <td className="fy25-sh-table-metric">{row.impact}</td>
-                      <td>{row.action}</td>
-                      <td className="fy25-sh-table-num">{row.complaints.toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="fy25-sh-table-panel">
-            <h5 className="fy25-sh-table-title" id="fy25-sh-ux-engagement-heading">
-              App Store and Play&nbsp;Store: UX &amp; Engagement Feedback
-            </h5>
-            <div className="fy25-sh-table-scroll">
-              <table
-                className="fy25-sh-table"
-                aria-labelledby="fy25-sh-ux-engagement-heading"
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">Category</th>
-                    <th scope="col">Key issues / requests</th>
-                    <th scope="col">Frequency</th>
-                    <th scope="col">Impact</th>
-                    <th scope="col">Recommended action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {SKYPORTHOME_UX_ENGAGEMENT_ROWS.map((row) => (
-                    <tr key={row.category}>
-                      <th scope="row">{row.category}</th>
-                      <td>{row.issues}</td>
-                      <td className="fy25-sh-table-metric">{row.frequency}</td>
-                      <td className="fy25-sh-table-metric">{row.impact}</td>
-                      <td>{row.action}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
+        <div className="fy25-sh-table-panel">
+          <h5 className="fy25-sh-table-title" id="fy25-sh-ux-engagement-heading">
+            App Store and Play&nbsp;Store: UX &amp; Engagement Feedback
+          </h5>
+          <SkyportHomeUxEngagementFeedbackTable />
+        </div>
+      </div>
     </div>
   )
 }
@@ -2683,8 +2750,8 @@ function SkyportHomeUserFeedbackCard({ expandDetailsOpen }) {
               <div className="fy25-skyport-home-subblock fy25-skyport-home-subblock--store-split">
                 <p id={SKYPORT_PUBLIC_SENTIMENT_CAPTION_ID} className="fy25-skyport-home-store-combined-intro">
                   <strong>Public Sentiment (Written Reviews):</strong>{' '}
-                  Based on ~{SKYPORT_PUBLIC_STORE_WRITTEN_REVIEWS_COUNT.toLocaleString()} App Store and Play Store reviews
-                  with text feedback.
+                  Based on ~{SKYPORT_PUBLIC_STORE_WRITTEN_REVIEWS_COUNT.toLocaleString()} App Store and Play Store
+                  reviews with text feedback.
                 </p>
                 <SkyportPublicSentimentVerticalBars />
               </div>
@@ -3415,6 +3482,7 @@ function SkyportHomeForecastFyUsersBarChart() {
     <BarChart
       data={FORECAST_YEARLY_CHART_DATA}
       margin={{ top: 22, right: 20, left: 16, bottom: 8 }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -3455,6 +3523,7 @@ function SkyportHomeForecastUsersCumulativeLineChart() {
     <LineChart
       data={FORECAST_CUMULATIVE_CHART_DATA}
       margin={{ top: 18, right: 20, left: 16, bottom: 4 }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -3508,6 +3577,7 @@ function ThermostatFyMonthlyChart({ fyId, showActiveLicensesLine = true }) {
         left: 16,
         bottom: 28,
       }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -3609,6 +3679,7 @@ function SkyportCareFyMonthlyLicenseChart({ fyId }) {
         left: 16,
         bottom: 16,
       }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -3710,6 +3781,7 @@ function ThermostatRightAllTimeQuarterlyChart({ simplified = false }) {
         left: 16,
         bottom: 28,
       }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid yAxisId="left" strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -3795,6 +3867,7 @@ function SkyportCareRightQuarterlyLineChart() {
         left: 16,
         bottom: 16,
       }}
+      isAnimationActive={false}
       {...{ overflow: 'visible' }}
     >
       <CartesianGrid yAxisId="left" strokeDasharray="3 3" stroke="var(--border)" fill="#fff" />
@@ -3945,9 +4018,9 @@ function Fy25ThermostatSalesDualChartsRow({
               showActiveLicensesLine={monthlyShowActiveLicenses}
             />
             <div className="fy25-thermostat-recharts-root fy25-skyportcare-monthly-recharts">
-              <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+              <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                 <ThermostatFyMonthlyChart fyId={chartTabId} showActiveLicensesLine={monthlyShowActiveLicenses} />
-              </ResponsiveContainer>
+              </Fy26RechartsHost>
             </div>
           </div>
         </div>
@@ -3957,9 +4030,9 @@ function Fy25ThermostatSalesDualChartsRow({
           <div className="fy25-skyportcare-monthly-chart-stack">
             <ThermostatAllTimeLegendRow simplified={allTimeChartSimplified} />
             <div className="fy25-thermostat-recharts-root fy25-skyportcare-monthly-recharts">
-              <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+              <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                 <ThermostatRightAllTimeQuarterlyChart simplified={allTimeChartSimplified} />
-              </ResponsiveContainer>
+              </Fy26RechartsHost>
             </div>
           </div>
         </div>
@@ -4043,9 +4116,9 @@ function Fy25SkyportCareDualChartsRow({ chartTabId, setChartTabId, idSuffix, tab
             <div className="fy25-skyportcare-monthly-chart-stack">
               <SkyportCareMonthlyLicenseLegendRow />
               <div className="fy25-thermostat-recharts-root fy25-skyportcare-monthly-recharts">
-                <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                   <SkyportCareFyMonthlyLicenseChart fyId={chartTabId} />
-                </ResponsiveContainer>
+                </Fy26RechartsHost>
               </div>
             </div>
           </div>
@@ -4058,9 +4131,9 @@ function Fy25SkyportCareDualChartsRow({ chartTabId, setChartTabId, idSuffix, tab
                 additionalEntries={SKYPORTCARE_QUARTERLY_LEGEND_ADDITIONAL_ENTRIES}
               />
               <div className="fy25-thermostat-recharts-root fy25-skyportcare-monthly-recharts">
-                <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                   <SkyportCareRightQuarterlyLineChart />
-                </ResponsiveContainer>
+                </Fy26RechartsHost>
               </div>
             </div>
           </div>
@@ -4136,9 +4209,9 @@ function Fusion30Fy26To30PillarMinis({
                     role="region"
                     aria-labelledby="fusion30-pillar-a-by-year-chart-heading"
                   >
-                    <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                    <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                       <BusinessModelForecastFyBarsChart thermostatSeriesOnly />
-                    </ResponsiveContainer>
+                    </Fy26RechartsHost>
                   </div>
                 </div>
               </div>
@@ -4150,9 +4223,9 @@ function Fusion30Fy26To30PillarMinis({
                     role="region"
                     aria-labelledby="fy26-forecast-alltime-chart-heading"
                   >
-                    <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                    <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                       <BusinessModelForecastAllTimeCumulativeChart thermostatSeriesOnly />
-                    </ResponsiveContainer>
+                    </Fy26RechartsHost>
                   </div>
                 </div>
               </div>
@@ -4214,9 +4287,9 @@ function Fusion30Fy26To30PillarMinis({
                     role="region"
                     aria-labelledby="fusion30-pillar-b-by-year-chart-heading"
                   >
-                    <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                    <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                       <SkyportHomeForecastFyUsersBarChart />
-                    </ResponsiveContainer>
+                    </Fy26RechartsHost>
                   </div>
                 </div>
               </div>
@@ -4228,9 +4301,9 @@ function Fusion30Fy26To30PillarMinis({
                     role="region"
                     aria-labelledby="fy26-fusion30-pillar-b-cumulative-users-heading"
                   >
-                    <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                    <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                       <SkyportHomeForecastUsersCumulativeLineChart />
-                    </ResponsiveContainer>
+                    </Fy26RechartsHost>
                   </div>
                 </div>
               </div>
@@ -4287,19 +4360,50 @@ function Fusion30Fy26To30PillarMinis({
                 role="region"
                 aria-labelledby="fy26-fusion30-pillar-c-cumulative-forecast-heading"
               >
-                <ResponsiveContainer width="100%" height={THERMOSTAT_FY_CHART_HEIGHT}>
+                <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
                   <BusinessModelForecastAllTimeCumulativeChart
                     omitThermostatSeries
                     omitSkyportHomeSeries
                     licenseNetNewStacked
                   />
-                </ResponsiveContainer>
+                </Fy26RechartsHost>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+function Fy26DownloadPdfButton({ onClick }) {
+  return (
+    <button
+      type="button"
+      className="fy26-print-pdf-btn"
+      onClick={onClick}
+      title="Opens print — choose Save as PDF (or Microsoft Print to PDF) to download."
+      aria-label="Download this page as PDF via your browser print dialog"
+    >
+      <svg
+        className="fy26-print-pdf-btn-icon"
+        width={16}
+        height={16}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 3v12m0 0l4-4m-4 4L8 11M5 21h14"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span>Download PDF</span>
+    </button>
   )
 }
 
@@ -4331,22 +4435,11 @@ export default function FY26() {
 
   const allTimeFunnel = enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
   const businessModelDetailsRef = useRef(null)
-  const [presentModeOpen, setPresentModeOpen] = useState(false)
+  const prePrintSnapshotRef = useRef(null)
+  const [printLayoutNonce, setPrintLayoutNonce] = useState(0)
+  const [printPrepOpen, setPrintPrepOpen] = useState(false)
   const [installedFunnelLicenseBreakdownOpen, setInstalledFunnelLicenseBreakdownOpen] = useState(false)
   const [skyportHomeFeedbackExpanded, setSkyportHomeFeedbackExpanded] = useState(false)
-  useLayoutEffect(() => {
-    if (!presentModeOpen) return undefined
-    setShowPlannedDetails(true)
-    setOutcomeExpanded({ a: true, b: true, c: true, d: true })
-    if (businessModelDetailsRef.current) businessModelDetailsRef.current.open = true
-    if (isDigitalPlatform) {
-      setInstalledFunnelLicenseBreakdownOpen(true)
-      setInstalledFunnelLicenseBreakdownOpenFusion30(true)
-      setSkyportHomeFeedbackExpanded(true)
-    }
-    return undefined
-  }, [presentModeOpen, isDigitalPlatform])
-
   useLayoutEffect(() => {
     const id = location.hash.replace(/^#/, '')
     if (!FY26_INPAGE_HASH_IDS.includes(id)) return
@@ -4364,7 +4457,100 @@ export default function FY26() {
     el.scrollIntoView({ block: 'start', behavior: 'auto' })
   }, [location.hash, sectionId, isDigitalPlatform])
 
+  useEffect(() => {
+    function onAfterPrint() {
+      const snap = prePrintSnapshotRef.current
+      if (!snap) return
+      prePrintSnapshotRef.current = null
+      setPrintPrepOpen(false)
+      setShowPlannedDetails(snap.showPlannedDetails)
+      setOutcomeExpanded(snap.outcomeExpanded)
+      setSkyportHomeFeedbackExpanded(snap.skyportHomeFeedbackExpanded)
+      setInstalledFunnelLicenseBreakdownOpen(snap.installedFunnelLicenseBreakdownOpen)
+      setInstalledFunnelLicenseBreakdownOpenFusion30(snap.installedFunnelLicenseBreakdownOpenFusion30)
+      queueMicrotask(() => {
+        if (businessModelDetailsRef.current) {
+          businessModelDetailsRef.current.open = snap.businessModelDetailsOpen
+        }
+      })
+    }
+    window.addEventListener('afterprint', onAfterPrint)
+    return () => window.removeEventListener('afterprint', onAfterPrint)
+  }, [])
+
+  useEffect(() => {
+    function bumpResize() {
+      window.dispatchEvent(new Event('resize'))
+    }
+    function onBeforePrint() {
+      flushSync(() => {
+        if (isDigitalPlatform) {
+          setSkyportHomeFeedbackExpanded(true)
+          setShowPlannedDetails(true)
+          setOutcomeExpanded({ a: true, b: true, c: true, d: true })
+          setInstalledFunnelLicenseBreakdownOpen(true)
+          setInstalledFunnelLicenseBreakdownOpenFusion30(true)
+        }
+        setPrintLayoutNonce((n) => n + 1)
+      })
+      if (isDigitalPlatform && businessModelDetailsRef.current) {
+        businessModelDetailsRef.current.open = true
+      }
+      bumpResize()
+      requestAnimationFrame(bumpResize)
+      queueMicrotask(bumpResize)
+      setTimeout(bumpResize, 0)
+      setTimeout(bumpResize, 80)
+      setTimeout(bumpResize, 220)
+    }
+    window.addEventListener('beforeprint', onBeforePrint)
+    return () => window.removeEventListener('beforeprint', onBeforePrint)
+  }, [isDigitalPlatform])
+
+  function handleSaveAsPdf() {
+    prePrintSnapshotRef.current = {
+      showPlannedDetails,
+      outcomeExpanded: { ...outcomeExpanded },
+      skyportHomeFeedbackExpanded,
+      installedFunnelLicenseBreakdownOpen,
+      installedFunnelLicenseBreakdownOpenFusion30,
+      businessModelDetailsOpen: businessModelDetailsRef.current?.open ?? false,
+    }
+    flushSync(() => {
+      setPrintPrepOpen(true)
+      setShowPlannedDetails(true)
+      setOutcomeExpanded({ a: true, b: true, c: true, d: true })
+      setSkyportHomeFeedbackExpanded(true)
+      setInstalledFunnelLicenseBreakdownOpen(true)
+      setInstalledFunnelLicenseBreakdownOpenFusion30(true)
+    })
+    if (businessModelDetailsRef.current) businessModelDetailsRef.current.open = true
+
+    const bumpResize = () => window.dispatchEvent(new Event('resize'))
+    const runPrint = () => {
+      flushSync(() => {
+        setPrintLayoutNonce((n) => n + 1)
+      })
+      bumpResize()
+      requestAnimationFrame(() => {
+        bumpResize()
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            bumpResize()
+            window.print()
+          }, 120)
+        })
+      })
+    }
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        setTimeout(runPrint, 400)
+      })
+    })
+  }
+
   return (
+    <Fy26PrintLayoutNonceContext.Provider value={printLayoutNonce}>
     <article className={`fy26-page${isDigitalPlatform ? '' : ' fy26-page--simple'}`}>
       <header className="ds-header fy26-header">
         <div className="fy26-header-title-row">
@@ -4377,13 +4563,12 @@ export default function FY26() {
         <div className="ds-layout fy26-layout">
         <FY26PageNav
           sectionId={sectionId}
-          presentOpen={presentModeOpen}
-          onPresentOpenChange={setPresentModeOpen}
-          installedFunnelLicenseBreakdownOpen={
-            isDigitalPlatform ? installedFunnelLicenseBreakdownOpen : undefined
-          }
-          onInstalledFunnelLicenseBreakdownOpenChange={
-            isDigitalPlatform ? setInstalledFunnelLicenseBreakdownOpen : undefined
+          businessModelDownloadPdf={
+            isDigitalPlatform ? (
+              <div className="fy26-page-nav-business-model-pdf">
+                <Fy26DownloadPdfButton onClick={handleSaveAsPdf} />
+              </div>
+            ) : null
           }
         />
         <div className="ds-sections">
@@ -4395,6 +4580,7 @@ export default function FY26() {
               </h2>
             </div>
             {sectionId === 'digital-platform' ? (
+            <>
             <ThermostatLocationsMapProvider>
             <div className="fy25-review-body">
               <div className="fy25-monthly-chart-wrap">
@@ -4611,6 +4797,7 @@ export default function FY26() {
               </div>
             </div>
             </ThermostatLocationsMapProvider>
+            </>
             ) : (
             <div className="ds-content">
               <p className="ds-subheading"><strong>Results vs plan</strong></p>
@@ -5129,7 +5316,9 @@ export default function FY26() {
                       sequencing within FY26. &ldquo;Ongoing&rdquo; items represent operating model changes and
                       cadence, not discrete feature delivery milestones.
                     </p>
-                    <Fy26DigitalAppsRoadmapEmbeds forceExpandRoadmaps={presentModeOpen} />
+                    <Fy26DigitalAppsRoadmapEmbeds
+                      forceExpandRoadmaps={printPrepOpen}
+                    />
                   </div>
                   <div className="fy26-mini-card" id="fy26-interaction-alignment">
                     <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
@@ -5290,5 +5479,6 @@ export default function FY26() {
       </div>
       </div>
     </article>
+    </Fy26PrintLayoutNonceContext.Provider>
   )
 }

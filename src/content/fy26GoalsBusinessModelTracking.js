@@ -108,6 +108,12 @@ function getFy26ActivityRow() {
   return getDigitalPlatformsForecastYearlyChartData().find((r) => r.period === 'FY26') ?? null
 }
 
+/** FY26 SkyportHome users (net new vs prior FY EOY) — same basis as business model / funnel `totalUsers`. */
+function getFy26ModelSkyportHomeUsersNetNew() {
+  const row = getFy26ActivityRow()
+  return row?.fySkyportHomeUsers ?? 0
+}
+
 function getFy26FunnelCol() {
   return getDigitalPlatformsForecastFunnelColumnsForTable().find((c) => c.id === 'FY26') ?? null
 }
@@ -210,8 +216,15 @@ export const FY26_TARGET_METRICS_THERMOSTATS = [
   },
 ]
 
+const FY26_SKYPORTHOME_USERS_NET_NEW_FROM_MODEL = getFy26ModelSkyportHomeUsersNetNew()
+
 export const FY26_TARGET_METRICS_SKYPORTHOME = [
-  { id: 'users', label: 'Users', target: '133,920', actual: null },
+  {
+    id: 'users',
+    label: 'Users',
+    target: FY26_SKYPORTHOME_USERS_NET_NEW_FROM_MODEL.toLocaleString('en-US'),
+    actual: null,
+  },
 ]
 
 export const FY26_TARGET_METRICS_SKYPORTCARE = [
@@ -237,7 +250,11 @@ export const FY26_TARGET_METRICS_ALL_COLUMNS = [
  * Left chart order: Thermostats sold, Wi‑Fi Connected Thermostats, Users.
  * Right chart order: Dealer participation, 1‑Year Active Licenses, Lifetime Active Licenses.
  */
-export const FY26_TARGET_METRICS_MONTHLY_CHART_LEFT = [240_000, 144_000, 133_920]
+export const FY26_TARGET_METRICS_MONTHLY_CHART_LEFT = [
+  240_000,
+  144_000,
+  FY26_SKYPORTHOME_USERS_NET_NEW_FROM_MODEL,
+]
 
 export const FY26_TARGET_METRICS_MONTHLY_CHART_RIGHT = [
   FY26_SKYPORTCARE_DEALER_PARTICIPATION_TARGET,

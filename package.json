@@ -10,6 +10,7 @@
     "build:city-hotspots": "node scripts/build-city-hotspots.cjs",
     "build": "npm run build:city-state-data && npm run build:city-hotspots && vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "preview": "vite preview",
+    "pdf:fy26": "node scripts/print-fy26-pdf.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -35,6 +36,7 @@
     "country-state-city": "^3.2.1",
     "jsdom": "^29.0.0",
     "postcss": "^8.5.8",
+    "puppeteer-core": "^24.15.0",
     "tailwindcss": "^4.2.1",
     "vite": "^5.1.0",
     "vitest": "^4.1.0",

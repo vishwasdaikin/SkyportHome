@@ -900,10 +900,6 @@
   margin-bottom: 0;
 }
 
-.fy25-skyport-home-charts-mini .fy25-skyport-home-data-summary__list {
-  margin-bottom: 0.85rem;
-}
-
 .fy25-skyportcare-charts-mini {
   margin-bottom: 1.15rem;
   padding: 1rem 1.15rem 0.2rem;
@@ -2436,6 +2432,14 @@
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--text-secondary, #64748b);
+}
+
+/* Explicit-size parent for ResponsiveContainer (avoids 0×0 in flex / print). */
+.fy26-recharts-host {
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  position: relative;
 }
 
 /* Remove stray gap below Recharts SVG (inline layout / descenders) */
@@ -5398,6 +5402,432 @@ ul.fy25-feature-desc li {
 .fy26-outcome-detail-item .fy26-goal-colon-value {
   font-weight: 400;
   color: #000;
+}
+
+/* Download PDF — uses browser print → Save as PDF (Digital Apps: under left nav Business model) */
+.fy26-page-nav-business-model-pdf {
+  margin-top: 1rem;
+  padding-top: 0.35rem;
+  margin-bottom: 0.2rem;
+}
+
+.fy26-print-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #fff;
+  background: var(--daikin-blue);
+  border: 1px solid var(--daikin-blue);
+  border-radius: 6px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.fy26-print-pdf-btn-icon {
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.fy26-print-pdf-btn:hover {
+  background: var(--daikin-blue-dark, #004a9e);
+  border-color: var(--daikin-blue-dark, #004a9e);
+  color: #fff;
+}
+
+.fy26-print-pdf-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.55);
+}
+
+@media print {
+  @page {
+    margin: 12mm 12mm;
+    size: auto;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* FY26 route: drop main padding reserved for fixed header */
+  body:has(.fy26-page) .app-main {
+    padding-top: 0.25rem !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .app-header,
+  .back-to-top,
+  .fy26-page .fy26-page-nav {
+    display: none !important;
+  }
+
+  .fy26-print-pdf-btn {
+    display: none !important;
+  }
+
+  /*
+   * Controls that do nothing in a static PDF — hide for a cleaner, professional export.
+   */
+  .fy26-page .fy25-skyport-home-feedback-details-link,
+  .fy26-page #skyport-home-feedback-expand-btn,
+  .fy26-page .fy25-skyport-home-expand-trigger,
+  .fy26-page .fy26-outcome-collapse-trigger,
+  .fy26-page .fy26-digital-apps-roadmap-toggle,
+  .fy26-page .fy25-chart-tabs,
+  .fy26-page .fy25-funnel-alp-expand,
+  .fy26-page .fy25-funnel-metric-help,
+  .fy26-page .fy25-funnel-metric-tooltip,
+  .fy26-page .fy26-strategic-themes-bulk-btn {
+    display: none !important;
+  }
+
+  /* Roadmap tables: show column titles as plain text (no sort affordance in PDF). */
+  .fy26-page .features-sort-header-btn {
+    appearance: none;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    text-align: inherit;
+    cursor: default !important;
+    pointer-events: none;
+    box-shadow: none !important;
+  }
+
+  .fy26-page .features-sort-indicator {
+    display: none !important;
+  }
+
+  /* Nested roadmap rows: initiative / category rows read as plain text (no chevron buttons). */
+  .fy26-page .fy26-roadmap-embed-tier-toggle {
+    appearance: none;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    text-align: left;
+    width: 100%;
+    cursor: default !important;
+    pointer-events: none;
+    box-shadow: none !important;
+  }
+
+  .fy26-page .fy26-roadmap-embed-tier-chevron {
+    display: none !important;
+  }
+
+  /* <details> business model: keep content open in PDF without disclosure chrome */
+  .fy26-page .fy26-business-model-summary {
+    list-style: none;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .fy26-page .fy26-business-model-summary::-webkit-details-marker,
+  .fy26-page .fy26-business-model-summary::marker {
+    display: none !important;
+  }
+
+  /*
+   * FY25 Review flow: end page 1 on Thermostats (incl. takeaway); start SkyportHome on page 2
+   * so the card + charts are not split awkwardly across pages.
+   */
+  .fy26-page #skyport-home.fy25-skyport-home-mini-stack {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .fy26-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .fy26-page-transition-surface {
+    animation: none !important;
+  }
+
+  .fy26-page .fy26-layout {
+    display: block !important;
+  }
+
+  .fy26-page .ds-sections,
+  .fy26-page .ds-section-single {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .fy26-page .ds-header.fy26-header {
+    margin-top: 0;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #cbd5e1;
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  .fy26-section-dropdown-menu,
+  .fy26-section-dropdown-backdrop {
+    display: none !important;
+  }
+
+  .fy26-section-dropdown-caret {
+    display: none !important;
+  }
+
+  .fy26-playbook-heading-trigger {
+    color: #000 !important;
+    pointer-events: none;
+  }
+
+  .fy26-page .ds-section-header {
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  /*
+   * Long cards: allow breaks so content isn’t clipped when taller than one page.
+   * Mini “heads” / single tables: try to keep on one page when short enough.
+   */
+  .fy26-page .fy26-mini-card,
+  .fy26-page .fy25-planned-card,
+  .fy26-page .fy25-monthly-chart-wrap,
+  .fy26-page .fy26-plan-cards .fy26-mini-card,
+  .fy26-page .fy26-fusion30-section .fy26-mini-card {
+    break-inside: auto;
+    page-break-inside: auto;
+    box-shadow: none !important;
+  }
+
+  .fy26-page .fy25-app-mini-card-head {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .fy26-page .fy26-execution-plan-table-wrap {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  /*
+   * Tables in PDF: do not split through rows (cleaner than mid-row cuts).
+   * thead repeats on each printed page; allow breaks between rows only.
+   */
+  .fy26-page table {
+    break-inside: auto;
+    page-break-inside: auto;
+    border-collapse: collapse;
+  }
+
+  .fy26-page thead {
+    display: table-header-group;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Keep column header row(s) with the first body row (avoid thead alone at page bottom). */
+  .fy26-page thead tr {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .fy26-page tbody tr:first-child {
+    break-before: avoid;
+    page-break-before: avoid;
+  }
+
+  .fy26-page tfoot {
+    display: table-footer-group;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .fy26-page tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Titles / legends directly above a table stay with that table’s header. */
+  .fy26-page .fy25-sh-table-title,
+  .fy26-page .fy25-skyport-home-review-tables-legend {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .fy26-page .fy25-sh-table-panel .fy25-sh-table-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Keep section titles attached to the block that follows (table, chart stack, etc.) */
+  .fy26-page h4.fy26-mini-card-title,
+  .fy26-page .fy25-visual-title,
+  .fy26-page .fy25-app-mini-card-head,
+  .fy26-page .fy26-goals-bm-tracking-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Small 2-row forecast / target blocks: prefer one page over a lone header */
+  .fy26-page .fy26-fusion30-forecast-skyport-home-table-wrap,
+  .fy26-page .fy26-target-metrics-table-scroll {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Horizontal scroll regions → full width on paper */
+  .fy26-business-model-scroll,
+  .fy26-page .fy25-sh-table-scroll,
+  .fy26-page .fy25-funnel-table-scroll,
+  .fy26-page .fy26-execution-plan-table-wrap,
+  .fy26-page .fy25-state-detail-table-wrap,
+  .fy26-page .fy26-target-metrics-table-scroll,
+  .fy26-page .features-table-wrap {
+    overflow: visible !important;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: unset !important;
+  }
+
+  .fy26-business-model-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 8.25pt !important;
+    line-height: 1.28 !important;
+  }
+
+  .fy26-business-model-table th,
+  .fy26-business-model-table td {
+    padding: 0.18rem 0.32rem !important;
+  }
+
+  .fy26-page .fy25-funnel-table,
+  .fy26-page .fy25-sh-table,
+  .fy26-page .fy26-execution-plan-table {
+    font-size: 8.5pt !important;
+  }
+
+  /*
+   * Recharts measures the parent; print flex/grid + min-height:0 often yields 0×0.
+   * Lock host + container height; avoid page-break-inside on the SVG wrapper (Chrome can omit paint).
+   */
+  .fy26-page .fy25-thermostat-sales-dual-grid,
+  .fy26-page .fy25-skyportcare-dual-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto auto !important;
+    width: 100% !important;
+  }
+
+  .fy26-page .fy25-thermostat-sales-dual-grid-panel--left,
+  .fy26-page .fy25-thermostat-sales-dual-grid-panel--right,
+  .fy26-page .fy25-skyportcare-dual-grid-panel--left,
+  .fy26-page .fy25-skyportcare-dual-grid-panel--right {
+    min-height: 460px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .fy26-page .fy25-thermostat-chart-panel,
+  .fy26-page .fy25-skyportcare-chart-panel {
+    min-height: 440px !important;
+    width: 100% !important;
+  }
+
+  .fy26-page .fy25-skyportcare-monthly-chart-stack {
+    min-height: 420px !important;
+    width: 100% !important;
+  }
+
+  .fy26-page .fy26-recharts-host {
+    width: 100% !important;
+    min-width: 240px !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .fy26-page .fy25-thermostat-recharts-root,
+  .fy26-page .fy25-skyportcare-monthly-recharts {
+    min-height: 400px !important;
+    height: 400px !important;
+    width: 100% !important;
+  }
+
+  .fy26-page .recharts-responsive-container {
+    width: 100% !important;
+    min-height: 400px !important;
+    height: 400px !important;
+    max-width: 100% !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .fy26-page .recharts-wrapper {
+    width: 100% !important;
+    min-height: 400px !important;
+    max-width: 100% !important;
+  }
+
+  .fy26-page .recharts-surface {
+    overflow: visible !important;
+    max-width: 100% !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* SkyportHome feedback: keep intro + chart together; reduce orphan blocks across pages */
+  .fy26-page .fy25-skyport-home-store-combined-intro,
+  .fy26-page .fy25-skyport-home-support-combined-intro {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .fy26-page .fy25-skyport-home-chart-wrap--public-vertical,
+  .fy26-page .fy25-skyport-home-chart-wrap--support-vertical {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Target metrics placeholders: show plan bars in PDF without the screen overlay */
+  .fy26-page .fy26-tm-monthly-placeholder-overlay {
+    display: none !important;
+  }
+
+  .fy26-page .fy25-skyport-home-chart-wrap--public-vertical .recharts-responsive-container,
+  .fy26-page .fy25-skyport-home-chart-wrap--support-vertical .recharts-responsive-container {
+    min-height: 288px !important;
+    height: 288px !important;
+  }
+
+  .fy26-page p,
+  .fy26-page li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .fy26-page a[href^='/'],
+  .fy26-page a[href^='http'] {
+    text-decoration: none;
+    color: inherit;
+  }
 }
 
 .fy26-strategic-themes-header {

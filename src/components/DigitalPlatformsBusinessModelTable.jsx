@@ -81,7 +81,7 @@ export function DigitalPlatformsBusinessModelTable() {
           />
           <DataRow
             label="Altherma volume"
-            values={['', '700', '4,000', '11,500', '20,000', '25,000']}
+            values={['', '840', '4,800', '13,800', '24,000', '30,000']}
           />
           <DataRow
             label="FY thermostats (all brands)"
@@ -127,11 +127,11 @@ export function DigitalPlatformsBusinessModelTable() {
           />
           <DataRow
             label="Altherma users"
-            values={['', '35', '400', '2,300', '6,000', '10,000']}
+            values={['', '42', '480', '2,760', '7,200', '12,000']}
           />
           <DataRow
             label="Total users"
-            values={['317,130', '467,335', '719,310', '1,147,110', '1,781,610', '2,612,410']}
+            values={['317,130', '467,342', '719,397', '1,147,657', '1,783,357', '2,616,157']}
           />
 
           <SubHeadRow title="SkyportCare" pillar="skyport-care" />

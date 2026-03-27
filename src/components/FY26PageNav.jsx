@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FY26_BASE, FY26_TOP_NAV_TITLES, getFy26PageNavGroups } from '../constants/fy26Nav'
-import { Fy26PresentMode } from './Fy26PresentMode'
+import { FY26_BASE, getFy26PageNavGroups } from '../constants/fy26Nav'
 
-export default function FY26PageNav({
-  sectionId,
-  presentOpen,
-  onPresentOpenChange,
-  installedFunnelLicenseBreakdownOpen,
-  onInstalledFunnelLicenseBreakdownOpenChange,
-}) {
+export default function FY26PageNav({ sectionId, businessModelDownloadPdf = null }) {
   const location = useLocation()
   const groups = useMemo(() => getFy26PageNavGroups(sectionId), [sectionId])
   /** Leaf targets for hash match, scroll spy, and observers (expands Results subitems). */
@@ -20,22 +13,6 @@ export default function FY26PageNav({
       ),
     [groups],
   )
-  /** Top-level nav rows only — Results stays one slide even when it has subitems. */
-  const presentSlideItems = useMemo(
-    () =>
-      groups.flatMap((g) =>
-        g.items.map((item) =>
-          item.subitems?.length ? { id: item.id, label: item.label, num: item.num } : item,
-        ),
-      ),
-    [groups],
-  )
-
-  /** Digital Apps: skip full `fy25-review` slice (would duplicate section header). */
-  const presentSlides = useMemo(() => {
-    if (sectionId !== 'digital-platform') return presentSlideItems
-    return presentSlideItems.filter((i) => i.id !== 'fy25-review')
-  }, [sectionId, presentSlideItems])
 
   const [activeId, setActiveId] = useState(() => {
     const h = location.hash.replace(/^#/, '')
@@ -111,29 +88,13 @@ export default function FY26PageNav({
                     <span className="ds-nav-num">{String(item.num).padStart(2, '0')}</span>
                     {item.label}
                   </Link>
+                  {item.id === 'digital-platforms-business-model' && businessModelDownloadPdf}
                 </li>
               ),
             )}
           </ol>
         </div>
       ))}
-      <div className="fy26-page-nav-present">
-        <button
-          type="button"
-          className="fy26-present-nav-btn--sidebar"
-          onClick={() => onPresentOpenChange?.(true)}
-        >
-          Present
-        </button>
-      </div>
-      <Fy26PresentMode
-        open={presentOpen}
-        onClose={() => onPresentOpenChange?.(false)}
-        slides={presentSlides}
-        deckTitle={`FY26 — ${FY26_TOP_NAV_TITLES[sectionId] ?? 'Playbook'}`}
-        installedFunnelLicenseBreakdownOpen={installedFunnelLicenseBreakdownOpen}
-        onInstalledFunnelLicenseBreakdownOpenChange={onInstalledFunnelLicenseBreakdownOpenChange}
-      />
     </nav>
   )
 }
