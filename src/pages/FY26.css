@@ -3747,14 +3747,14 @@ ul.fy25-feature-desc li {
 
 .fy26-operating-priority-card__text {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--fy26-card-body);
   line-height: 1.55;
   font-weight: 500;
   color: #fff;
 }
 
 .fy26-operating-priority-card__label {
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
 }
 
@@ -4921,9 +4921,8 @@ ul.fy25-feature-desc li {
   padding: 1rem 1.15rem;
   font-size: 15px;
   line-height: 1.55;
-  color: var(--text-primary, #0f172a);
-  background: #fff;
-  border: 3px solid var(--daikin-blue-dark, #0077b8);
+  color: #fff;
+  background: #0b2a4a;
   border-radius: 8px;
 }
 
