@@ -107,7 +107,15 @@ function formatFeatureContent(featureText) {
   return featureText
 }
 
-export default function SkyportCare() {
+export default function SkyportCare({
+  pageTitle = 'SkyportCare',
+  pageTagline = 'Dealer execution at scale — the dealer operating layer across the full lifecycle.',
+  roadmapRows = skyportCareFeaturesRows,
+  progressScope = 'skyportCare',
+  persistProgress = true,
+  initialDone = Array.from(skyportCareFeaturesDone),
+  initialPartial = Array.from(skyportCareFeaturesPartial),
+}) {
   const location = useLocation()
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -118,12 +126,13 @@ export default function SkyportCare() {
   const [viewMode, setViewMode] = useState('grouped')
   const [openGroups, setOpenGroups] = useState(new Set())
   const [showCategoryChart, setShowCategoryChart] = useState(false)
-  const { getStatus } = useFeatureProgress('skyportCare', {
-    initialDone: Array.from(skyportCareFeaturesDone),
-    initialPartial: Array.from(skyportCareFeaturesPartial),
+  const { getStatus } = useFeatureProgress(progressScope, {
+    persist: persistProgress,
+    initialDone,
+    initialPartial,
   })
 
-  const rowsWithGroups = useMemo(() => getRowsWithGroups(skyportCareFeaturesRows), [])
+  const rowsWithGroups = useMemo(() => getRowsWithGroups(roadmapRows), [roadmapRows])
   const filteredRows = useMemo(() => filterRows(rowsWithGroups, search), [rowsWithGroups, search])
   const sortedRows = useMemo(
     () => sortFeatureRows(filteredRows, sortConfig.key, sortConfig.dir),
@@ -154,10 +163,8 @@ export default function SkyportCare() {
   return (
     <article className="skyport-care-page">
       <header className="skyport-care-header">
-        <h1>SkyportCare</h1>
-        <p className="skyport-care-tagline">
-          Dealer execution at scale — the dealer operating layer across the full lifecycle.
-        </p>
+        <h1>{pageTitle}</h1>
+        <p className="skyport-care-tagline">{pageTagline}</p>
         <figure className="skyport-care-hero">
           <img
             src={`${import.meta.env.BASE_URL}images/skyport-care-hero.png`}

@@ -5,19 +5,15 @@ function localDataUrl(file) {
   return `${base.replace(/\/?$/, '/')}${file.replace(/^\//, '')}`
 }
 
-/** Dev: Vite plugin reads xlsx from disk. Prod: static JSON from `npm run export-roadmaps`. */
-const SHEET_JSON_URL = import.meta.env.DEV
-  ? '/local-data/test-sheet.json'
-  : localDataUrl('generated-roadmaps/test-sheet.json')
+const CARE_ROADMAP_JSON_URL = import.meta.env.DEV
+  ? '/local-data/skyport-care-roadmap.json'
+  : localDataUrl('generated-roadmaps/skyport-care-roadmap.json')
 
 /**
- * Loads rows from Test.xlsx (project root) via the dev-server plugin.
- * Polls every `pollMs` while in dev so edits in Excel show up without refresh.
- *
- * Production: this URL is not served by Vite — use a real API or put a JSON/CSV
- * in `public/` and change the fetch URL.
+ * Loads SkyportCare_Roadmap.xlsx (project root) via dev-server plugin.
+ * Same polling pattern as useTestSheetData.
  */
-export function useTestSheetData({ pollMs = 4000 } = {}) {
+export function useSkyportCareRoadmapData({ pollMs = 4000 } = {}) {
   const [sheetNames, setSheetNames] = useState([])
   /** @type {Record<string, unknown[]>} */
   const [sheets, setSheets] = useState({})
@@ -27,10 +23,10 @@ export function useTestSheetData({ pollMs = 4000 } = {}) {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch(`${SHEET_JSON_URL}?t=${Date.now()}`, { cache: 'no-store' })
+      const res = await fetch(`${CARE_ROADMAP_JSON_URL}?t=${Date.now()}`, { cache: 'no-store' })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
-        throw new Error(json.error || res.statusText || 'Failed to load sheet')
+        throw new Error(json.error || res.statusText || 'Failed to load SkyportCare roadmap')
       }
       const names = Array.isArray(json.sheetNames) ? json.sheetNames : []
       const byName = json.sheets && typeof json.sheets === 'object' ? json.sheets : {}
@@ -55,7 +51,6 @@ export function useTestSheetData({ pollMs = 4000 } = {}) {
     return () => clearInterval(id)
   }, [load, pollMs])
 
-  /** Rows for one tab (convenience). */
   const getRows = useCallback(
     (name) => {
       if (!name || !sheets[name]) return []
@@ -73,7 +68,6 @@ export function useTestSheetData({ pollMs = 4000 } = {}) {
     loading,
     error,
     refetch: load,
-    /** first sheet name, if any */
     defaultSheetName: sheetNames[0] ?? null,
   }
 }

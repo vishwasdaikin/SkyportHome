@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "dev:host": "vite --host",
+    "export-roadmaps": "node scripts/export-roadmap-xlsx-to-public.mjs",
     "build:city-state-data": "node scripts/build-city-counts-by-us-state.cjs",
     "build:city-hotspots": "node scripts/build-city-hotspots.cjs",
-    "build": "npm run build:city-state-data && npm run build:city-hotspots && vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
+    "build": "npm run export-roadmaps && npm run build:city-state-data && npm run build:city-hotspots && vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "preview": "vite preview",
     "pdf:fy26": "node scripts/print-fy26-pdf.mjs",
     "test": "vitest run",

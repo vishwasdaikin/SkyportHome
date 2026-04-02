@@ -8,8 +8,9 @@ import {
 } from '../utils/fiscalYearWideSheetChart'
 
 /**
- * Demo: charts ./Test.xlsx (project root). FY## sheets use wide layout (months as columns);
- * defaults to FY23 + "Monthly Daikin Smart Thermostat Sales" when present.
+ * Demo: charts a local workbook from project root (prefers SkyportHome_Roadmap.xlsx,
+ * then Test.xlsx). FY## sheets use wide layout (months as columns); defaults to FY23
+ * + "Monthly Daikin Smart Thermostat Sales" when present.
  * Other sheets: first column as X, first numeric column as Y.
  */
 function parseNum(v) {
@@ -34,7 +35,7 @@ function rowsToChartData(rows) {
 const PREFERRED_SHEET = 'FY23'
 
 export default function TestXlsxDemo() {
-  const { sheetNames, getRows, defaultSheetName, loading, error, refetch } = useTestSheetData({
+  const { sheetNames, workbook, getRows, defaultSheetName, loading, error, refetch } = useTestSheetData({
     pollMs: 4000,
   })
   const [selectedSheet, setSelectedSheet] = useState('')
@@ -87,9 +88,10 @@ export default function TestXlsxDemo() {
   return (
     <div className="digital-strategy-page" style={{ maxWidth: 960 }}>
       <header className="ds-header">
-        <h1>Test.xlsx (live in dev)</h1>
+        <h1>{workbook || 'Local workbook'} (live in dev)</h1>
         <p className="ds-tagline">
-          Data comes from <code>Test.xlsx</code> in the project root — <strong>all worksheet tabs</strong> are loaded.
+          Data comes from <code>{workbook || 'SkyportHome_Roadmap.xlsx'}</code> in the project root —{' '}
+          <strong>all worksheet tabs</strong> are loaded.
           <strong> FY23</strong> (and other FY## wide layouts) chart monthly columns; default metric is smart thermostat
           sales. With <code>npm run dev</code>, saves are picked up every few seconds.
         </p>

@@ -8,7 +8,7 @@ const APP_TILES = [
     to: '/apps/skyport-home',
     title: 'SkyportHome',
     description:
-      'Always-on homeowner engagement — product capabilities, roadmap, and the homeowner experience across the full lifecycle.',
+      'Always-on homeowner engagement — roadmap features and functions load live from the connected Excel workbook (SkyportHome_Roadmap.xlsx).',
     image: `${base}images/skyport-home-hero.png`,
     imageAlt: 'Homeowner using the Daikin thermostat app',
   },
@@ -16,7 +16,7 @@ const APP_TILES = [
     to: '/apps/skyport-care',
     title: 'SkyportCare',
     description:
-      'Dealer execution at scale — the dealer operating layer for installs, service, and connected care across the lifecycle.',
+      'Dealer execution at scale — roadmap features and functions load live from SkyportCare_Roadmap.xlsx.',
     image: `${base}images/skyport-care-hero.png`,
     imageAlt: 'Daikin service technician with service van',
   },

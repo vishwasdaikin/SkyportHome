@@ -26,12 +26,12 @@ function save(scope, { done, partial }) {
 }
 
 /**
- * @param {'skyportHome' | 'skyportCare'} scope
- * @param {{ initialDone?: string[], initialPartial?: string[] }} options
+ * @param {string} scope
+ * @param {{ initialDone?: string[], initialPartial?: string[], persist?: boolean }} options
  */
-export function useFeatureProgress(scope, { initialDone = [], initialPartial = [] } = {}) {
+export function useFeatureProgress(scope, { initialDone = [], initialPartial = [], persist = true } = {}) {
   const [state, setState] = useState(() => {
-    const stored = load(scope)
+    const stored = persist ? load(scope) : null
     if (stored) {
       return {
         done: new Set(stored.done),
@@ -45,11 +45,12 @@ export function useFeatureProgress(scope, { initialDone = [], initialPartial = [
   })
 
   useEffect(() => {
+    if (!persist) return
     save(scope, {
       done: [...state.done],
       partial: [...state.partial],
     })
-  }, [scope, state.done, state.partial])
+  }, [persist, scope, state.done, state.partial])
 
   const setProgress = useCallback((feature, status) => {
     if (!feature) return

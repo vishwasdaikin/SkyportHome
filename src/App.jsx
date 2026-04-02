@@ -3,8 +3,8 @@ import Layout from './components/Layout'
 import RequireAuth from './auth/RequireAuth'
 import SitePasswordGate from './auth/SitePasswordGate'
 import HomePageTailwind from './pages/HomePageTailwind'
-import SkyportHome from './pages/SkyportHome'
-import SkyportCare from './pages/SkyportCare'
+import AppSuiteTest from './pages/AppSuiteTest'
+import AppSuiteTest2 from './pages/AppSuiteTest2'
 import SkyportEnergy from './pages/SkyportEnergy'
 import FY25 from './pages/FY25'
 import FY26 from './pages/FY26'
@@ -35,8 +35,10 @@ export default function App() {
         <Route path="/demos/care" element={<DemosCare />} />
         <Route path="/image" element={<ImagePage />} />
         <Route path="/apps" element={<AppsPage />} />
-        <Route path="/apps/skyport-home" element={<SkyportHome />} />
-        <Route path="/apps/skyport-care" element={<SkyportCare />} />
+        <Route path="/apps/skyport-home" element={<AppSuiteTest />} />
+        <Route path="/apps/test" element={<Navigate to="/apps/skyport-home" replace />} />
+        <Route path="/apps/skyport-care" element={<AppSuiteTest2 />} />
+        <Route path="/apps/test-2" element={<Navigate to="/apps/skyport-care" replace />} />
         <Route path="/apps/skyport-energy" element={<SkyportEnergy />} />
         <Route path="/strategy/fy25" element={<FY25 />} />
         <Route

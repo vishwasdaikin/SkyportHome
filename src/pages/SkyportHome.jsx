@@ -53,7 +53,15 @@ function roadmapFilterSummary(search) {
   return ` (search "${search.trim()}")`
 }
 
-export default function SkyportHome() {
+export default function SkyportHome({
+  pageTitle = 'SkyportHome',
+  pageTagline = 'Always-on homeowner engagement — features and product capabilities.',
+  roadmapRows = featuresRows,
+  progressScope = 'skyportHome',
+  persistProgress = true,
+  initialDone = Array.from(featuresDone),
+  initialPartial = Array.from(featuresPartial),
+}) {
   const location = useLocation()
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -64,12 +72,13 @@ export default function SkyportHome() {
   const [viewMode, setViewMode] = useState('grouped') // 'grouped' | 'table'
   const [openGroups, setOpenGroups] = useState(new Set())
   const [showCategoryChart, setShowCategoryChart] = useState(false)
-  const { getStatus } = useFeatureProgress('skyportHome', {
-    initialDone: Array.from(featuresDone),
-    initialPartial: Array.from(featuresPartial),
+  const { getStatus } = useFeatureProgress(progressScope, {
+    persist: persistProgress,
+    initialDone,
+    initialPartial,
   })
 
-  const rowsWithGroups = useMemo(() => getRowsWithGroups(featuresRows), [])
+  const rowsWithGroups = useMemo(() => getRowsWithGroups(roadmapRows), [roadmapRows])
   const filteredRows = useMemo(() => filterRows(rowsWithGroups, search), [rowsWithGroups, search])
   const sortedRows = useMemo(
     () => sortFeatureRows(filteredRows, sortConfig.key, sortConfig.dir),
@@ -100,9 +109,9 @@ export default function SkyportHome() {
   return (
     <article className="skyport-home-page">
       <header className="skyport-home-header">
-        <h1>SkyportHome</h1>
+        <h1>{pageTitle}</h1>
         <p className="skyport-home-tagline">
-          Always‑on homeowner engagement — features and product capabilities.
+          {pageTagline}
         </p>
         <figure className="skyport-home-hero">
           <img
