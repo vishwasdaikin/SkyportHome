@@ -224,13 +224,15 @@ export function RoadmapNestedByInitiativeTable({
   className = NESTED_TABLE_CLASS,
   /** When true (default): only blue initiative rows show until expanded; yellow categories collapsed until expanded. */
   tierAccordion = true,
+  /** Preserves same initiative header order as static FY26 data when rows come from Excel (different sheet order). */
+  initiativeStableOrder = null,
 }) {
   const allowedKeys = variant === 'groupedPanel' ? ROADMAP_NESTED_SORT_KEYS_PANEL : ROADMAP_NESTED_SORT_KEYS_FULL
   const sortKey = allowedKeys.includes(sortConfig.key) ? sortConfig.key : null
   const tree = useMemo(() => {
-    const built = buildInitiativeCategoryTree(rows)
+    const built = buildInitiativeCategoryTree(rows, initiativeStableOrder)
     return applyWithinCategorySort(built, sortKey, sortConfig.dir)
-  }, [rows, sortKey, sortConfig.dir])
+  }, [rows, sortKey, sortConfig.dir, initiativeStableOrder])
 
   const [expandedInitiatives, setExpandedInitiatives] = useState(() => new Set())
   const [expandedCategories, setExpandedCategories] = useState(() => new Set())

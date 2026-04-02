@@ -1,9 +1,16 @@
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { featuresRows } from '../content/featuresData'
 import { skyportCareFeaturesRows } from '../content/skyportCareFeaturesData'
+import { useTestSheetData } from '../hooks/useTestSheetData'
+import { useSkyportCareRoadmapData } from '../hooks/useSkyportCareRoadmapData'
+import { normalizeRoadmapRowsFromRaw } from '../utils/roadmapExcelRows'
 import { formatFeatureCellContent } from '../utils/formatFeatureCellContent'
 import { formatSkyportCareFeatureCellContent } from '../utils/formatSkyportCareFeatureCellContent'
-import { ROADMAP_NESTED_SORT_KEYS_FULL } from '../utils/roadmapInitiativeCategoryTree'
+import {
+  ROADMAP_INITIATIVE_ORDER_SKYPORT_CARE,
+  ROADMAP_INITIATIVE_ORDER_SKYPORT_HOME,
+  ROADMAP_NESTED_SORT_KEYS_FULL,
+} from '../utils/roadmapInitiativeCategoryTree'
 import { RoadmapNestedByInitiativeTable } from './RoadmapNestedByInitiativeTable'
 import '../pages/Features.css'
 
@@ -16,9 +23,34 @@ function getRowsWithGroups(rows) {
 }
 
 /**
- * Expandable full roadmap tables for FY26 Digital Apps & Services playbook (inline; no navigation).
+ * Expandable full roadmap tables for FY26 Digital Apps & Services.
+ * Rows load from SkyportHome_Roadmap.xlsx and SkyportCare_Roadmap.xlsx (dev plugin / prod JSON),
+ * with fallback to bundled static data if nothing normalizes.
  */
 export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
+  const { getRows: getHomeRows } = useTestSheetData({ pollMs: 4000 })
+  const { sheetNames, getRows: getCareRows } = useSkyportCareRoadmapData({ pollMs: 4000 })
+
+  const careSheetName = useMemo(() => {
+    if (sheetNames.includes('SkyportCare')) return 'SkyportCare'
+    return sheetNames[0] ?? 'SkyportCare'
+  }, [sheetNames])
+
+  const homeRoadmapRows = useMemo(() => {
+    const raw = getHomeRows('SkyportHome')
+    const mapped = normalizeRoadmapRowsFromRaw(raw)
+    return mapped.length > 0 ? mapped : featuresRows
+  }, [getHomeRows])
+
+  const careRoadmapRows = useMemo(() => {
+    const raw = getCareRows(careSheetName)
+    const mapped = normalizeRoadmapRowsFromRaw(raw)
+    return mapped.length > 0 ? mapped : skyportCareFeaturesRows
+  }, [getCareRows, careSheetName])
+
+  const homeRows = useMemo(() => getRowsWithGroups(homeRoadmapRows), [homeRoadmapRows])
+  const careRows = useMemo(() => getRowsWithGroups(careRoadmapRows), [careRoadmapRows])
+
   const [homeOpen, setHomeOpen] = useState(false)
   const [careOpen, setCareOpen] = useState(false)
 
@@ -28,11 +60,9 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
       setCareOpen(true)
     }
   }, [forceExpandRoadmaps])
+
   const [sortHome, setSortHome] = useState({ key: 'priority', dir: 'asc' })
   const [sortCare, setSortCare] = useState({ key: 'priority', dir: 'asc' })
-
-  const homeRows = useMemo(() => getRowsWithGroups(featuresRows), [])
-  const careRows = useMemo(() => getRowsWithGroups(skyportCareFeaturesRows), [])
 
   const toggleSortHome = (key) => {
     if (!ROADMAP_NESTED_SORT_KEYS_FULL.includes(key)) return
@@ -79,6 +109,7 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
                 onSort={toggleSortHome}
                 variant="full"
                 formatFeature={formatFeatureCellContent}
+                initiativeStableOrder={ROADMAP_INITIATIVE_ORDER_SKYPORT_HOME}
               />
             </div>
           </div>
@@ -113,6 +144,7 @@ export function Fy26DigitalAppsRoadmapEmbeds({ forceExpandRoadmaps }) {
                 onSort={toggleSortCare}
                 variant="full"
                 formatFeature={formatSkyportCareFeatureCellContent}
+                initiativeStableOrder={ROADMAP_INITIATIVE_ORDER_SKYPORT_CARE}
               />
             </div>
           </div>

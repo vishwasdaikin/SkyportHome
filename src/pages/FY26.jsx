@@ -4428,10 +4428,14 @@ export default function FY26() {
     outcomeExpanded.b &&
     outcomeExpanded.c &&
     outcomeExpanded.d
+  if (sectionId === 'digital-platform-test') {
+    return <Navigate to={`${FY26_BASE}/digital-platform`} replace />
+  }
+
   const isValid = FY26_TOP_NAV_IDS.includes(sectionId)
   if (!isValid) return <Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />
 
-  const isDigitalPlatform = sectionId === 'digital-platform'
+  const isDigitalPlatformLayout = sectionId === 'digital-platform'
 
   const allTimeFunnel = enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
   const businessModelDetailsRef = useRef(null)
@@ -4446,7 +4450,7 @@ export default function FY26() {
     if (id === 'digital-platforms-business-model' && businessModelDetailsRef.current) {
       businessModelDetailsRef.current.open = true
     }
-    if (isDigitalPlatform) {
+    if (isDigitalPlatformLayout) {
       const goalKey = id.match(/^fy26-outcome-trigger-([abcd])$/)?.[1]
       if (goalKey) {
         setOutcomeExpanded((s) => ({ ...s, [goalKey]: true }))
@@ -4455,7 +4459,7 @@ export default function FY26() {
     const el = document.getElementById(id)
     if (!el) return
     el.scrollIntoView({ block: 'start', behavior: 'auto' })
-  }, [location.hash, sectionId, isDigitalPlatform])
+  }, [location.hash, sectionId, isDigitalPlatformLayout])
 
   useEffect(() => {
     function onAfterPrint() {
@@ -4484,7 +4488,7 @@ export default function FY26() {
     }
     function onBeforePrint() {
       flushSync(() => {
-        if (isDigitalPlatform) {
+        if (isDigitalPlatformLayout) {
           setSkyportHomeFeedbackExpanded(true)
           setShowPlannedDetails(true)
           setOutcomeExpanded({ a: true, b: true, c: true, d: true })
@@ -4493,7 +4497,7 @@ export default function FY26() {
         }
         setPrintLayoutNonce((n) => n + 1)
       })
-      if (isDigitalPlatform && businessModelDetailsRef.current) {
+      if (isDigitalPlatformLayout && businessModelDetailsRef.current) {
         businessModelDetailsRef.current.open = true
       }
       bumpResize()
@@ -4505,7 +4509,7 @@ export default function FY26() {
     }
     window.addEventListener('beforeprint', onBeforePrint)
     return () => window.removeEventListener('beforeprint', onBeforePrint)
-  }, [isDigitalPlatform])
+  }, [isDigitalPlatformLayout])
 
   function handleSaveAsPdf() {
     prePrintSnapshotRef.current = {
@@ -4551,7 +4555,7 @@ export default function FY26() {
 
   return (
     <Fy26PrintLayoutNonceContext.Provider value={printLayoutNonce}>
-    <article className={`fy26-page${isDigitalPlatform ? '' : ' fy26-page--simple'}`}>
+    <article className={`fy26-page${isDigitalPlatformLayout ? '' : ' fy26-page--simple'}`}>
       <header className="ds-header fy26-header">
         <div className="fy26-header-title-row">
           <div className="fy26-header-title-cluster">
@@ -4564,7 +4568,7 @@ export default function FY26() {
         <FY26PageNav
           sectionId={sectionId}
           businessModelDownloadPdf={
-            isDigitalPlatform ? (
+            isDigitalPlatformLayout ? (
               <div className="fy26-page-nav-business-model-pdf">
                 <Fy26DownloadPdfButton onClick={handleSaveAsPdf} />
               </div>
@@ -4576,10 +4580,10 @@ export default function FY26() {
             <div className="ds-section-header" id="fy25-review">
               <span className="ds-section-badge">1</span>
               <h2 className="ds-section-title ds-section-title-single">
-                {sectionId === 'digital-platform' ? 'FY25 Review — Results' : 'FY25 Review'}
+                {isDigitalPlatformLayout ? 'FY25 Review — Results' : 'FY25 Review'}
               </h2>
             </div>
-            {sectionId === 'digital-platform' ? (
+            {isDigitalPlatformLayout ? (
             <>
             <ThermostatLocationsMapProvider>
             <div className="fy25-review-body">
@@ -4811,7 +4815,7 @@ export default function FY26() {
               <span className="ds-section-badge">2</span>
               <h2 className="ds-section-title ds-section-title-single">FY26 – Goals &amp; Objectives</h2>
             </div>
-            {isDigitalPlatform ? (
+            {isDigitalPlatformLayout ? (
               <div className="fy26-plan-cards">
                 <>
                   <p className="fy26-plan-strategy-preamble-text">
@@ -5316,9 +5320,7 @@ export default function FY26() {
                       sequencing within FY26. &ldquo;Ongoing&rdquo; items represent operating model changes and
                       cadence, not discrete feature delivery milestones.
                     </p>
-                    <Fy26DigitalAppsRoadmapEmbeds
-                      forceExpandRoadmaps={printPrepOpen}
-                    />
+                    <Fy26DigitalAppsRoadmapEmbeds forceExpandRoadmaps={printPrepOpen} />
                   </div>
                   <div className="fy26-mini-card" id="fy26-interaction-alignment">
                     <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
@@ -5380,7 +5382,7 @@ export default function FY26() {
               <span className="ds-section-badge">3</span>
               <h2 className="ds-section-title ds-section-title-single">Fusion30 Summary - Strategic Horizon</h2>
             </div>
-            {isDigitalPlatform ? (
+            {isDigitalPlatformLayout ? (
               <>
                 <Fusion30Fy26To30PillarMinis
                   installedFunnelLicenseBreakdownOpenFusion30={installedFunnelLicenseBreakdownOpenFusion30}
@@ -5459,7 +5461,7 @@ export default function FY26() {
               </div>
             )}
           </section>
-          {isDigitalPlatform && (
+          {isDigitalPlatformLayout && (
             <div className="fy26-business-model-below-fusion30">
               <div className="fy26-business-model-block" id="digital-platforms-business-model">
                 <details ref={businessModelDetailsRef} className="fy26-business-model-details">

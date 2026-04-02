@@ -31,11 +31,44 @@ function moveCategoryToBottom(categories, initiative) {
   return [...next, block]
 }
 
+/** Matches first-seen order in `featuresData` so FY26 tables match the static bundle. */
+export const ROADMAP_INITIATIVE_ORDER_SKYPORT_HOME = [
+  'New Function Introduction',
+  'New Feature Introduction',
+  'New Technical Integration',
+  'Sustaining',
+  'New Product Integration',
+  'New Interoperability Capability',
+]
+
+/** Matches first-seen order in `skyportCareFeaturesData`. */
+export const ROADMAP_INITIATIVE_ORDER_SKYPORT_CARE = [
+  'New Feature Introduction',
+  'Sustaining',
+  'New Product Integration',
+  'New Function Introduction',
+  'New Technical Integration',
+]
+
+function sortInitiativeKeys(order, stableList) {
+  if (!stableList?.length) return order
+  const weight = new Map(stableList.map((name, i) => [name, i]))
+  const tail = stableList.length + 1
+  return [...order].sort((a, b) => {
+    const wa = weight.has(a) ? weight.get(a) : tail
+    const wb = weight.has(b) ? weight.get(b) : tail
+    if (wa !== wb) return wa - wb
+    return String(a).localeCompare(String(b))
+  })
+}
+
 /**
  * @param {object[]} rows
+ * @param {string[] | null} [stableInitiativeOrder] When set (e.g. SkyportHome vs SkyportCare presets), initiative
+ *   sections sort in this order so Excel row order does not reshuffle blue headers vs the static FY26 embeds.
  * @returns {{ initiative: string, categories: { category: string, rows: object[] }[] }[]}
  */
-export function buildInitiativeCategoryTree(rows) {
+export function buildInitiativeCategoryTree(rows, stableInitiativeOrder = null) {
   const initiativeOrder = []
   const byInitiative = new Map()
 
@@ -55,7 +88,9 @@ export function buildInitiativeCategoryTree(rows) {
     node.byCategory.get(category).push(row)
   }
 
-  return initiativeOrder.map((initiative) => {
+  const orderedInitiatives = sortInitiativeKeys(initiativeOrder, stableInitiativeOrder)
+
+  return orderedInitiatives.map((initiative) => {
     const { categoryOrder, byCategory } = byInitiative.get(initiative)
     const categories = categoryOrder.map((category) => ({
       category,
