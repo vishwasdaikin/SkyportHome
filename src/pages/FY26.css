@@ -227,6 +227,12 @@
 /* Playbook-style left TOC: grid from DigitalStrategy `.ds-layout`; sticky below fixed header */
 .fy26-page .fy26-layout .ds-nav {
   top: calc(var(--app-header-height, 60px) + 0.75rem);
+  /* Match FY26 sticky offset so the panel scrolls inside the viewport (long section lists). */
+  max-height: calc(100dvh - var(--app-header-height, 60px) - 0.75rem - 1rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .fy26-page-nav .ds-nav-sublist {

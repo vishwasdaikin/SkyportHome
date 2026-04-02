@@ -97,6 +97,24 @@
   padding-right: 1.5rem;
 }
 
+/* Tall TOCs: keep sticky nav within the viewport so links below the fold stay reachable */
+@media (min-width: 769px) {
+  .ds-layout .ds-nav {
+    max-height: calc(100vh - var(--app-header-height, 60px) - 1.25rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .app-layout--playbook .ds-layout .ds-nav {
+    max-height: calc(
+      100vh - var(--app-header-height, 60px) - var(--app-playbook-nav-gap, 0.7rem) -
+        var(--app-playbook-nav-height, 60px) - 1.25rem
+    );
+  }
+}
+
 .ds-nav-title {
   margin: 0 0 0.75rem 0;
   font-size: var(--text-xs);
