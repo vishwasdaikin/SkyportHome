@@ -13,7 +13,7 @@ export const DP_BUSINESS_MODEL_COLUMN_LABELS = [
   'FY30',
 ]
 
-function parsePctLabelToDecimal(label) {
+export function parsePctLabelToDecimal(label) {
   const n = parseFloat(String(label).replace(/%/g, ''), 10)
   return Number.isFinite(n) ? n / 100 : 0
 }
@@ -104,7 +104,7 @@ export const DP_FUNNEL_FORECAST_BY_ID = Object.fromEntries(
 )
 
 /** End-of-year cumulative snapshots (business model “Total …” rows + SkyportCare license components). */
-const YEAR_END_SNAPSHOTS = [
+const YEAR_END_SNAPSHOTS_RAW = [
   {
     key: 'FY25',
     totalThermostatsSold: 610_064,
@@ -159,18 +159,28 @@ const YEAR_END_SNAPSHOTS = [
     oneYearActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[4].oneYearActiveLicensesEoy,
     lifetimeActiveLicenses: DP_FUNNEL_FORECAST_COLUMNS[4].lifetimeActiveLicensesEoy,
   },
-].map((s) => ({
-  ...s,
-  activeLicenses: s.bundledActiveLicenses + s.oneYearActiveLicenses + s.lifetimeActiveLicenses,
-}))
+]
+
+export function withYearEndSnapshotActiveLicenses(s) {
+  const sum = s.bundledActiveLicenses + s.oneYearActiveLicenses + s.lifetimeActiveLicenses
+  return {
+    ...s,
+    activeLicenses: s.activeLicenses != null && Number.isFinite(s.activeLicenses) ? s.activeLicenses : sum,
+  }
+}
+
+const YEAR_END_SNAPSHOTS = YEAR_END_SNAPSHOTS_RAW.map(withYearEndSnapshotActiveLicenses)
 
 /**
  * FY26–FY30 columns for the installed-base forecast funnel table.
  * Active license rows (total + bundled / 1‑year / lifetime) use fiscal year‑end model counts — same basis as SkyportCare in the business model.
  */
-export function getDigitalPlatformsForecastFunnelColumnsForTable() {
-  return DP_FUNNEL_FORECAST_COLUMNS.map((c) => {
-    const currSnap = YEAR_END_SNAPSHOTS.find((s) => s.key === c.id)
+export function getDigitalPlatformsForecastFunnelColumnsForTable(
+  yearEndSnapshots = YEAR_END_SNAPSHOTS,
+  funnelForecastColumns = DP_FUNNEL_FORECAST_COLUMNS,
+) {
+  return funnelForecastColumns.map((c) => {
+    const currSnap = yearEndSnapshots.find((s) => s.key === c.id)
     const connectedPct =
       c.fyThermostatsSold > 0 ? (c.fyConnectedNew / c.fyThermostatsSold) * 100 : 0
     return {
@@ -180,7 +190,7 @@ export function getDigitalPlatformsForecastFunnelColumnsForTable() {
       fyConnectedNew: c.fyConnectedNew,
       connectedPct,
       activeLicensePenetrationLabel: c.activeLicensePenetrationLabel,
-      activeLicensesEoy: currSnap.activeLicenses,
+      activeLicensesEoy: currSnap?.activeLicenses ?? 0,
       bundledActiveLicensesEoy: c.bundledActiveLicensesEoy,
       oneYearActiveLicensesEoy: c.oneYearActiveLicensesEoy,
       lifetimeActiveLicensesEoy: c.lifetimeActiveLicensesEoy,
@@ -195,12 +205,15 @@ export function getDigitalPlatformsForecastFunnelColumnsForTable() {
  * (users & licenses vs prior FY EOY); right chart carries EOY cumulative totals.
  * @returns {{ period: string, fyThermostatsAllBrands: number, fyConnectedThermostats: number, fySkyportHomeUsers: number, fyActiveLicensesNetNew: number, fyBundledActiveLicensesNetNew: number, fyOneYearActiveLicensesNetNew: number, fyLifetimeActiveLicensesNetNew: number }[]}
  */
-export function getDigitalPlatformsForecastYearlyChartData() {
-  const fyByKey = Object.fromEntries(DP_FUNNEL_FORECAST_COLUMNS.map((c) => [c.id, c]))
-  return YEAR_END_SNAPSHOTS.filter((s) => s.key !== 'FY25').map((s) => {
+export function getDigitalPlatformsForecastYearlyChartData(
+  yearEndSnapshots = YEAR_END_SNAPSHOTS,
+  funnelForecastColumns = DP_FUNNEL_FORECAST_COLUMNS,
+) {
+  const fyByKey = Object.fromEntries(funnelForecastColumns.map((c) => [c.id, c]))
+  return yearEndSnapshots.filter((s) => s.key !== 'FY25').map((s) => {
     const fy = fyByKey[s.key]
-    const snapIdx = YEAR_END_SNAPSHOTS.findIndex((x) => x.key === s.key)
-    const prevSnap = snapIdx > 0 ? YEAR_END_SNAPSHOTS[snapIdx - 1] : null
+    const snapIdx = yearEndSnapshots.findIndex((x) => x.key === s.key)
+    const prevSnap = snapIdx > 0 ? yearEndSnapshots[snapIdx - 1] : null
     const fySkyportHomeUsers = prevSnap ? Math.max(0, s.totalUsers - prevSnap.totalUsers) : 0
     const fyBundledActiveLicensesNetNew = prevSnap
       ? Math.max(0, s.bundledActiveLicenses - prevSnap.bundledActiveLicenses)
@@ -229,8 +242,8 @@ export function getDigitalPlatformsForecastYearlyChartData() {
  * FY25–FY30 fiscal year‑end cumulative snapshots (model + historical FY25). Right “All‑Time” outlook chart.
  * @returns {{ period: string, cumulative: number, connectedCumulative: number, usersCumulative: number, activeLicensesCumulative: number, bundledActiveLicensesCumulative: number, oneYearActiveLicensesCumulative: number, lifetimeActiveLicensesCumulative: number }[]}
  */
-export function getDigitalPlatformsForecastCumulativeChartData() {
-  return YEAR_END_SNAPSHOTS.map((s) => ({
+export function getDigitalPlatformsForecastCumulativeChartData(yearEndSnapshots = YEAR_END_SNAPSHOTS) {
+  return yearEndSnapshots.map((s) => ({
     period: s.key,
     cumulative: s.totalThermostatsSold,
     connectedCumulative: s.totalConnected,

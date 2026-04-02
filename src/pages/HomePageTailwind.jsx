@@ -13,7 +13,7 @@ export default function HomePageTailwind() {
       {/* Hero — full content width like SkyportCare (no max-w-4xl on image) */}
       <section className="pb-1 sm:pb-2 bg-gradient-to-b from-daikin-blue-light/40 via-white to-white">
         <header className="home-repository-header">
-          <h1>Digital Solutions Central Repository</h1>
+          <h1>Digital Experience and Solutions</h1>
           <p className="home-repository-tagline">
             One place for documents, apps, playbooks, and reference material — easy to browse and
             share with leadership.

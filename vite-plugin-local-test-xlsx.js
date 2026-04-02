@@ -91,6 +91,46 @@ export default function localTestXlsxPlugin() {
           return
         }
 
+        if (url === '/local-data/digital-platforms-business-model.json') {
+          try {
+            const fileName = 'Digital_Platforms_Business_Model.xlsx'
+            const filePath = path.resolve(process.cwd(), fileName)
+            if (!fs.existsSync(filePath)) {
+              res.statusCode = 404
+              res.setHeader('Content-Type', 'application/json')
+              res.end(
+                JSON.stringify({
+                  error: 'Workbook not found in project root',
+                  path: filePath,
+                  workbook: fileName,
+                }),
+              )
+              return
+            }
+            const buf = fs.readFileSync(filePath)
+            const wb = XLSX.read(buf, { type: 'buffer' })
+            const grids = {}
+            for (const name of wb.SheetNames) {
+              const sh = wb.Sheets[name]
+              grids[name] = XLSX.utils.sheet_to_json(sh, { header: 1, defval: '', raw: false })
+            }
+            res.setHeader('Content-Type', 'application/json')
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            res.end(
+              JSON.stringify({
+                workbook: fileName,
+                sheetNames: wb.SheetNames,
+                grids,
+              }),
+            )
+          } catch (err) {
+            res.statusCode = 500
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: err?.message || String(err) }))
+          }
+          return
+        }
+
         if (!url.startsWith('/local-data/test-sheet.json')) {
           return next()
         }

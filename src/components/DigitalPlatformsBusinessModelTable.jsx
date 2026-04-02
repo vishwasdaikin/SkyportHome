@@ -5,47 +5,68 @@ function cell(v) {
   return v
 }
 
-function SectionHeadRow({ title }) {
+export function BmSectionHeadRow({ title, colSpan = COLS.length + 1 }) {
   return (
     <tr className="fy26-bm-section-head">
-      <th colSpan={COLS.length + 1} scope="colgroup">
+      <th colSpan={colSpan} scope="colgroup">
         {title}
       </th>
     </tr>
   )
 }
 
-function SubHeadRow({ title, pillar }) {
+export function BmSubHeadRow({ title, pillar, colSpan = COLS.length + 1 }) {
   return (
     <tr
       className={['fy26-bm-subhead', pillar ? `fy26-bm-subhead--${pillar}` : '']
         .filter(Boolean)
         .join(' ')}
     >
-      <th colSpan={COLS.length + 1} scope="colgroup">
+      <th colSpan={colSpan} scope="colgroup">
         {title}
       </th>
     </tr>
   )
 }
 
-function DataRow({ label, values, labelClass = '', getCellClassName }) {
+export function BmDataRow({ label, values, labelClass = '', getCellClassName, columnKeys = COLS }) {
   return (
     <tr>
       <th scope="row" className={labelClass}>
         {label}
       </th>
-      {values.map((v, i) => {
+      {columnKeys.map((k, i) => {
         const extra = getCellClassName?.(i) ?? ''
         return (
-          <td key={COLS[i]} className={['fy26-bm-num', extra].filter(Boolean).join(' ')}>
-            {cell(v)}
+          <td key={typeof k === 'string' && k ? k : `c-${i}`} className={['fy26-bm-num', extra].filter(Boolean).join(' ')}>
+            {cell(values[i])}
           </td>
         )
       })}
     </tr>
   )
 }
+
+function SectionHeadRow({ title }) {
+  return <BmSectionHeadRow title={title} />
+}
+
+function SubHeadRow({ title, pillar }) {
+  return <BmSubHeadRow title={title} pillar={pillar} />
+}
+
+function DataRow({ label, values, labelClass = '', getCellClassName }) {
+  return (
+    <BmDataRow
+      label={label}
+      values={values}
+      labelClass={labelClass}
+      getCellClassName={getCellClassName}
+    />
+  )
+}
+
+export { cell }
 
 /**
  * Digital Platform horizon model: user/subscription growth and revenue (FY26–FY30).

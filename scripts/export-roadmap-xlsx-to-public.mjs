@@ -40,6 +40,21 @@ function workbookToPayload(absPath, fileName) {
   }
 }
 
+function workbookToGridPayload(absPath, fileName) {
+  const buf = fs.readFileSync(absPath)
+  const wb = XLSX.read(buf, { type: 'buffer' })
+  const grids = {}
+  for (const name of wb.SheetNames) {
+    const sh = wb.Sheets[name]
+    grids[name] = XLSX.utils.sheet_to_json(sh, { header: 1, defval: '', raw: false })
+  }
+  return {
+    workbook: fileName,
+    sheetNames: wb.SheetNames,
+    grids,
+  }
+}
+
 function writeJson(fileName, payload) {
   const outPath = path.join(OUT_DIR, fileName)
   fs.mkdirSync(path.dirname(outPath), { recursive: true })
@@ -68,4 +83,14 @@ if (!fs.existsSync(carePath)) {
 
 writeJson('test-sheet.json', workbookToPayload(home.absPath, home.fileName))
 writeJson('skyport-care-roadmap.json', workbookToPayload(carePath, 'SkyportCare_Roadmap.xlsx'))
+
+const bmPath = path.resolve(process.cwd(), 'Digital_Platforms_Business_Model.xlsx')
+if (!fs.existsSync(bmPath)) {
+  console.error('[export-roadmaps] Missing Digital_Platforms_Business_Model.xlsx in project root.')
+  process.exit(1)
+}
+writeJson(
+  'digital-platforms-business-model.json',
+  workbookToGridPayload(bmPath, 'Digital_Platforms_Business_Model.xlsx'),
+)
 console.log('[export-roadmaps] Done.')

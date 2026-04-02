@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useEffect, useRef, useId, createContext, useContext } from 'react'
+import { useState, useLayoutEffect, useEffect, useRef, useId, useMemo, createContext, useContext } from 'react'
 import { flushSync } from 'react-dom'
 import { useParams, Navigate, NavLink, useLocation } from 'react-router-dom'
 import {
@@ -31,15 +31,19 @@ import {
   ThermostatLocationsMapProvider,
   ThermostatLocationsMapInlineLink,
 } from '../components/ThermostatLocationsMap'
-import { DigitalPlatformsBusinessModelTable } from '../components/DigitalPlatformsBusinessModelTable'
+import { DigitalPlatformsBusinessModelTableFromExcel } from '../components/DigitalPlatformsBusinessModelTableFromExcel'
 import FY26PageNav from '../components/FY26PageNav'
 import { Fy26DigitalAppsRoadmapEmbeds } from '../components/Fy26DigitalAppsRoadmapEmbeds'
 import { Fy26GoalsBusinessModelTracking } from '../components/Fy26GoalsBusinessModelTracking'
+import { useDigitalPlatformsBusinessModelData } from '../hooks/useDigitalPlatformsBusinessModelData'
+import { BUSINESS_MODEL_DEFAULT_SHEET } from '../utils/digitalPlatformsBusinessModelGrid'
+import { getInstalledBaseAllTimeSnapshotFromGrid } from '../content/businessModelToForecastBridge'
 import {
-  getDigitalPlatformsForecastYearlyChartData,
-  getDigitalPlatformsForecastCumulativeChartData,
-  getDigitalPlatformsForecastFunnelColumnsForTable,
-} from '../content/digitalPlatformsForecastFunnel'
+  Fy26ForecastMetricsContext,
+  FY26_STATIC_FORECAST_METRICS,
+  tryCreateForecastMetricsFromBusinessModelGrid,
+  useFy26ForecastMetrics,
+} from './Fy26ForecastMetricsContext'
 
 /** FY2023 units sold + active SkyportCare licenses (Apr'23–Mar'24). */
 const FY23_THERMOSTAT_MONTHLY_DATA = [
@@ -726,38 +730,26 @@ const PAID_ANNUAL_LICENSE_PENETRATION_TIP =
 const PAID_LIFETIME_LICENSE_PENETRATION_TIP =
   'This is the total active paid lifetime licenses as a % of Connected Systems.'
 
-const FORECAST_YEARLY_CHART_DATA = getDigitalPlatformsForecastYearlyChartData()
-const FORECAST_CUMULATIVE_CHART_DATA = getDigitalPlatformsForecastCumulativeChartData()
-const FORECAST_CUMULATIVE_CHART_LAST_INDEX = Math.max(0, FORECAST_CUMULATIVE_CHART_DATA.length - 1)
-
-/** Pillar c cumulative lines — same hex as FY25 Results 01‑c (SkyportCare quarterly chart). */
-const FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE = {
-  bundled: SKYPORTCARE_QUARTERLY_LINE_STROKES.bundled,
-  lifetime: SKYPORTCARE_QUARTERLY_LINE_STROKES.lifetime,
-  oneYear: SKYPORTCARE_QUARTERLY_LINE_STROKES.oneYear,
-}
-
-const FORECAST_FUNNEL_TABLE_COLS = getDigitalPlatformsForecastFunnelColumnsForTable()
-const FORECAST_YEARLY_BY_PERIOD = Object.fromEntries(FORECAST_YEARLY_CHART_DATA.map((r) => [r.period, r]))
-const FORECAST_USERS_CUMULATIVE_BY_PERIOD = Object.fromEntries(
-  FORECAST_CUMULATIVE_CHART_DATA.map((r) => [r.period, r.usersCumulative]),
-)
-const FORECAST_CONNECTED_CUMULATIVE_BY_PERIOD = Object.fromEntries(
-  FORECAST_CUMULATIVE_CHART_DATA.map((r) => [r.period, r.connectedCumulative]),
-)
-const FORECAST_THERMOSTATS_SOLD_CUMULATIVE_BY_PERIOD = Object.fromEntries(
-  FORECAST_CUMULATIVE_CHART_DATA.map((r) => [r.period, r.cumulative]),
-)
-
 /** Appended to Fusion30 user-facing thermostat labels (FIT product line scope). */
 const FUSION30_THERMOSTATS_FIT_ONLY = ' (FIT only)'
 
-/** FY-end cumulative connected ÷ cumulative sold (0–100), for Fusion30 3A Wi-Fi Connected Thermostat Penetration row. */
-function forecastCumulativeConnectedPenetrationPct(periodId) {
-  const sold = FORECAST_THERMOSTATS_SOLD_CUMULATIVE_BY_PERIOD[periodId] ?? 0
-  const conn = FORECAST_CONNECTED_CUMULATIVE_BY_PERIOD[periodId] ?? 0
-  if (!Number.isFinite(sold) || sold <= 0) return 0
-  return (conn / sold) * 100
+function renderForecastLastBarValueLabel(yearlyChartData, fill, labelText) {
+  return ({ x, y, width, value, index }) => {
+    const lastIndex = yearlyChartData.length - 1
+    if (index !== lastIndex || value == null || !Number.isFinite(value)) return null
+    return (
+      <text
+        x={x + width / 2}
+        y={y - 6}
+        textAnchor="middle"
+        fontSize={9}
+        fontWeight={600}
+        fill={fill}
+      >
+        {labelText}
+      </text>
+    )
+  }
 }
 
 function skyportCareLicenseTypeHighlightClass(colId, seriesKey, context) {
@@ -858,25 +850,6 @@ function BusinessModelForecastQuarterlyTooltip({
   )
 }
 
-function renderForecastLastBarValueLabel(fill, labelText) {
-  return ({ x, y, width, value, index }) => {
-    const lastIndex = FORECAST_YEARLY_CHART_DATA.length - 1
-    if (index !== lastIndex || value == null || !Number.isFinite(value)) return null
-    return (
-      <text
-        x={x + width / 2}
-        y={y - 6}
-        textAnchor="middle"
-        fontSize={9}
-        fontWeight={600}
-        fill={fill}
-      >
-        {labelText}
-      </text>
-    )
-  }
-}
-
 /** Left outlook panel: FY26–FY30 activity as grouped bars (+ FY net‑new active licenses, red). */
 function BusinessModelForecastFyBarsChart({
   thermostatSeriesOnly = false,
@@ -884,6 +857,7 @@ function BusinessModelForecastFyBarsChart({
   omitSkyportHomeSeries = false,
   licenseNetNewStacked = false,
 }) {
+  const fm = useFy26ForecastMetrics()
   const fitTherm = thermostatSeriesOnly ? FUSION30_THERMOSTATS_FIT_ONLY : ''
   const showThermostatBars = thermostatSeriesOnly || !omitThermostatSeries
   const showSkyportCareBars = !thermostatSeriesOnly
@@ -891,7 +865,7 @@ function BusinessModelForecastFyBarsChart({
     licenseNetNewStacked && omitThermostatSeries && omitSkyportHomeSeries && showSkyportCareBars
   return (
     <ComposedChart
-      data={FORECAST_YEARLY_CHART_DATA}
+      data={fm.yearlyChartData}
       margin={{ top: 22, right: 20, left: 16, bottom: 8 }}
       isAnimationActive={false}
       {...{ overflow: 'visible' }}
@@ -937,7 +911,9 @@ function BusinessModelForecastFyBarsChart({
             maxBarSize={24}
           >
             {!thermostatSeriesOnly ? (
-              <LabelList content={renderForecastLastBarValueLabel('#0369a1', 'Thermostats sold')} />
+              <LabelList
+                content={renderForecastLastBarValueLabel(fm.yearlyChartData, '#0369a1', 'Thermostats sold')}
+              />
             ) : null}
           </Bar>
           <Bar
@@ -949,7 +925,13 @@ function BusinessModelForecastFyBarsChart({
             maxBarSize={24}
           >
             {!thermostatSeriesOnly ? (
-              <LabelList content={renderForecastLastBarValueLabel('#0f766e', 'Wi-Fi Connected Thermostats')} />
+              <LabelList
+                content={renderForecastLastBarValueLabel(
+                  fm.yearlyChartData,
+                  '#0f766e',
+                  'Wi-Fi Connected Thermostats',
+                )}
+              />
             ) : null}
           </Bar>
         </>
@@ -966,7 +948,7 @@ function BusinessModelForecastFyBarsChart({
               maxBarSize={24}
             >
               <LabelList
-                content={renderForecastLastBarValueLabel('#6d28d9', 'SkyportHome users')}
+                content={renderForecastLastBarValueLabel(fm.yearlyChartData, '#6d28d9', 'SkyportHome users')}
               />
             </Bar>
           ) : null}
@@ -1006,7 +988,9 @@ function BusinessModelForecastFyBarsChart({
               radius={[3, 3, 0, 0]}
               maxBarSize={24}
             >
-              <LabelList content={renderForecastLastBarValueLabel('#b91c1c', 'Active licenses')} />
+              <LabelList
+                content={renderForecastLastBarValueLabel(fm.yearlyChartData, '#b91c1c', 'Active licenses')}
+              />
             </Bar>
           )}
         </>
@@ -1022,6 +1006,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
   omitSkyportHomeSeries = false,
   licenseNetNewStacked = false,
 }) {
+  const fm = useFy26ForecastMetrics()
   const fitTherm = thermostatSeriesOnly ? FUSION30_THERMOSTATS_FIT_ONLY : ''
   const showThermostatLines = thermostatSeriesOnly || !omitThermostatSeries
   const showSkyportCareLines = !thermostatSeriesOnly
@@ -1029,7 +1014,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
     licenseNetNewStacked && omitThermostatSeries && omitSkyportHomeSeries && showSkyportCareLines
   return (
     <LineChart
-      data={FORECAST_CUMULATIVE_CHART_DATA}
+      data={fm.cumulativeChartData}
       margin={{ top: 18, right: 20, left: 16, bottom: 4 }}
       isAnimationActive={false}
       {...{ overflow: 'visible' }}
@@ -1080,7 +1065,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
               thermostatSeriesOnly
                 ? false
                 : ({ index, x, y, value }) =>
-                    index === FORECAST_CUMULATIVE_CHART_LAST_INDEX && value != null ? (
+                    index === fm.cumulativeChartLastIndex && value != null ? (
                       <text x={x - 10} y={y - 4} textAnchor="end" fontSize={11} fill="#0097e0" fontWeight={600}>
                         Thermostats sold
                       </text>
@@ -1101,7 +1086,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
               thermostatSeriesOnly
                 ? false
                 : ({ index, x, y, value }) =>
-                    index === FORECAST_CUMULATIVE_CHART_LAST_INDEX && value != null ? (
+                    index === fm.cumulativeChartLastIndex && value != null ? (
                       <text x={x - 10} y={y - 12} textAnchor="end" fontSize={11} fill="#0f766e" fontWeight={600}>
                         Connected
                       </text>
@@ -1119,11 +1104,11 @@ function BusinessModelForecastAllTimeCumulativeChart({
                 type="monotone"
                 dataKey="bundledActiveLicensesCumulative"
                 name="Bundled active licenses (FY-end cumulative)"
-                stroke={FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.bundled}
+                stroke={fm.licenseComponentCumulativeLine.bundled}
                 strokeWidth={2.5}
                 dot={{
                   r: 4,
-                  fill: FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.bundled,
+                  fill: fm.licenseComponentCumulativeLine.bundled,
                   stroke: '#fff',
                   strokeWidth: 2,
                 }}
@@ -1135,11 +1120,11 @@ function BusinessModelForecastAllTimeCumulativeChart({
                 type="monotone"
                 dataKey="lifetimeActiveLicensesCumulative"
                 name="Lifetime active licenses (FY-end cumulative)"
-                stroke={FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.lifetime}
+                stroke={fm.licenseComponentCumulativeLine.lifetime}
                 strokeWidth={2.35}
                 dot={{
                   r: 4,
-                  fill: FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.lifetime,
+                  fill: fm.licenseComponentCumulativeLine.lifetime,
                   stroke: '#fff',
                   strokeWidth: 2,
                 }}
@@ -1151,11 +1136,11 @@ function BusinessModelForecastAllTimeCumulativeChart({
                 type="monotone"
                 dataKey="oneYearActiveLicensesCumulative"
                 name="1-Year active licenses (FY-end cumulative)"
-                stroke={FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.oneYear}
+                stroke={fm.licenseComponentCumulativeLine.oneYear}
                 strokeWidth={2.25}
                 dot={{
                   r: 3.5,
-                  fill: FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.oneYear,
+                  fill: fm.licenseComponentCumulativeLine.oneYear,
                   stroke: '#fff',
                   strokeWidth: 2,
                 }}
@@ -1181,7 +1166,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
                 activeDot={{ r: 5 }}
                 connectNulls={false}
                 label={({ index, x, y, value }) =>
-                  index === FORECAST_CUMULATIVE_CHART_LAST_INDEX && value != null ? (
+                  index === fm.cumulativeChartLastIndex && value != null ? (
                     <text
                       x={x - 10}
                       y={y - 14}
@@ -1206,7 +1191,7 @@ function BusinessModelForecastAllTimeCumulativeChart({
                   activeDot={{ r: 5 }}
                   connectNulls={false}
                   label={({ index, x, y, value }) =>
-                    index === Math.max(0, FORECAST_CUMULATIVE_CHART_LAST_INDEX - 1) && value != null ? (
+                    index === Math.max(0, fm.cumulativeChartLastIndex - 1) && value != null ? (
                       <text
                         x={x + 8}
                         y={y + 16}
@@ -1577,12 +1562,14 @@ function SkyportCareFunnelActivationTable({ allTimeFunnel, licenseBreakdownOpen,
 
 /** SkyportCare activation funnel metrics for Fusion30 pillar c — FY26–FY30 forecast columns only (same rows as FY25 table). */
 function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLicenseBreakdownOpenChange }) {
+  const fm = useFy26ForecastMetrics()
   const activeLicensesTipId = useId()
   const activeLicensePenetrationTipId = useId()
   const paidAnnualLicensePenetrationTipId = useId()
   const paidLifetimeLicensePenetrationTipId = useId()
   const licenseTypeBreakdownRowIds =
     'fy30-sc-funnel-row-license-bundled fy30-sc-funnel-row-license-1year fy30-sc-funnel-row-license-lifetime-active'
+  const funnelCols = fm.funnelTableCols
 
   return (
     <div className="fy25-funnel-table-block fy25-funnel-table-block--activation fy25-funnel-activation-in-skyportcare-card">
@@ -1596,7 +1583,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
               <th scope="col" className="fy25-funnel-table-th-metric">
                 Metric
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <th key={col.id} scope="col" className="fy25-funnel-table-th-data">
                   {col.label}
                 </th>
@@ -1637,7 +1624,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   </button>
                 </span>
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
                   {col.activeLicensesEoy.toLocaleString('en-US')}
                 </td>
@@ -1649,7 +1636,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
                     Bundled Active Licenses
                   </th>
-                  {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  {funnelCols.map((col) => (
                     <td
                       key={col.id}
                       className={[
@@ -1668,7 +1655,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
                     1-Year Active Licenses
                   </th>
-                  {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  {funnelCols.map((col) => (
                     <td
                       key={col.id}
                       className={[
@@ -1687,7 +1674,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   <th scope="row" className="fy25-funnel-table-rowhead fy25-funnel-table-rowhead--sub">
                     Lifetime Active Licenses
                   </th>
-                  {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+                  {funnelCols.map((col) => (
                     <td
                       key={col.id}
                       className={[
@@ -1723,7 +1710,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   </span>
                 </span>
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
                   <span className="fy25-funnel-table-pct">{col.activeLicensePenetrationLabel}</span>
                 </td>
@@ -1752,7 +1739,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   </span>
                 </span>
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
                   <span className="fy25-funnel-table-pct">{col.paidAnnualPenetrationLabel}</span>
                 </td>
@@ -1781,7 +1768,7 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
                   </span>
                 </span>
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
                   <span className="fy25-funnel-table-pct">{col.paidLifetimePenetrationLabel}</span>
                 </td>
@@ -1796,7 +1783,9 @@ function SkyportCareFusion30ForecastActivationTable({ licenseBreakdownOpen, onLi
 
 /** FY26–FY30 forecast thermostats sold + Wi-Fi Connected Thermostats (shown in Fusion30 pillar a; not duplicated in funnel table below). */
 function Fusion30ForecastThermostatSoldConnectedTable() {
-  const colSpan = 1 + FORECAST_FUNNEL_TABLE_COLS.length
+  const fm = useFy26ForecastMetrics()
+  const funnelCols = fm.funnelTableCols
+  const colSpan = 1 + funnelCols.length
   return (
     <div className="fy25-funnel-table-block fy26-fusion30-forecast-thermo-table-wrap">
       <div className="fy25-funnel-table-scroll">
@@ -1809,7 +1798,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="col" className="fy25-funnel-table-th-metric">
                 Metric
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <th key={col.id} scope="col" className="fy25-funnel-table-th-data">
                   {col.label}
                 </th>
@@ -1829,7 +1818,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Thermostats sold{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
                   {col.fyThermostatsSold.toLocaleString('en-US')}
                 </td>
@@ -1839,7 +1828,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Wi-Fi Connected Thermostats{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--connected">
                   {col.fyConnectedNew.toLocaleString('en-US')}
                 </td>
@@ -1849,7 +1838,7 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Wi-Fi Connected Thermostat Penetration{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
                   <span className="fy25-funnel-table-pct">
                     {formatFunnelPctForDisplay(col.connectedPct)}
@@ -1869,8 +1858,8 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Thermostats sold{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => {
-                const c = FORECAST_THERMOSTATS_SOLD_CUMULATIVE_BY_PERIOD[col.id]
+              {funnelCols.map((col) => {
+                const c = fm.thermostatsSoldCumulativeByPeriod[col.id]
                 return (
                   <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--count">
                     {(c ?? 0).toLocaleString('en-US')}
@@ -1882,8 +1871,8 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Wi-Fi Connected Thermostats{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => {
-                const c = FORECAST_CONNECTED_CUMULATIVE_BY_PERIOD[col.id]
+              {funnelCols.map((col) => {
+                const c = fm.connectedCumulativeByPeriod[col.id]
                 return (
                   <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--connected">
                     {(c ?? 0).toLocaleString('en-US')}
@@ -1895,10 +1884,10 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Wi-Fi Connected Thermostat Penetration{FUSION30_THERMOSTATS_FIT_ONLY}
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--paid-pct">
                   <span className="fy25-funnel-table-pct">
-                    {formatFunnelPctForDisplay(forecastCumulativeConnectedPenetrationPct(col.id))}
+                    {formatFunnelPctForDisplay(fm.cumulativeConnectedPenetrationPct(col.id))}
                   </span>
                 </td>
               ))}
@@ -1912,6 +1901,8 @@ function Fusion30ForecastThermostatSoldConnectedTable() {
 
 /** FY26–FY30 SkyportHome Users rows: By Year net new + FY-end cumulative; Fusion30 pillar b. */
 function Fusion30ForecastSkyportHomeUsersTable() {
+  const fm = useFy26ForecastMetrics()
+  const funnelCols = fm.funnelTableCols
   return (
     <div className="fy25-funnel-table-block fy26-fusion30-forecast-skyport-home-table-wrap">
       <div className="fy25-funnel-table-scroll">
@@ -1924,7 +1915,7 @@ function Fusion30ForecastSkyportHomeUsersTable() {
               <th scope="col" className="fy25-funnel-table-th-metric">
                 Metric
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => (
+              {funnelCols.map((col) => (
                 <th key={col.id} scope="col" className="fy25-funnel-table-th-data">
                   {col.label}
                 </th>
@@ -1936,8 +1927,8 @@ function Fusion30ForecastSkyportHomeUsersTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Users (By Year)
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => {
-                const y = FORECAST_YEARLY_BY_PERIOD[col.id]
+              {funnelCols.map((col) => {
+                const y = fm.yearlyByPeriod[col.id]
                 const n = y?.fySkyportHomeUsers ?? 0
                 return (
                   <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--skyport-home-net">
@@ -1950,8 +1941,8 @@ function Fusion30ForecastSkyportHomeUsersTable() {
               <th scope="row" className="fy25-funnel-table-rowhead">
                 Users (Cumulative)
               </th>
-              {FORECAST_FUNNEL_TABLE_COLS.map((col) => {
-                const c = FORECAST_USERS_CUMULATIVE_BY_PERIOD[col.id]
+              {funnelCols.map((col) => {
+                const c = fm.usersCumulativeByPeriod[col.id]
                 return (
                   <td key={col.id} className="fy25-funnel-table-num fy25-funnel-table-num--skyport-home-cumulative">
                     {(c ?? 0).toLocaleString('en-US')}
@@ -2868,9 +2859,9 @@ function allTimeTooltipSeriesColor(entry) {
   if (entry?.dataKey === 'cumulative') return '#0097e0'
   if (entry?.dataKey === 'connectedCumulative') return '#0d9488'
   if (entry?.dataKey === 'activeLicensesCumulative') return FY26_ACTIVE_LICENSES_LINE_COLOR
-  if (entry?.dataKey === 'bundledActiveLicensesCumulative') return FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.bundled
-  if (entry?.dataKey === 'oneYearActiveLicensesCumulative') return FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.oneYear
-  if (entry?.dataKey === 'lifetimeActiveLicensesCumulative') return FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.lifetime
+  if (entry?.dataKey === 'bundledActiveLicensesCumulative') return SKYPORTCARE_QUARTERLY_LINE_STROKES.bundled
+  if (entry?.dataKey === 'oneYearActiveLicensesCumulative') return SKYPORTCARE_QUARTERLY_LINE_STROKES.oneYear
+  if (entry?.dataKey === 'lifetimeActiveLicensesCumulative') return SKYPORTCARE_QUARTERLY_LINE_STROKES.lifetime
   if (entry?.dataKey === 'skyportHomeUsers') return FY26_SKYPORTHOME_USERS_LINE_COLOR
   return '#64748b'
 }
@@ -3272,6 +3263,7 @@ function BusinessModelForecastCumulativeLegendRow({
   omitSkyportHomeSeries = false,
   licenseNetNewStacked = false,
 }) {
+  const licLine = SKYPORTCARE_QUARTERLY_LINE_STROKES
   const entries = thermostatOnly
     ? [
         {
@@ -3293,19 +3285,19 @@ function BusinessModelForecastCumulativeLegendRow({
             key: 'bundledCumulative',
             label: 'Bundled Active Licenses',
             fullName: 'Bundled active licenses (FY-end cumulative)',
-            fill: FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.bundled,
+            fill: licLine.bundled,
           },
           {
             key: 'lifetimeCumulative',
             label: 'Lifetime Active Licenses',
             fullName: 'Lifetime active licenses (FY-end cumulative)',
-            fill: FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.lifetime,
+            fill: licLine.lifetime,
           },
           {
             key: 'oneYearCumulative',
             label: '1-Year Active Licenses',
             fullName: '1-Year active licenses (FY-end cumulative)',
-            fill: FORECAST_LICENSE_COMPONENT_CUMULATIVE_LINE.oneYear,
+            fill: licLine.oneYear,
           },
         ]
       : omitThermostatSeries && omitSkyportHomeSeries
@@ -3478,9 +3470,10 @@ function Fusion30SkyportHomeTotalUsersLegendRow() {
 
 /** Fusion30 pillar b: FY26–FY30 net-new SkyportHome users (single bar series). */
 function SkyportHomeForecastFyUsersBarChart() {
+  const fm = useFy26ForecastMetrics()
   return (
     <BarChart
-      data={FORECAST_YEARLY_CHART_DATA}
+      data={fm.yearlyChartData}
       margin={{ top: 22, right: 20, left: 16, bottom: 8 }}
       isAnimationActive={false}
       {...{ overflow: 'visible' }}
@@ -3519,9 +3512,10 @@ function SkyportHomeForecastFyUsersBarChart() {
 
 /** Fusion30 pillar b: FY25–FY30 cumulative SkyportHome users (single line). */
 function SkyportHomeForecastUsersCumulativeLineChart() {
+  const fm = useFy26ForecastMetrics()
   return (
     <LineChart
-      data={FORECAST_CUMULATIVE_CHART_DATA}
+      data={fm.cumulativeChartData}
       margin={{ top: 18, right: 20, left: 16, bottom: 4 }}
       isAnimationActive={false}
       {...{ overflow: 'visible' }}
@@ -4428,16 +4422,34 @@ export default function FY26() {
     outcomeExpanded.b &&
     outcomeExpanded.c &&
     outcomeExpanded.d
-  if (sectionId === 'digital-platform-test') {
-    return <Navigate to={`${FY26_BASE}/digital-platform`} replace />
-  }
+
+  const isDigitalAppsPlaybook = sectionId === 'digital-platform'
+  const bmData = useDigitalPlatformsBusinessModelData({
+    enabled: isDigitalAppsPlaybook,
+    pollMs: 4000,
+  })
+  const forecastMetrics = useMemo(() => {
+    if (!isDigitalAppsPlaybook) return FY26_STATIC_FORECAST_METRICS
+    const grid = bmData.grids[BUSINESS_MODEL_DEFAULT_SHEET]
+    if (!grid?.length) return FY26_STATIC_FORECAST_METRICS
+    return tryCreateForecastMetricsFromBusinessModelGrid(grid) ?? FY26_STATIC_FORECAST_METRICS
+  }, [isDigitalAppsPlaybook, bmData.grids])
+
+  const allTimeFunnel = useMemo(() => {
+    if (isDigitalAppsPlaybook) {
+      const grid = bmData.grids[BUSINESS_MODEL_DEFAULT_SHEET]
+      if (grid?.length) {
+        const snap = getInstalledBaseAllTimeSnapshotFromGrid(grid)
+        if (snap) return snap
+      }
+    }
+    return enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
+  }, [isDigitalAppsPlaybook, bmData.grids])
 
   const isValid = FY26_TOP_NAV_IDS.includes(sectionId)
   if (!isValid) return <Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />
 
   const isDigitalPlatformLayout = sectionId === 'digital-platform'
-
-  const allTimeFunnel = enrichAllTimeFunnelWithPaidPenetration(getAllTimeFunnelSnapshot())
   const businessModelDetailsRef = useRef(null)
   const prePrintSnapshotRef = useRef(null)
   const [printLayoutNonce, setPrintLayoutNonce] = useState(0)
@@ -4575,6 +4587,7 @@ export default function FY26() {
             ) : null
           }
         />
+        <Fy26ForecastMetricsContext.Provider value={forecastMetrics}>
         <div className="ds-sections">
           <section className="ds-section ds-section-single">
             <div className="ds-section-header" id="fy25-review">
@@ -5471,13 +5484,19 @@ export default function FY26() {
                     </span>
                   </summary>
                   <div className="fy26-business-model-details-body">
-                    <DigitalPlatformsBusinessModelTable />
+                    <DigitalPlatformsBusinessModelTableFromExcel
+                      grids={bmData.grids}
+                      workbook={bmData.workbook}
+                      loading={bmData.loading}
+                      error={bmData.error}
+                    />
                   </div>
                 </details>
               </div>
             </div>
           )}
         </div>
+        </Fy26ForecastMetricsContext.Provider>
       </div>
       </div>
     </article>
