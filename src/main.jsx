@@ -5,6 +5,8 @@ import { ErrorBoundary } from './ErrorBoundary'
 import AuthProvider from './auth/AuthProvider'
 import App from './App'
 import './index.css'
+/* Load with the app shell so customer-detail (early return, no #care-demo-root) always gets these rules */
+import './pages/CareDemoPage.css'
 
 function routerBasename() {
   const b = import.meta.env.BASE_URL

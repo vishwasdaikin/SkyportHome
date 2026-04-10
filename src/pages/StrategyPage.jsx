@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { FY26_BASE, FY26_DEFAULT_SECTION_ID } from '../constants/fy26Nav'
+import { FY26_BASE, FY26_DEFAULT_SECTION_ID, FY26_HCM_VISIBLE, FY26_NAV_ITEMS } from '../constants/fy26Nav'
 import { getFy25PlaybookPdfUrl } from '../utils/fy25PlaybookPdfUrl'
 import './AppsPage.css'
 import './StrategyPage.css'
@@ -9,12 +9,24 @@ const base = import.meta.env.BASE_URL || '/'
 const STRATEGY_TILES = [
   {
     to: `${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`,
-    title: 'FY26',
+    title: 'FY26 — Digital Apps & Services',
     description:
-      'FY26 roadmap for Digital Apps & Services and Digital Tools.',
+      'FY26 playbook: Digital Apps & Services (default entry). Use the page title menu to open Digital Tools.',
     image: `${base}images/fy26-strategy.png`,
     imageAlt: 'Marketing strategy — light bulb and strategic planning concept',
   },
+  ...(FY26_HCM_VISIBLE
+    ? [
+        {
+          to: `${FY26_BASE}/hcm`,
+          title: 'HCM',
+          description:
+            'FY26 playbook — HCM view: simplified layout and content vs Digital Apps & Services.',
+          image: `${base}images/fy26-strategy.png`,
+          imageAlt: 'FY26 strategy planning',
+        },
+      ]
+    : []),
   {
     to: '/strategy/operating/overview',
     title: 'Digital Strategy Principles',
@@ -67,8 +79,20 @@ export default function StrategyPage() {
       <header className="apps-page-header">
         <h1>Strategy</h1>
         <p className="apps-page-intro strategy-page-intro">
-          FY25 playbook (PDF), FY26 sectioned roadmap, and Digital Strategy Principles — pick an entry
-          point below.
+          FY25 playbook (PDF), FY26 playbooks (Digital Apps &amp; Services
+          {FY26_HCM_VISIBLE ? ', HCM' : ''}, Digital Tools), and Digital Strategy Principles — pick an entry point
+          below.
+        </p>
+        <p className="strategy-page-fy26-inline-links">
+          FY26 playbooks:{' '}
+          {FY26_NAV_ITEMS.map(({ sectionId, label }, i) => (
+            <span key={sectionId}>
+              {i > 0 ? ' · ' : null}
+              <Link to={`${FY26_BASE}/${sectionId}`} className="strategy-page-fy26-inline-link">
+                {label}
+              </Link>
+            </span>
+          ))}
         </p>
       </header>
 

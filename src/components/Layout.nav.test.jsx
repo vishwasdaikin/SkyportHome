@@ -49,25 +49,39 @@ describe('Layout top nav', () => {
     await user.click(within(nav).getByRole('button', { name: /strategy/i }))
 
     expect(screen.getByRole('link', { name: 'All strategy' })).toHaveAttribute('href', '/strategy')
-    expect(screen.getByRole('link', { name: 'FY26' })).toHaveAttribute('href', '/strategy/fy26')
+    expect(screen.getByRole('link', { name: 'FY26 · Digital Apps & Services' })).toHaveAttribute(
+      'href',
+      '/strategy/fy26/digital-platform'
+    )
+    expect(screen.getByRole('link', { name: 'FY26 · HCM' })).toHaveAttribute('href', '/strategy/fy26/hcm')
+    expect(screen.getByRole('link', { name: 'FY26 · Digital Tools' })).toHaveAttribute(
+      'href',
+      '/strategy/fy26/digital-tools-services'
+    )
     expect(screen.getByRole('link', { name: 'Digital Strategy Principles' })).toHaveAttribute(
       'href',
       '/strategy/operating/overview'
     )
   })
 
-  it('includes FY26 playbook section links in Strategy flyout (same as page dropdown)', async () => {
-    const user = userEvent.setup()
-    renderNav()
-    const nav = screen.getByRole('navigation', { name: 'Main' })
-    await user.click(within(nav).getByRole('button', { name: /strategy/i }))
-
-    expect(
-      screen.getByRole('menuitem', { name: 'Digital Apps & Services', hidden: true })
-    ).toHaveAttribute('href', '/strategy/fy26/digital-platform')
-    expect(
-      screen.getByRole('menuitem', { name: 'Digital Tools', hidden: true })
-    ).toHaveAttribute('href', '/strategy/fy26/digital-tools-services')
-    expect(screen.getByRole('menu', { name: 'FY26 playbook sections', hidden: true })).toBeInTheDocument()
+  it('shows FY26 playbook tabs (Digital Apps, HCM, Digital Tools) when on an FY26 section', () => {
+    renderNav('/strategy/fy26/digital-platform')
+    const sub = screen.getByRole('navigation', { name: 'FY26 playbook' })
+    expect(within(sub).getByRole('link', { name: 'Digital Apps & Services' })).toHaveAttribute(
+      'href',
+      '/strategy/fy26/digital-platform'
+    )
+    expect(within(sub).getByRole('link', { name: 'HCM' })).toHaveAttribute('href', '/strategy/fy26/hcm')
+    expect(within(sub).getByRole('link', { name: 'Digital Tools' })).toHaveAttribute(
+      'href',
+      '/strategy/fy26/digital-tools-services'
+    )
   })
+
+  it('hides site header and FY26 playbook tabs on FY26 HCM only', () => {
+    renderNav('/strategy/fy26/hcm')
+    expect(screen.queryByRole('navigation', { name: 'Main' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'FY26 playbook' })).not.toBeInTheDocument()
+  })
+
 })

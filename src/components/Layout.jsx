@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from '../auth/authConfig'
+import { TEST_PAGE_VISIBLE } from '../constants/devOnlyNav'
 import AuthNav from '../auth/AuthNav'
 import AuthNavBackend from '../auth/AuthNavBackend'
 import './Layout.css'
-import { FY26_BASE, FY26_NAV_ITEMS } from '../constants/fy26Nav'
+import { FY26_BASE, FY26_HCM_VISIBLE, FY26_NAV_ITEMS } from '../constants/fy26Nav'
 
 const APPS_BASE = '/apps'
 const STRATEGY_OPERATING_BASE = '/strategy/operating'
@@ -17,6 +18,11 @@ export default function Layout({ children }) {
   const appsRef = useRef(null)
   const location = useLocation()
   const isOperatingPlaybook = location.pathname.startsWith(STRATEGY_OPERATING_BASE)
+  const isFy26Playbook = location.pathname.startsWith(`${FY26_BASE}/`)
+  const isFy26HcmPage = FY26_HCM_VISIBLE && location.pathname === `${FY26_BASE}/hcm`
+  const isPlaybookSubNav = isOperatingPlaybook || (isFy26Playbook && !isFy26HcmPage)
+  const isSkyportHomeApp = location.pathname === '/demos/skyport-home-concept'
+  const isCareDemoPage = location.pathname.startsWith('/test-page/care-demo')
 
   useEffect(() => {
     function onScroll() {
@@ -45,7 +51,10 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className={`app-layout ${isOperatingPlaybook ? 'app-layout--playbook' : ''}`}>
+    <div
+      className={`app-layout ${isPlaybookSubNav ? 'app-layout--playbook' : ''} ${isSkyportHomeApp || isCareDemoPage ? 'app-layout--skyport-home-app' : ''}`}
+    >
+      {!isSkyportHomeApp && !isCareDemoPage && !isFy26HcmPage && (
       <header className="app-header">
         <NavLink
           to="/"
@@ -103,6 +112,16 @@ export default function Layout({ children }) {
           <NavLink to="/" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`} end>
             Home
           </NavLink>
+          {TEST_PAGE_VISIBLE ? (
+            <NavLink
+              to="/test-page"
+              className={({ isActive }) =>
+                `app-nav-link ${isActive || location.pathname.startsWith('/test-page/') ? 'active' : ''}`
+              }
+            >
+              Test page
+            </NavLink>
+          ) : null}
 
           <div className="app-nav-dropdown" ref={appsRef}>
             <button
@@ -164,31 +183,16 @@ export default function Layout({ children }) {
                 >
                   All strategy
                 </NavLink>
-                <div className="app-nav-dropdown-fy26-wrap">
+                {FY26_NAV_ITEMS.map(({ sectionId, label }) => (
                   <NavLink
-                    to={FY26_BASE}
-                    className="app-nav-dropdown-item app-nav-dropdown-item--flyout-parent"
+                    key={sectionId}
+                    to={`${FY26_BASE}/${sectionId}`}
+                    className="app-nav-dropdown-item"
                     onClick={() => setStrategyOpen(false)}
                   >
-                    FY26
-                    <span className="app-nav-dropdown-flyout-caret" aria-hidden>
-                      ▸
-                    </span>
+                    FY26 · {label}
                   </NavLink>
-                  <div className="app-nav-dropdown-flyout" role="menu" aria-label="FY26 playbook sections">
-                    {FY26_NAV_ITEMS.map(({ sectionId, label }) => (
-                      <NavLink
-                        key={sectionId}
-                        to={`${FY26_BASE}/${sectionId}`}
-                        className="app-nav-dropdown-item"
-                        role="menuitem"
-                        onClick={() => setStrategyOpen(false)}
-                      >
-                        {label}
-                      </NavLink>
-                    ))}
-                  </div>
-                </div>
+                ))}
                 <NavLink
                   to={`${STRATEGY_OPERATING_BASE}/overview`}
                   className="app-nav-dropdown-item"
@@ -208,6 +212,7 @@ export default function Layout({ children }) {
           </div>
         )}
       </header>
+      )}
       {isOperatingPlaybook && (
         <nav className="app-playbook-nav" aria-label="Digital Strategy Principles">
           <NavLink to={`${STRATEGY_OPERATING_BASE}/overview`} className={({ isActive }) => `app-playbook-nav-link ${isActive ? 'active' : ''}`} end>
@@ -224,10 +229,34 @@ export default function Layout({ children }) {
           </NavLink>
         </nav>
       )}
-      <main className={`app-main ${location.pathname === '/demos' || location.pathname === '/demos/care' ? 'app-main--full-bleed' : ''}`}>
+      {isFy26Playbook && !isFy26HcmPage && (
+        <nav className="app-playbook-nav" aria-label="FY26 playbook">
+          {FY26_NAV_ITEMS.map(({ sectionId, label }) => (
+            <NavLink
+              key={sectionId}
+              to={`${FY26_BASE}/${sectionId}`}
+              end
+              className={({ isActive }) => `app-playbook-nav-link ${isActive ? 'active' : ''}`}
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+      )}
+      <main
+        className={`app-main ${
+          isSkyportHomeApp || isCareDemoPage
+            ? 'app-main--skyport-home-app'
+            : isFy26HcmPage
+              ? 'app-main--fy26-hcm'
+              : location.pathname === '/demos' || location.pathname === '/demos/care'
+                ? 'app-main--full-bleed'
+                : ''
+        }`}
+      >
         {children}
       </main>
-      {showBackToTop && (
+      {showBackToTop && !isSkyportHomeApp && !isCareDemoPage && !isFy26HcmPage && (
         <button
           type="button"
           className="back-to-top"

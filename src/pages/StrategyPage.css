@@ -4,6 +4,24 @@
   width: 100%;
 }
 
+.strategy-page-fy26-inline-links {
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-secondary, #4b5563);
+}
+
+.strategy-page-fy26-inline-link {
+  font-weight: 600;
+  color: var(--daikin-blue, #0097e0);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.strategy-page-fy26-inline-link:hover {
+  color: var(--daikin-blue-dark, #0077b6);
+}
+
 @media (min-width: 1100px) {
   .strategy-page-intro {
     white-space: nowrap;

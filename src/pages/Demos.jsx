@@ -8,6 +8,14 @@ export default function Demos() {
         <Link to="/apps/skyport-home" className="demos-back-link">
           ← SkyportHome
         </Link>
+        <div className="demos-toolbar-links">
+          <Link to="/demos/skyport-home-concept" className="demos-annotated-link">
+            New concept demo
+          </Link>
+          <Link to="/demos/annotated" className="demos-back-link">
+            Annotated overview
+          </Link>
+        </div>
       </div>
       <div className="demos-embed">
         <iframe

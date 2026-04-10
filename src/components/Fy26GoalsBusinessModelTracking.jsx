@@ -195,7 +195,7 @@ function formatTargetMetricsActual(v) {
 }
 
 /** FY26 Target Metrics — one table: metric columns, Target and Actual rows. */
-export function Fy26GoalsBusinessModelTracking() {
+export function Fy26GoalsBusinessModelTracking({ omitEngagementNote = false } = {}) {
   return (
     <div className="fy26-target-metrics">
       <h4 className="fy26-goals-bm-tracking-title">Target Metrics</h4>
@@ -239,12 +239,14 @@ export function Fy26GoalsBusinessModelTracking() {
         </table>
       </div>
       <Fy26TargetMetricsMonthlyPlaceholderCharts />
-      <p className="fy26-target-metrics-note">
-        <strong>Note:</strong>
-        {'\u00A0'}
-        Engagement metrics (MAU and users taking meaningful actions) are tracked operationally and are not
-        included in the FY26 financial forecast. Baselines will be established once instrumentation is in place.
-      </p>
+      {!omitEngagementNote && (
+        <p className="fy26-target-metrics-note">
+          <strong>Note:</strong>
+          {'\u00A0'}
+          Engagement metrics (MAU and users taking meaningful actions) are tracked operationally and are not
+          included in the FY26 financial forecast. Baselines will be established once instrumentation is in place.
+        </p>
+      )}
     </div>
   )
 }

@@ -136,6 +136,22 @@
   outline-offset: 2px;
 }
 
+.skyport-home-demo-secondary-link {
+  margin: 0.85rem 0 0;
+}
+
+.skyport-home-demo-secondary {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.skyport-home-demo-secondary:hover {
+  color: var(--daikin-blue);
+}
+
 /* Features toolbar: search + view toggle */
 .features-toolbar {
   display: flex;

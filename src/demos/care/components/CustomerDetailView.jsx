@@ -153,7 +153,7 @@ export function CustomerDetailView({ onBack }) {
                 </div>
               </div>
               <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-1">
                   <h3 className="text-lg font-semibold text-gray-800">Other Equipment</h3>
                   <button className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
                     <Plus className="w-4 h-4" /> Add Equipment
@@ -186,7 +186,7 @@ export function CustomerDetailView({ onBack }) {
                 </table>
               </div>
               <div>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-1">
                   <h3 className="text-lg font-semibold text-gray-800">Reports</h3>
                   <button className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
                     <Plus className="w-4 h-4" /> Generate Report

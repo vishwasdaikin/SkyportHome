@@ -254,3 +254,42 @@ export function getDigitalPlatformsForecastCumulativeChartData(yearEndSnapshots 
     lifetimeActiveLicensesCumulative: s.lifetimeActiveLicenses,
   }))
 }
+
+const SKYPORTHOME_USERS_BAR_FY_ORDER = ['FY26', 'FY27', 'FY28', 'FY29', 'FY30']
+
+/**
+ * Cumulative SkyportHome users at fiscal year-end, FY26–FY30 (Digital Platforms model).
+ * Same basis as the purple cumulative users line on FY26 Fusion30 outlook charts.
+ */
+export function getSkyportHomeUsersCumulativeFY26to30BarData(
+  yearEndSnapshots = YEAR_END_SNAPSHOTS,
+) {
+  const byPeriod = Object.fromEntries(
+    getDigitalPlatformsForecastCumulativeChartData(yearEndSnapshots).map((r) => [r.period, r]),
+  )
+  return SKYPORTHOME_USERS_BAR_FY_ORDER.map((period) => {
+    const row = byPeriod[period]
+    return { fiscalYear: period, users: row.usersCumulative }
+  })
+}
+
+/**
+ * Total revenue ($) FY26–FY30 — Digital Platforms business model “Total revenue ($)” row
+ * (SkyportCare license + enterprise). Matches `DigitalPlatformsBusinessModelTable.jsx`.
+ */
+const FUSION30_TOTAL_REVENUE_USD_BY_FY = {
+  FY26: 17_215_317,
+  FY27: 28_960_479,
+  FY28: 48_260_205,
+  FY29: 73_730_361,
+  FY30: 130_664_710,
+}
+
+const FUSION30_REVENUE_FY_ORDER = ['FY26', 'FY27', 'FY28', 'FY29', 'FY30']
+
+export function getFusion30TotalRevenueFY26to30BarData() {
+  return FUSION30_REVENUE_FY_ORDER.map((fiscalYear) => ({
+    fiscalYear,
+    revenue: FUSION30_TOTAL_REVENUE_USD_BY_FY[fiscalYear],
+  }))
+}

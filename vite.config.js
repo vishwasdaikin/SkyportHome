@@ -61,6 +61,10 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       strictPort: true,
+      /** Avoid stale CSS/JS when switching branches or after many edits (dev only). */
+      headers: {
+        'Cache-Control': 'no-store',
+      },
       proxy: {
         '/api': {
           target: coreApiOrigin,

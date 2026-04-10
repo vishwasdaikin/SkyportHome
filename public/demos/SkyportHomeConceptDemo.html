@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en" class="sh-app">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>SkyportHome</title>
+    <meta name="description" content="SkyportHome" />
+    <style>
+      :root {
+        --daikin: #0097e0;
+        --daikin-glow: rgba(0, 151, 224, 0.45);
+        --canvas: #0a0a0c;
+        --canvas-elev: #121214;
+        --text: #f5f5f7;
+        --text-dim: rgba(245, 245, 247, 0.45);
+        --text-faint: rgba(245, 245, 247, 0.28);
+        --safe-b: env(safe-area-inset-bottom, 0px);
+        --safe-t: env(safe-area-inset-top, 0px);
+        --touch-min: 44px;
+        --touch-comfort: 48px;
+        --touch-gap: 8px;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, 'Segoe UI', sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html.sh-app,
+      html.sh-app body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        min-height: 100dvh;
+        background: #050506;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .app-shell {
+        width: 100%;
+        max-width: 430px;
+        min-height: 100dvh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        background: var(--canvas);
+        flex: 1;
+      }
+      @media (max-width: 430px) {
+        .app-shell {
+          max-width: none;
+        }
+      }
+      .mobile-status {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: calc(12px + var(--safe-t)) 22px 8px;
+        gap: 0.5rem;
+        background: var(--canvas);
+        position: relative;
+        z-index: 5;
+      }
+      .mobile-status-time {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+        min-width: 3.25rem;
+        color: var(--text);
+      }
+      .dynamic-island {
+        position: absolute;
+        left: 50%;
+        top: calc(10px + var(--safe-t));
+        transform: translateX(-50%);
+        width: 118px;
+        height: 34px;
+        border-radius: 20px;
+        background: #1a1a1c;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+      @media (max-width: 420px) {
+        .dynamic-island {
+          width: 100px;
+          height: 30px;
+        }
+      }
+      .mobile-status-icons {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 3.25rem;
+        justify-content: flex-end;
+        color: var(--text);
+      }
+      .mobile-status-icons svg {
+        width: 18px;
+        height: 18px;
+        opacity: 0.9;
+      }
+      .shell {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        background: var(--canvas);
+      }
+      .scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 1.25rem;
+        padding-bottom: calc(0.75rem + var(--safe-b));
+        -webkit-overflow-scrolling: touch;
+        background: var(--canvas);
+        display: flex;
+        flex-direction: column;
+      }
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-top: 4px;
+        position: relative;
+        z-index: 2;
+      }
+      .home-block {
+        min-width: 0;
+      }
+      .home-name {
+        font-size: 1.0625rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .room-context {
+        margin-top: 10px;
+        margin-bottom: 4px;
+        position: relative;
+        z-index: 2;
+      }
+      .room-chips {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 2px 0;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+      }
+      .room-chips--trail {
+        padding-top: 6px;
+        overflow: visible;
+      }
+      .room-chip {
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        min-height: 36px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-dim);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.25s ease;
+      }
+      .room-chip[aria-selected='true'] {
+        background: rgba(0, 151, 224, 0.18);
+        color: #fff;
+        box-shadow: 0 0 20px rgba(0, 151, 224, 0.2);
+      }
+      .room-chip--ghost {
+        background: transparent;
+        color: var(--text-faint);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      }
+      .room-chip--ghost[aria-pressed='true'],
+      .room-chip--ghost.is-on {
+        color: var(--text);
+        box-shadow:
+          inset 0 0 0 1px rgba(0, 151, 224, 0.45),
+          0 0 16px rgba(0, 151, 224, 0.15);
+      }
+      .room-default[hidden],
+      .room-overview[hidden] {
+        display: none !important;
+      }
+      .room-overview {
+        flex: 1;
+        min-height: 42vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 0;
+      }
+      .overview-graphic {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        color: var(--text-dim);
+      }
+      .overview-graphic rect.ov-room {
+        cursor: pointer;
+        transition:
+          stroke 0.25s ease,
+          filter 0.25s ease;
+      }
+      .overview-graphic rect.ov-active {
+        stroke: var(--daikin) !important;
+        stroke-opacity: 1 !important;
+        stroke-width: 2;
+        filter: drop-shadow(0 0 14px rgba(0, 151, 224, 0.5));
+      }
+      .overview-hint {
+        margin-top: 1rem;
+        font-size: 0.8125rem;
+        color: var(--text-faint);
+        text-align: center;
+      }
+      .settings-ghost {
+        width: var(--touch-comfort);
+        height: var(--touch-comfort);
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+        pointer-events: none;
+        opacity: 0.9;
+      }
+      .hero {
+        position: relative;
+        flex: 1;
+        min-height: 36vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0 1.25rem;
+      }
+      .hero-canvas {
+        position: absolute;
+        inset: -8% -20% 0;
+        background:
+          radial-gradient(ellipse 75% 65% at 50% 42%, rgba(0, 151, 224, 0.18) 0%, transparent 58%),
+          radial-gradient(ellipse 90% 55% at 50% 88%, rgba(0, 151, 224, 0.07) 0%, transparent 45%);
+        pointer-events: none;
+      }
+      .encouragement {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 0.35rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--text-dim);
+        letter-spacing: -0.01em;
+        text-align: center;
+        max-width: 17rem;
+        line-height: 1.35;
+      }
+      .temp-hero {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        font-size: clamp(5rem, 22vw, 6.25rem);
+        font-weight: 500;
+        letter-spacing: -0.06em;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        color: var(--text);
+        transition: transform 0.35s cubic-bezier(0.25, 0.9, 0.32, 1);
+      }
+      .app-shell.is-tuning .temp-hero {
+        transform: scale(1.045);
+      }
+      .temp-digits {
+        display: inline-block;
+        transition: transform 0.2s cubic-bezier(0.25, 0.9, 0.32, 1);
+      }
+      .temp-digits.is-pulse {
+        animation: digitPulse 0.26s cubic-bezier(0.25, 0.9, 0.35, 1);
+      }
+      @keyframes digitPulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.07);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .temp-hero .deg {
+        font-size: 0.32em;
+        font-weight: 500;
+        color: var(--text-faint);
+        vertical-align: super;
+        margin-left: 0.06em;
+        letter-spacing: 0;
+      }
+      .micro-facts {
+        position: relative;
+        z-index: 1;
+        margin: 1rem 0 0;
+        font-size: 0.875rem;
+        color: var(--text-faint);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.01em;
+      }
+      .controls-dock {
+        position: relative;
+        z-index: 2;
+        padding-top: 0.35rem;
+      }
+
+      .intent-track {
+        --intent: 1;
+        position: relative;
+        display: flex;
+        margin: 0 0 1.1rem;
+        padding: 3px;
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.045);
+        touch-action: pan-y;
+      }
+      .intent-glider {
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        left: 3px;
+        width: calc((100% - 6px) / 3);
+        border-radius: 100px;
+        background: rgba(0, 151, 224, 0.22);
+        box-shadow:
+          0 0 28px rgba(0, 151, 224, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        pointer-events: none;
+        transform: translateX(calc(var(--intent) * 100%));
+        transition: transform 0.34s cubic-bezier(0.25, 0.9, 0.32, 1);
+        will-change: transform;
+      }
+      .intent-opt {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+        min-height: 44px;
+        border: none;
+        border-radius: 100px;
+        background: transparent;
+        color: var(--text-dim);
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        font-family: inherit;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: color 0.2s ease;
+      }
+      .intent-opt[aria-selected='true'] {
+        color: #fff;
+      }
+
+      .temp-unified {
+        border-radius: 22px;
+        padding: 14px 14px 12px;
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+      .target-label {
+        margin: 0 0 0.65rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        text-align: center;
+      }
+      .setpoint-capsule {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        margin: 0 0 0.85rem;
+        padding: 2px 4px;
+        border-radius: 100px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .capsule-step {
+        min-width: 52px;
+        min-height: 52px;
+        border: none;
+        border-radius: 100px;
+        background: transparent;
+        color: rgba(0, 151, 224, 0.85);
+        font-size: 1.85rem;
+        font-weight: 200;
+        font-family: inherit;
+        line-height: 1;
+        cursor: pointer;
+        touch-action: manipulation;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .capsule-step:active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .capsule-readout {
+        flex: 1;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.15rem;
+        font-variant-numeric: tabular-nums;
+        padding: 0 0.25rem;
+      }
+      .capsule-readout #sp-v {
+        font-size: 2rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        color: var(--text);
+        line-height: 1;
+      }
+      .capsule-unit {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-faint);
+      }
+
+      .rail-wrap {
+        position: relative;
+        padding: 4px 0 0;
+      }
+      .rail-scale {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 0 2px;
+        font-size: 0.6875rem;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-faint);
+        letter-spacing: 0.02em;
+      }
+      .rail-input {
+        width: 100%;
+        height: 44px;
+        margin: 0;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+      }
+      .rail-input::-webkit-slider-runnable-track {
+        height: 4px;
+        border-radius: 4px;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 100, 180, 0.45) 0%,
+          rgba(80, 90, 110, 0.35) 45%,
+          rgba(200, 120, 60, 0.4) 100%
+        );
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+      .rail-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 11px;
+        height: 26px;
+        margin-top: calc((4px - 26px) / 2);
+        border-radius: 5px;
+        background: linear-gradient(180deg, #f8f8fa 0%, #d8d8de 100%);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow:
+          0 0 0 1px rgba(0, 151, 224, 0.35),
+          0 2px 12px rgba(0, 151, 224, 0.35),
+          0 4px 20px rgba(0, 0, 0, 0.35);
+      }
+      .rail-input::-moz-range-track {
+        height: 4px;
+        border-radius: 4px;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 100, 180, 0.45) 0%,
+          rgba(80, 90, 110, 0.35) 45%,
+          rgba(200, 120, 60, 0.4) 100%
+        );
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+      .rail-input::-moz-range-thumb {
+        width: 11px;
+        height: 26px;
+        border-radius: 5px;
+        background: linear-gradient(180deg, #f8f8fa 0%, #d8d8de 100%);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow:
+          0 0 0 1px rgba(0, 151, 224, 0.35),
+          0 2px 12px rgba(0, 151, 224, 0.35);
+      }
+      .rail-input:focus-visible {
+        outline: none;
+      }
+      .rail-input:focus-visible::-webkit-slider-thumb {
+        box-shadow:
+          0 0 0 2px var(--daikin),
+          0 2px 12px rgba(0, 151, 224, 0.45);
+      }
+      .add-foot {
+        margin-top: auto;
+        padding-top: 1.25rem;
+        text-align: center;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: rgba(0, 151, 224, 0.55);
+        letter-spacing: -0.01em;
+      }
+
+      .app-shell.is-tuning .encouragement,
+      .app-shell.is-tuning .micro-facts,
+      .app-shell.is-tuning .add-foot,
+      .app-shell.is-tuning .room-context {
+        opacity: 0.2;
+        pointer-events: none;
+        transition: opacity 0.28s ease;
+      }
+      .app-shell.is-tuning .top-row {
+        opacity: 0.35;
+        pointer-events: none;
+        transition: opacity 0.28s ease;
+      }
+      .app-shell.is-tuning .controls-dock {
+        transform: scale(1.02);
+        transition: transform 0.28s cubic-bezier(0.25, 0.9, 0.32, 1);
+      }
+      .home-gesture-bar {
+        width: 128px;
+        height: 5px;
+        margin: 0 auto;
+        margin-bottom: max(8px, var(--safe-b));
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.18);
+        flex-shrink: 0;
+      }
+      .vh {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      /* UX #1: contextual guidance — lightweight coach (not a tutorial wall) */
+      .coach-root {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        pointer-events: none;
+      }
+      .coach-root.is-on {
+        pointer-events: auto;
+      }
+      .coach-root[hidden] {
+        display: none !important;
+      }
+      .coach-scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+      .coach-highlight {
+        position: relative;
+        z-index: 201;
+        border-radius: 20px;
+        outline: 2px solid rgba(0, 151, 224, 0.95);
+        outline-offset: 6px;
+        box-shadow:
+          0 0 0 1px rgba(0, 151, 224, 0.35),
+          0 0 40px rgba(0, 151, 224, 0.2);
+      }
+      .coach-panel {
+        position: relative;
+        z-index: 202;
+        margin: 0 1rem 1rem;
+        margin-bottom: max(1rem, var(--safe-b));
+        padding: 1.15rem 1.2rem 1rem;
+        border-radius: 18px;
+        background: rgba(28, 28, 30, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.45);
+      }
+      .coach-step-label {
+        margin: 0 0 0.35rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+      }
+      .coach-text {
+        margin: 0 0 1.1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.35;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .coach-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+      .coach-btn {
+        min-height: var(--touch-comfort);
+        padding: 0 1.15rem;
+        border-radius: 12px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      .coach-btn--ghost {
+        background: transparent;
+        color: var(--text-dim);
+      }
+      .coach-btn--primary {
+        background: var(--daikin);
+        color: #fff;
+      }
+      .coach-btn--primary:active,
+      .coach-btn--ghost:active {
+        transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="mobile-status" role="presentation" aria-hidden="true">
+        <span class="mobile-status-time" id="status-time">9:41</span>
+        <span class="dynamic-island" aria-hidden="true"></span>
+        <div class="mobile-status-icons" aria-hidden="true">
+          <svg viewBox="0 0 18 12" width="19" height="14" fill="currentColor" aria-hidden="true">
+            <rect x="0" y="8" width="3" height="4" rx="1" opacity="0.85" />
+            <rect x="5" y="5" width="3" height="7" rx="1" opacity="0.9" />
+            <rect x="10" y="2" width="3" height="10" rx="1" opacity="0.95" />
+            <rect x="15" y="0" width="3" height="12" rx="1" />
+          </svg>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+            <path
+              d="M15.67 4H14V2c0-.55-.45-1-1-1h-2c-.55 0-1 .45-1 1v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"
+            />
+          </svg>
+        </div>
+      </header>
+
+      <div class="shell">
+        <main class="scroll" aria-label="Home">
+          <div class="top-row">
+            <div class="home-block">
+              <div class="home-name">Oak Street</div>
+            </div>
+            <span class="settings-ghost" aria-hidden="true">⚙</span>
+          </div>
+
+          <div class="room-context" id="coach-target-rooms">
+            <div class="room-chips" role="tablist" aria-label="Rooms">
+              <button type="button" class="room-chip" role="tab" data-room="Living room" aria-selected="true">
+                Living room
+              </button>
+              <button type="button" class="room-chip" role="tab" data-room="Bedroom" aria-selected="false">
+                Bedroom
+              </button>
+              <button type="button" class="room-chip" role="tab" data-room="Altherma" aria-selected="false">
+                Altherma
+              </button>
+            </div>
+            <div class="room-chips room-chips--trail">
+              <button type="button" class="room-chip room-chip--ghost" id="overview-toggle" aria-pressed="false">
+                Overview
+              </button>
+            </div>
+          </div>
+
+          <div class="room-default" id="room-default-view">
+            <section class="hero" id="coach-target-hero" aria-label="Indoor comfort">
+              <div class="hero-canvas" aria-hidden="true"></div>
+              <p class="encouragement" id="comfort-line">Steady and comfortable</p>
+              <p class="temp-hero" aria-live="polite">
+              <span id="indoor-temp" class="temp-digits">72</span><span class="deg">°F</span>
+            </p>
+              <p class="micro-facts"><span id="feels-like">71</span>° · <span id="out-temp">38</span>° out</p>
+            </section>
+
+            <div class="controls-dock">
+              <div
+                class="intent-track"
+                id="coach-target-mode"
+                data-intent="1"
+                role="tablist"
+                aria-label="Comfort intent"
+              >
+                <div class="intent-glider" id="intent-glider" aria-hidden="true"></div>
+                <button type="button" class="intent-opt" role="tab" data-index="0" aria-selected="false">Heat</button>
+                <button type="button" class="intent-opt" role="tab" data-index="1" aria-selected="true">Cool</button>
+                <button type="button" class="intent-opt" role="tab" data-index="2" aria-selected="false">Auto</button>
+              </div>
+
+              <div class="temp-unified" id="coach-target-adjust">
+                <p class="target-label">Target</p>
+                <div class="setpoint-capsule">
+                  <button type="button" class="capsule-step" id="sp-d" aria-label="Cooler">−</button>
+                  <div class="capsule-readout">
+                    <span id="sp-v">72</span><span class="capsule-unit">°F</span>
+                  </div>
+                  <button type="button" class="capsule-step" id="sp-u" aria-label="Warmer">+</button>
+                </div>
+                <div class="rail-wrap">
+                  <div class="rail-scale" aria-hidden="true">
+                    <span>60°</span><span>80°</span>
+                  </div>
+                  <label class="vh" for="sp-r">Set target temperature</label>
+                  <input
+                    type="range"
+                    id="sp-r"
+                    class="rail-input"
+                    min="60"
+                    max="80"
+                    value="72"
+                    step="1"
+                    aria-valuenow="72"
+                    aria-valuemin="60"
+                    aria-valuemax="80"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <p class="add-foot">+ Add device</p>
+          </div>
+
+          <div class="room-overview" id="room-overview-view" hidden>
+            <svg class="overview-graphic" viewBox="0 0 240 140" aria-label="Home layout" role="img">
+              <rect
+                x="8"
+                y="8"
+                width="224"
+                height="124"
+                rx="12"
+                fill="none"
+                stroke="currentColor"
+                stroke-opacity="0.2"
+              />
+              <rect
+                class="ov-room"
+                data-room="Living room"
+                x="20"
+                y="20"
+                width="100"
+                height="56"
+                rx="8"
+                fill="rgba(255,255,255,0.04)"
+                stroke="currentColor"
+                stroke-opacity="0.35"
+              />
+              <rect
+                class="ov-room"
+                data-room="Bedroom"
+                x="132"
+                y="20"
+                width="88"
+                height="56"
+                rx="8"
+                fill="rgba(255,255,255,0.04)"
+                stroke="currentColor"
+                stroke-opacity="0.35"
+              />
+              <rect
+                class="ov-room"
+                data-room="Altherma"
+                x="20"
+                y="84"
+                width="200"
+                height="36"
+                rx="8"
+                fill="rgba(255,255,255,0.04)"
+                stroke="currentColor"
+                stroke-opacity="0.35"
+              />
+              <text x="120" y="14" text-anchor="middle" fill="currentColor" font-size="9" opacity="0.45" font-family="inherit">
+                Oak Street
+              </text>
+            </svg>
+            <p class="overview-hint">Tap a space to work it</p>
+          </div>
+        </main>
+        <div class="home-gesture-bar" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div id="coach-root" class="coach-root" hidden>
+      <div class="coach-scrim" aria-hidden="true"></div>
+      <div
+        class="coach-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="coach-heading"
+        aria-describedby="coach-text"
+      >
+        <p id="coach-heading" class="coach-step-label"></p>
+        <p id="coach-text" class="coach-text"></p>
+        <div class="coach-actions">
+          <button type="button" class="coach-btn coach-btn--ghost" id="coach-skip">Skip</button>
+          <button type="button" class="coach-btn coach-btn--primary" id="coach-next">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      ;(function () {
+        var statusTime = document.getElementById('status-time')
+        function tickStatusClock() {
+          if (!statusTime) return
+          var d = new Date()
+          var h = d.getHours()
+          var m = d.getMinutes()
+          var hr = h % 12
+          if (hr === 0) hr = 12
+          statusTime.textContent = hr + ':' + String(m).padStart(2, '0')
+        }
+        tickStatusClock()
+        setInterval(tickStatusClock, 30000)
+
+        var appShell = document.querySelector('.app-shell')
+        var sp = 72
+        var lastUserSp = sp
+        var spV = document.getElementById('sp-v')
+        var spR = document.getElementById('sp-r')
+        var indoor = document.getElementById('indoor-temp')
+        var feels = document.getElementById('feels-like')
+        var comfortLine = document.getElementById('comfort-line')
+        var outTemp = document.getElementById('out-temp')
+
+        function haptic() {
+          try {
+            if (navigator.vibrate) navigator.vibrate(6)
+          } catch (_) {}
+        }
+
+        function pulseDigits() {
+          if (!indoor) return
+          indoor.classList.remove('is-pulse')
+          void indoor.offsetWidth
+          indoor.classList.add('is-pulse')
+          setTimeout(function () {
+            indoor.classList.remove('is-pulse')
+          }, 300)
+        }
+
+        var copyByState = {
+          'Comfort hold': 'Steady and comfortable',
+          'Cooling soon': 'Cooling when you need it',
+          'Heating soon': 'Warming things up for you',
+        }
+
+        function sync(opts) {
+          opts = opts || {}
+          sp = Math.min(80, Math.max(60, sp))
+          spV.textContent = String(sp)
+          spR.value = String(sp)
+          spR.setAttribute('aria-valuenow', String(sp))
+          var drift = sp > 74 ? 1 : sp < 68 ? -1 : 0
+          var inV = sp - drift
+          indoor.textContent = String(inV)
+          feels.textContent = String(inV - 1)
+          var wx =
+            sp >= 73 ? 'Cooling soon' : sp <= 69 ? 'Heating soon' : 'Comfort hold'
+          if (comfortLine) comfortLine.textContent = copyByState[wx] || wx
+          outTemp.textContent = '38'
+          if (opts.user && sp !== lastUserSp) {
+            lastUserSp = sp
+            haptic()
+            pulseDigits()
+          }
+        }
+
+        var tempUnified = document.querySelector('.temp-unified')
+        var tuningArm = false
+        if (tempUnified && appShell) {
+          tempUnified.addEventListener('pointerdown', function () {
+            tuningArm = true
+            appShell.classList.add('is-tuning')
+          })
+          document.addEventListener(
+            'pointerup',
+            function () {
+              if (!tuningArm) return
+              tuningArm = false
+              setTimeout(function () {
+                appShell.classList.remove('is-tuning')
+              }, 200)
+            },
+            true
+          )
+          document.addEventListener(
+            'pointercancel',
+            function () {
+              tuningArm = false
+              appShell.classList.remove('is-tuning')
+            },
+            true
+          )
+        }
+
+        document.getElementById('sp-u').addEventListener('click', function () {
+          sp++
+          sync({ user: true })
+        })
+        document.getElementById('sp-d').addEventListener('click', function () {
+          sp--
+          sync({ user: true })
+        })
+        spR.addEventListener('input', function () {
+          sp = Number(spR.value)
+          sync({ user: true })
+        })
+
+        var intentTrack = document.getElementById('coach-target-mode')
+        var intentOpts = intentTrack ? intentTrack.querySelectorAll('.intent-opt') : []
+        var intentIndex = 1
+
+        function setIntent(idx, fromSwipe) {
+          idx = Math.max(0, Math.min(2, idx))
+          intentIndex = idx
+          intentTrack.style.setProperty('--intent', String(idx))
+          intentTrack.setAttribute('data-intent', String(idx))
+          intentOpts.forEach(function (b) {
+            var i = Number(b.getAttribute('data-index'))
+            b.setAttribute('aria-selected', i === idx ? 'true' : 'false')
+          })
+          if (fromSwipe) haptic()
+        }
+
+        intentOpts.forEach(function (b) {
+          b.addEventListener('click', function () {
+            setIntent(Number(b.getAttribute('data-index')))
+            haptic()
+          })
+        })
+
+        var swipeX = null
+        intentTrack.addEventListener(
+          'touchstart',
+          function (e) {
+            swipeX = e.changedTouches[0].clientX
+          },
+          { passive: true }
+        )
+        intentTrack.addEventListener(
+          'touchend',
+          function (e) {
+            if (swipeX == null) return
+            var dx = e.changedTouches[0].clientX - swipeX
+            swipeX = null
+            if (Math.abs(dx) < 48) return
+            if (dx < 0) setIntent(intentIndex + 1, true)
+            else setIntent(intentIndex - 1, true)
+          },
+          { passive: true }
+        )
+
+        setIntent(intentIndex)
+
+        var roomChips = document.querySelectorAll('.room-chip[data-room]')
+        var overviewToggle = document.getElementById('overview-toggle')
+        var roomDefault = document.getElementById('room-default-view')
+        var roomOverview = document.getElementById('room-overview-view')
+
+        function setActiveRoom(name) {
+          roomChips.forEach(function (c) {
+            c.setAttribute('aria-selected', c.getAttribute('data-room') === name ? 'true' : 'false')
+          })
+          document.querySelectorAll('.ov-room').forEach(function (r) {
+            r.classList.toggle('ov-active', r.getAttribute('data-room') === name)
+          })
+        }
+
+        roomChips.forEach(function (c) {
+          c.addEventListener('click', function () {
+            setActiveRoom(c.getAttribute('data-room'))
+            haptic()
+          })
+        })
+
+        if (overviewToggle && roomDefault && roomOverview) {
+          overviewToggle.addEventListener('click', function () {
+            var open = !roomOverview.hasAttribute('hidden')
+            if (open) {
+              roomDefault.removeAttribute('hidden')
+              roomOverview.setAttribute('hidden', '')
+              overviewToggle.setAttribute('aria-pressed', 'false')
+              overviewToggle.classList.remove('is-on')
+            } else {
+              roomDefault.setAttribute('hidden', '')
+              roomOverview.removeAttribute('hidden')
+              overviewToggle.setAttribute('aria-pressed', 'true')
+              overviewToggle.classList.add('is-on')
+            }
+            haptic()
+          })
+        }
+
+        document.querySelectorAll('.ov-room').forEach(function (r) {
+          r.addEventListener('click', function () {
+            setActiveRoom(r.getAttribute('data-room'))
+            if (roomDefault && roomOverview && overviewToggle) {
+              roomDefault.removeAttribute('hidden')
+              roomOverview.setAttribute('hidden', '')
+              overviewToggle.setAttribute('aria-pressed', 'false')
+              overviewToggle.classList.remove('is-on')
+            }
+            var match = document.querySelector('.room-chip[data-room="' + r.getAttribute('data-room') + '"]')
+            if (match) match.focus()
+            haptic()
+          })
+        })
+
+        setActiveRoom('Living room')
+        sync()
+
+        /* —— User Experience #1: in-app contextual guidance —— */
+        var COACH_KEY = 'sh_ux_coach_home_v1'
+        var coachSteps = [
+          {
+            el: function () {
+              return document.getElementById('coach-target-hero')
+            },
+            title: 'Comfort',
+            text: 'Your home’s state, in one glance.',
+          },
+          {
+            el: function () {
+              return document.getElementById('coach-target-rooms')
+            },
+            title: 'Rooms',
+            text: 'Switch zones fast. Overview when you want the big picture.',
+          },
+          {
+            el: function () {
+              return document.getElementById('coach-target-mode')
+            },
+            title: 'Intent',
+            text: 'Swipe or tap — one calm control.',
+          },
+          {
+            el: function () {
+              return document.getElementById('coach-target-adjust')
+            },
+            title: 'Target',
+            text: 'Capsule and rail work as one.',
+          },
+        ]
+
+        var coachRoot = document.getElementById('coach-root')
+        var coachHeading = document.getElementById('coach-heading')
+        var coachTextEl = document.getElementById('coach-text')
+        var coachSkip = document.getElementById('coach-skip')
+        var coachNext = document.getElementById('coach-next')
+        var coachStepIndex = 0
+        var coachHighlights = []
+
+        function coachClearHighlights() {
+          coachHighlights.forEach(function (n) {
+            if (n) n.classList.remove('coach-highlight')
+          })
+          coachHighlights = []
+        }
+
+        function coachScrollTo(el) {
+          if (!el) return
+          try {
+            el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+          } catch (_) {}
+        }
+
+        function coachRenderStep() {
+          coachClearHighlights()
+          var step = coachSteps[coachStepIndex]
+          if (!step) return
+          var target = step.el()
+          if (target) {
+            target.classList.add('coach-highlight')
+            coachHighlights.push(target)
+            coachScrollTo(target)
+          }
+          coachHeading.textContent = step.title + ' · ' + (coachStepIndex + 1) + ' of ' + coachSteps.length
+          coachTextEl.textContent = step.text
+          coachNext.textContent = coachStepIndex >= coachSteps.length - 1 ? 'Done' : 'Next'
+        }
+
+        function coachClose() {
+          coachRoot.classList.remove('is-on')
+          coachRoot.setAttribute('hidden', '')
+          coachClearHighlights()
+          try {
+            localStorage.setItem(COACH_KEY, '1')
+          } catch (_) {}
+        }
+
+        function coachOpen() {
+          coachStepIndex = 0
+          coachRoot.removeAttribute('hidden')
+          coachRoot.classList.add('is-on')
+          coachRenderStep()
+          setTimeout(function () {
+            coachNext.focus()
+          }, 100)
+        }
+
+        function coachMaybeStart() {
+          var force =
+            typeof location !== 'undefined' &&
+            new URLSearchParams(location.search).get('coach') === '1'
+          if (force) {
+            try {
+              localStorage.removeItem(COACH_KEY)
+            } catch (_) {}
+          }
+          var done = false
+          try {
+            done = localStorage.getItem(COACH_KEY) === '1'
+          } catch (_) {
+            done = false
+          }
+          if (!done) coachOpen()
+        }
+
+        if (coachSkip) {
+          coachSkip.addEventListener('click', coachClose)
+        }
+        if (coachNext) {
+          coachNext.addEventListener('click', function () {
+            if (coachStepIndex >= coachSteps.length - 1) {
+              coachClose()
+              return
+            }
+            coachStepIndex++
+            coachRenderStep()
+            coachNext.focus()
+          })
+        }
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && coachRoot && !coachRoot.hasAttribute('hidden')) {
+            coachClose()
+          }
+        })
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', coachMaybeStart)
+        } else {
+          coachMaybeStart()
+        }
+      })()
+    </script>
+  </body>
+</html>

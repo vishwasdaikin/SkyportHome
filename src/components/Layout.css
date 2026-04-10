@@ -154,6 +154,8 @@
   left: 0;
   margin-top: 0.25rem;
   min-width: 11rem;
+  max-height: min(70vh, 24rem);
+  overflow-y: auto;
   padding: 0.35rem 0;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -181,73 +183,6 @@
   background: var(--daikin-blue-light);
   color: var(--daikin-blue);
   font-weight: 600;
-}
-
-/* Strategy → FY26: hover / focus flyout with same sections as FY26 page dropdown */
-.app-nav-dropdown-fy26-wrap {
-  position: relative;
-}
-
-.app-nav-dropdown-item--flyout-parent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.app-nav-dropdown-flyout-caret {
-  flex-shrink: 0;
-  font-size: 0.65rem;
-  opacity: 0.65;
-}
-
-.app-nav-dropdown-flyout {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  margin-left: 0.15rem;
-  min-width: 14.5rem;
-  max-width: min(90vw, 20rem);
-  padding: 0.35rem 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  z-index: 60;
-}
-
-/* Invisible strip so cursor can reach flyout without closing hover */
-.app-nav-dropdown-flyout::before {
-  content: '';
-  position: absolute;
-  right: 100%;
-  top: 0;
-  bottom: 0;
-  width: 0.65rem;
-}
-
-.app-nav-dropdown-fy26-wrap:hover .app-nav-dropdown-flyout,
-.app-nav-dropdown-fy26-wrap:focus-within .app-nav-dropdown-flyout {
-  display: block;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .app-nav-dropdown-fy26-wrap:hover .app-nav-dropdown-flyout,
-  .app-nav-dropdown-fy26-wrap:focus-within .app-nav-dropdown-flyout {
-    animation: appNavFy26FlyoutIn 0.2s ease-out;
-  }
-}
-
-@keyframes appNavFy26FlyoutIn {
-  from {
-    opacity: 0;
-    transform: translateX(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 .app-nav-link {
@@ -363,6 +298,28 @@
   min-height: 0;
 }
 
+/* SkyportHome app embed: no site header — fill viewport edge-to-edge */
+.app-layout--skyport-home-app {
+  min-height: 100dvh;
+  min-height: 100svh;
+}
+
+.app-main--skyport-home-app {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+/* FY26 HCM: no site or playbook chrome — content starts at top */
+.app-main--fy26-hcm {
+  padding-top: 1rem;
+}
+
 @media (min-width: 640px) {
   .app-header {
     padding: 0.65rem 2rem;
@@ -371,6 +328,9 @@
     padding-right: 2rem;
     padding-bottom: 2.5rem;
     padding-left: 2rem;
+  }
+  .app-main--skyport-home-app {
+    padding: 0;
   }
 }
 

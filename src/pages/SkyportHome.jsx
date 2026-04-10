@@ -393,12 +393,22 @@ export default function SkyportHome({
         </p>
         <p className="skyport-home-demo-cta-wrap">
           <a
-            href={`${(import.meta.env.BASE_URL || '/').replace(/\/+$/, '')}/demos`}
+            href={`${(import.meta.env.BASE_URL || '/').replace(/\/+$/, '')}/demos/skyport-home-concept`}
             target="_blank"
             rel="noopener noreferrer"
             className="skyport-home-demo-cta"
           >
             Open interactive demo ↗
+          </a>
+        </p>
+        <p className="skyport-home-demo-secondary-link">
+          <a
+            href={`${(import.meta.env.BASE_URL || '/').replace(/\/+$/, '')}/demos`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="skyport-home-demo-secondary"
+          >
+            Earlier Magic Patterns prototype (original embed)
           </a>
         </p>
       </section>

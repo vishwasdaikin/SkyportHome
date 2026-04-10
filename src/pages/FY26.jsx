@@ -7,6 +7,7 @@ import {
   FY26_NAV_ITEMS,
   FY26_TOP_NAV_IDS,
   FY26_TOP_NAV_TITLES,
+  isFy26DigitalAppsStyleSection,
 } from '../constants/fy26Nav'
 import {
   ComposedChart,
@@ -38,6 +39,7 @@ import { Fy26GoalsBusinessModelTracking } from '../components/Fy26GoalsBusinessM
 import { useDigitalPlatformsBusinessModelData } from '../hooks/useDigitalPlatformsBusinessModelData'
 import { BUSINESS_MODEL_DEFAULT_SHEET } from '../utils/digitalPlatformsBusinessModelGrid'
 import { getInstalledBaseAllTimeSnapshotFromGrid } from '../content/businessModelToForecastBridge'
+import { FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY } from '../content/funnelActiveLicensePenetrationFYDisplay'
 import {
   Fy26ForecastMetricsContext,
   FY26_STATIC_FORECAST_METRICS,
@@ -622,13 +624,6 @@ const SKYPORTCARE_QUARTERLY_LEGEND_ADDITIONAL_ENTRIES = Object.freeze([
     fill: SKYPORTCARE_QUARTERLY_LINE_STROKES.expiredLicenses,
   },
 ])
-
-/** Installed base funnel table: Active License Penetration FY columns (presentation). */
-const FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY = {
-  FY25: { pct: '6%', absParen: '(4,600)' },
-  FY24: { pct: '6%', absParen: '(5,700)' },
-  FY23: { pct: '4%', absParen: '(1,700)' },
-}
 
 /** Installed base funnel table: Paid Annual License Penetration FY + All‑Time columns (presentation). */
 const FUNNEL_PAID_ANNUAL_PENETRATION_FY_DISPLAY = {
@@ -2724,7 +2719,7 @@ function SkyportHomeReviewTablesBlock() {
   )
 }
 
-function SkyportHomeUserFeedbackCard({ expandDetailsOpen }) {
+function SkyportHomeUserFeedbackCard({ expandDetailsOpen, omitTakeaway }) {
   const expandPanelId = 'skyport-home-feedback-expand-panel'
 
   return (
@@ -2755,14 +2750,16 @@ function SkyportHomeUserFeedbackCard({ expandDetailsOpen }) {
         </div>
       )}
 
-      <div className="fy25-takeaway fy25-takeaway--skyport-after-charts">
-        <p className="fy25-takeaway-paragraph">
-          <strong className="fy25-takeaway-inline-label">Takeaway:</strong>{' '}
-          SkyportHome has reached meaningful scale, but unresolved reliability and UX issues dominate user
-          feedback, limiting engagement and value realization. Improving core experience quality and
-          instrumentation is critical before driving deeper homeowner activation.
-        </p>
-      </div>
+      {!omitTakeaway && (
+        <div className="fy25-takeaway fy25-takeaway--skyport-after-charts">
+          <p className="fy25-takeaway-paragraph">
+            <strong className="fy25-takeaway-inline-label">Takeaway:</strong>{' '}
+            SkyportHome has reached meaningful scale, but unresolved reliability and UX issues dominate user
+            feedback, limiting engagement and value realization. Improving core experience quality and
+            instrumentation is critical before driving deeper homeowner activation.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -4036,7 +4033,13 @@ function Fy25ThermostatSalesDualChartsRow({
 }
 
 /** SkyportCare FY25 Review card: Monthly Active Licenses (bars) + quarterly license trends (3 lines, FY23–FY25). */
-function Fy25SkyportCareDualChartsRow({ chartTabId, setChartTabId, idSuffix, tablistAriaLabel }) {
+function Fy25SkyportCareDualChartsRow({
+  chartTabId,
+  setChartTabId,
+  idSuffix,
+  tablistAriaLabel,
+  omitLicenseRenewalsInstrumentationNote = false,
+}) {
   const monthlyHeadingId = `thermostat-monthly-heading${idSuffix}`
   const fyPanelId = `thermostat-fy-chart-panel${idSuffix}`
   const alltimeHeadingId = `thermostat-alltime-heading${idSuffix}`
@@ -4058,9 +4061,11 @@ function Fy25SkyportCareDualChartsRow({ chartTabId, setChartTabId, idSuffix, tab
             {SKYPORTCARE_DEALER_STATS.active.toLocaleString('en-US')} ({SKYPORTCARE_DEALER_STATS.activePctDisplay})
           </strong>
         </li>
-        <li>
-          1-Year and Lifetime Active License Renewals <strong>is not yet instrumented</strong>.
-        </li>
+        {!omitLicenseRenewalsInstrumentationNote && (
+          <li>
+            1-Year and Lifetime Active License Renewals <strong>is not yet instrumented</strong>.
+          </li>
+        )}
       </ul>
       <div className="fy25-skyportcare-dual-grid">
         <div className="fy25-skyportcare-dual-grid-header fy25-skyportcare-dual-grid-header--left">
@@ -4401,9 +4406,112 @@ function Fy26DownloadPdfButton({ onClick }) {
   )
 }
 
+/** HCM playbook: Execution Plan table without PIC, Key Dependencies, or Target columns. */
+function Fy26ExecutionPlanTableHcm() {
+  return (
+    <div className="fy26-execution-plan-table-wrap">
+      <table className="fy26-execution-plan-table fy26-execution-plan-table--hcm-two-col">
+        <colgroup>
+          <col className="fy26-execution-plan-col-theme" />
+          <col className="fy26-execution-plan-col-actions" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">Strategic Theme</th>
+            <th scope="col" className="fy26-execution-plan-th-actions">
+              Key Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="fy26-execution-plan-theme-name" rowSpan={3}>
+              Activation &amp; Onboarding
+            </td>
+            <td>Simplify dealer &amp; homeowner activation flows</td>
+          </tr>
+          <tr>
+            <td>
+              Standardize activation at install &amp; commissioning (Quality Install as default path)
+            </td>
+          </tr>
+          <tr>
+            <td>Reduce friction from install → first value</td>
+          </tr>
+          <tr>
+            <td className="fy26-execution-plan-theme-name" rowSpan={3}>
+              Engagement &amp; Action
+            </td>
+            <td>
+              Shift from passive monitoring to actionable insights (reports, alerts, recommended actions)
+            </td>
+          </tr>
+          <tr>
+            <td>Surface dealer‑initiated actions through consistent homeowner experiences</td>
+          </tr>
+          <tr>
+            <td>
+              Establish recurring engagement loops across <strong>SkyportHome</strong> and{' '}
+              <strong>SkyportCare</strong>
+            </td>
+          </tr>
+          <tr>
+            <td className="fy26-execution-plan-theme-name" rowSpan={3}>
+              Monetization &amp; Packaging
+            </td>
+            <td>Simplify license packaging (bundles, defaults, renewal paths)</td>
+          </tr>
+          <tr>
+            <td>Align pricing and packaging to dealer workflows and per‑home value models</td>
+          </tr>
+          <tr>
+            <td>Reduce cognitive and transactional friction to purchase and renew</td>
+          </tr>
+          <tr>
+            <td className="fy26-execution-plan-theme-name" rowSpan={4}>
+              Platform &amp; Integration
+            </td>
+            <td>
+              Establish <strong>SkyportCare</strong> as the primary dealer front door with backend integrations
+            </td>
+          </tr>
+          <tr>
+            <td>Reduce dependency on emails, tribal knowledge, and disconnected tools</td>
+          </tr>
+          <tr>
+            <td>
+              Enable feature reuse across <strong>SkyportHome</strong> and <strong>SkyportCare</strong> through
+              shared platform services
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Establish a shared analytics and measurement layer across <strong>SkyportHome</strong> and{' '}
+              <strong>SkyportCare</strong>
+            </td>
+          </tr>
+          <tr>
+            <td className="fy26-execution-plan-theme-name" rowSpan={3}>
+              Operating Cadence &amp; Ownership
+            </td>
+            <td>Establish clear end‑to‑end product ownership per theme</td>
+          </tr>
+          <tr>
+            <td>Increase release cadence aligned to engagement and monetization goals</td>
+          </tr>
+          <tr>
+            <td>Shift from project‑based delivery to outcome‑based execution</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export default function FY26() {
-  const { sectionId } = useParams()
+  const { sectionId: sectionIdRaw } = useParams()
   const location = useLocation()
+  const sectionId = typeof sectionIdRaw === 'string' ? sectionIdRaw.trim().toLowerCase() : ''
   const [showPlannedDetails, setShowPlannedDetails] = useState(false)
   const [thermostatChartTabId, setThermostatChartTabId] = useState(FY25_REVIEW_DEFAULT_FY_TAB)
   const [thermostatChartTabIdSkyportCare, setThermostatChartTabIdSkyportCare] = useState(
@@ -4423,7 +4531,7 @@ export default function FY26() {
     outcomeExpanded.c &&
     outcomeExpanded.d
 
-  const isDigitalAppsPlaybook = sectionId === 'digital-platform'
+  const isDigitalAppsPlaybook = isFy26DigitalAppsStyleSection(sectionId)
   const bmData = useDigitalPlatformsBusinessModelData({
     enabled: isDigitalAppsPlaybook,
     pollMs: 4000,
@@ -4447,9 +4555,10 @@ export default function FY26() {
   }, [isDigitalAppsPlaybook, bmData.grids])
 
   const isValid = FY26_TOP_NAV_IDS.includes(sectionId)
-  if (!isValid) return <Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />
+  const needsCaseRedirect =
+    typeof sectionIdRaw === 'string' && sectionIdRaw !== sectionId && isValid
+  const isDigitalPlatformLayout = isValid && isFy26DigitalAppsStyleSection(sectionId)
 
-  const isDigitalPlatformLayout = sectionId === 'digital-platform'
   const businessModelDetailsRef = useRef(null)
   const prePrintSnapshotRef = useRef(null)
   const [printLayoutNonce, setPrintLayoutNonce] = useState(0)
@@ -4523,6 +4632,13 @@ export default function FY26() {
     return () => window.removeEventListener('beforeprint', onBeforePrint)
   }, [isDigitalPlatformLayout])
 
+  if (needsCaseRedirect) {
+    return <Navigate to={`${FY26_BASE}/${sectionId}${location.hash}`} replace />
+  }
+  if (!isValid) {
+    return <Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />
+  }
+
   function handleSaveAsPdf() {
     prePrintSnapshotRef.current = {
       showPlannedDetails,
@@ -4568,6 +4684,7 @@ export default function FY26() {
   return (
     <Fy26PrintLayoutNonceContext.Provider value={printLayoutNonce}>
     <article className={`fy26-page${isDigitalPlatformLayout ? '' : ' fy26-page--simple'}`}>
+      {sectionId !== 'hcm' && (
       <header className="ds-header fy26-header">
         <div className="fy26-header-title-row">
           <div className="fy26-header-title-cluster">
@@ -4575,8 +4692,12 @@ export default function FY26() {
           </div>
         </div>
       </header>
+      )}
       <div key={sectionId} className="fy26-page-transition-surface">
-        <div className="ds-layout fy26-layout">
+        <div
+          className={`ds-layout fy26-layout${sectionId === 'hcm' ? ' fy26-layout--no-side-nav' : ''}`}
+        >
+        {sectionId !== 'hcm' && (
         <FY26PageNav
           sectionId={sectionId}
           businessModelDownloadPdf={
@@ -4587,6 +4708,7 @@ export default function FY26() {
             ) : null
           }
         />
+        )}
         <Fy26ForecastMetricsContext.Provider value={forecastMetrics}>
         <div className="ds-sections">
           <section className="ds-section ds-section-single">
@@ -4635,6 +4757,7 @@ export default function FY26() {
                     monthlyShowActiveLicenses={false}
                     allTimeChartSimplified
                   />
+                  {sectionId !== 'hcm' && (
                   <div
                     className="fy25-takeaway fy25-takeaway--thermostat-after-dual-charts"
                     role="note"
@@ -4647,6 +4770,7 @@ export default function FY26() {
                       base.
                     </p>
                   </div>
+                  )}
                 </div>
                 <div className="fy25-skyport-home-mini-stack" id="skyport-home">
                   <div className="fy26-mini-card fy25-skyport-home-charts-mini" id="fy25-skyport-home-charts">
@@ -4683,12 +4807,17 @@ export default function FY26() {
                         <strong>~{SKYPORTHOME_ALL_TIME_VALUE.toLocaleString('en-US')}</strong>
                         {' '}(93% of Wi-Fi Connected Thermostats)
                       </li>
-                      <li>
-                        User action/engagement analytics and MAU data capture{' '}
-                        <strong>is not yet instrumented</strong>.
-                      </li>
+                      {sectionId !== 'hcm' && (
+                        <li>
+                          User action/engagement analytics and MAU data capture{' '}
+                          <strong>is not yet instrumented</strong>.
+                        </li>
+                      )}
                     </ul>
-                    <SkyportHomeUserFeedbackCard expandDetailsOpen={skyportHomeFeedbackExpanded} />
+                    <SkyportHomeUserFeedbackCard
+                      expandDetailsOpen={skyportHomeFeedbackExpanded}
+                      omitTakeaway={sectionId === 'hcm'}
+                    />
                   </div>
                 </div>
                 <div className="fy26-mini-card fy25-skyportcare-charts-mini" id="fy25-skyportcare-charts">
@@ -4714,21 +4843,25 @@ export default function FY26() {
                     setChartTabId={setThermostatChartTabIdSkyportCare}
                     idSuffix="-skyport-care"
                     tablistAriaLabel="Fiscal year, SkyportCare monthly active licenses"
+                    omitLicenseRenewalsInstrumentationNote={sectionId === 'hcm'}
                   />
-                  <div
-                    className="fy25-takeaway fy25-takeaway--skyportcare-after-dual-charts"
-                    role="note"
-                  >
-                    <p className="fy25-takeaway-paragraph">
-                      <strong className="fy25-takeaway-inline-label">Takeaway:</strong>{' '}
-                      SkyportCare shows steady growth in active licenses, but overall penetration remains low relative
-                      to the installed hardware base, reflecting an activation gap rather than demand constraints.
-                      Closing this gap is the primary lever to convert connected systems into recurring digital value.
-                    </p>
-                  </div>
+                  {sectionId !== 'hcm' && (
+                    <div
+                      className="fy25-takeaway fy25-takeaway--skyportcare-after-dual-charts"
+                      role="note"
+                    >
+                      <p className="fy25-takeaway-paragraph">
+                        <strong className="fy25-takeaway-inline-label">Takeaway:</strong>{' '}
+                        SkyportCare shows steady growth in active licenses, but overall penetration remains low relative
+                        to the installed hardware base, reflecting an activation gap rather than demand constraints.
+                        Closing this gap is the primary lever to convert connected systems into recurring digital value.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
+              {sectionId !== 'hcm' && (
               <div className="fy25-planned-full">
                 <div className="fy25-planned-card">
                   <div className="fy25-planned-header">
@@ -4803,7 +4936,9 @@ export default function FY26() {
                   )}
                 </div>
               </div>
+              )}
 
+              {sectionId !== 'hcm' && (
               <div className="fy25-takeaway fy25-takeaway--fy25-review-summary" role="note">
                 <p className="fy25-takeaway-paragraph">
                   <strong className="fy25-takeaway-inline-label">Takeaway:</strong>{' '}
@@ -4812,6 +4947,7 @@ export default function FY26() {
                   in activating the existing installed base.
                 </p>
               </div>
+              )}
             </div>
             </ThermostatLocationsMapProvider>
             </>
@@ -4831,10 +4967,12 @@ export default function FY26() {
             {isDigitalPlatformLayout ? (
               <div className="fy26-plan-cards">
                 <>
+                  {sectionId !== 'hcm' && (
                   <p className="fy26-plan-strategy-preamble-text">
                     Our strategy follows a clear progression: activate connected systems, engage homeowners and
                     dealers consistently, and retain value through renewals, services, and lifecycle monetization.
                   </p>
+                  )}
                   <div className="fy26-mini-card fy26-outcomes-box" id="fy26-outcomes">
                     <div className="fy26-outcomes-header">
                       <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
@@ -5115,7 +5253,7 @@ export default function FY26() {
                       </div>
                     </div>
                     <div className="fy26-goals-tracking-in-goals-card" id="fy26-goals-business-model-tracking">
-                      <Fy26GoalsBusinessModelTracking />
+                      <Fy26GoalsBusinessModelTracking omitEngagementNote={sectionId === 'hcm'} />
                     </div>
                   </div>
                   <div className="fy26-mini-card fy26-strategic-themes-box" id="fy26-strategic-themes">
@@ -5159,10 +5297,19 @@ export default function FY26() {
                       execution prioritizes simple, consistent, and outcome-driven user experiences across{' '}
                       <strong>SkyportHome</strong> and <strong>SkyportCare</strong>.
                     </p>
+                    {sectionId !== 'hcm' && (
                     <p className="fy26-execution-plan-ownership">
                       Execution is led through product‑level ownership, with development capacity augmented
                       through external partners.
                     </p>
+                    )}
+                    {sectionId === 'hcm' ? (
+                      <details className="fy26-hcm-execution-plan-details">
+                        <summary className="fy26-hcm-execution-plan-summary">Execution plan table</summary>
+                        <Fy26ExecutionPlanTableHcm />
+                      </details>
+                    ) : (
+                    <>
                     <div className="fy26-execution-plan-table-wrap">
                       <table className="fy26-execution-plan-table">
                         <colgroup>
@@ -5333,8 +5480,11 @@ export default function FY26() {
                       sequencing within FY26. &ldquo;Ongoing&rdquo; items represent operating model changes and
                       cadence, not discrete feature delivery milestones.
                     </p>
+                    </>
+                    )}
                     <Fy26DigitalAppsRoadmapEmbeds forceExpandRoadmaps={printPrepOpen} />
                   </div>
+                  {sectionId !== 'hcm' && (
                   <div className="fy26-mini-card" id="fy26-interaction-alignment">
                     <h4 className="fy26-mini-card-title fy26-mini-card-title--letter-badge">
                       <span className="fy26-plan-letter-badge">D</span>
@@ -5363,6 +5513,8 @@ export default function FY26() {
                       </li>
                     </ul>
                   </div>
+                  )}
+                  {sectionId !== 'hcm' && (
                   <div className="fy26-operating-priority-card" id="fy26-operating-priority" role="note">
                     <p className="fy26-operating-priority-card__text">
                       <strong className="fy26-operating-priority-card__label">FY26 Priority:</strong>{' '}
@@ -5370,6 +5522,7 @@ export default function FY26() {
                       SkyportCare.
                     </p>
                   </div>
+                  )}
                 </>
               </div>
             ) : (
@@ -5401,6 +5554,8 @@ export default function FY26() {
                   installedFunnelLicenseBreakdownOpenFusion30={installedFunnelLicenseBreakdownOpenFusion30}
                   setInstalledFunnelLicenseBreakdownOpenFusion30={setInstalledFunnelLicenseBreakdownOpenFusion30}
                 />
+                {sectionId !== 'hcm' && (
+                <>
                 <div className="fy26-mini-card fy26-fusion30-aims-card" id="fusion30-strategic-aims">
                   <div className="ds-content fy26-fusion30-content">
                     <p className="ds-subheading">
@@ -5462,6 +5617,8 @@ export default function FY26() {
                   engine, with FY26–FY29 focused on building the activation, engagement, and monetization
                   foundation required to get there.
                 </p>
+                </>
+                )}
               </>
             ) : (
               <div className="ds-content">
@@ -5474,7 +5631,7 @@ export default function FY26() {
               </div>
             )}
           </section>
-          {isDigitalPlatformLayout && (
+          {isDigitalPlatformLayout && sectionId !== 'hcm' && (
             <div className="fy26-business-model-below-fusion30">
               <div className="fy26-business-model-block" id="digital-platforms-business-model">
                 <details ref={businessModelDetailsRef} className="fy26-business-model-details">

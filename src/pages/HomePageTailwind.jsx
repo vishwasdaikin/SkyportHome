@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { FY26_HCM_VISIBLE, FY26_BASE } from '../constants/fy26Nav'
+import { TEST_PAGE_VISIBLE } from '../constants/devOnlyNav'
 import './HomePageTailwind.css'
 
 const scrollToId = (id) => {
@@ -36,6 +38,16 @@ export default function HomePageTailwind() {
           <Link to="/strategy" className="home-repository-btn">
             All Strategy
           </Link>
+          {FY26_HCM_VISIBLE ? (
+            <Link to={`${FY26_BASE}/hcm`} className="home-repository-btn">
+              FY26 HCM
+            </Link>
+          ) : null}
+          {TEST_PAGE_VISIBLE ? (
+            <Link to="/test-page" className="home-repository-btn">
+              Test page
+            </Link>
+          ) : null}
           <button
             type="button"
             onClick={() => scrollToId('overview')}

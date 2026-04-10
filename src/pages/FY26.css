@@ -78,6 +78,16 @@
   text-align: left;
 }
 
+/* HCM: static page title (no FY26 Playbook dropdown on this section) */
+h1.fy26-playbook-heading.fy26-playbook-heading--plain {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+  text-align: left;
+}
+
 /* Full title = section switcher (wrapper + menu positioning) */
 .fy26-playbook-title-dropdown.fy26-section-dropdown {
   position: relative;
@@ -222,6 +232,46 @@
   background: rgba(0, 151, 224, 0.1);
   color: var(--daikin-blue);
   font-weight: 600;
+}
+
+/* HCM playbook: single-column layout (no FY26PageNav sidebar) */
+.fy26-page .fy26-layout.fy26-layout--no-side-nav {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.fy26-hcm-execution-plan-details {
+  margin-top: 0.75rem;
+}
+
+.fy26-hcm-execution-plan-summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--daikin-blue, #0097e0);
+  list-style: none;
+}
+
+.fy26-hcm-execution-plan-summary::marker {
+  content: '';
+}
+
+.fy26-hcm-execution-plan-summary::-webkit-details-marker {
+  display: none;
+}
+
+.fy26-hcm-execution-plan-summary::before {
+  content: '▸ ';
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.fy26-hcm-execution-plan-details[open] > .fy26-hcm-execution-plan-summary::before {
+  content: '▾ ';
+}
+
+.fy26-hcm-execution-plan-details .fy26-execution-plan-table-wrap {
+  margin-top: 0.65rem;
 }
 
 /* Playbook-style left TOC: grid from DigitalStrategy `.ds-layout`; sticky below fixed header */

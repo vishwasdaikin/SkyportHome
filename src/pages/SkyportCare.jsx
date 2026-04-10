@@ -1,5 +1,5 @@
 import { useState, useMemo, useLayoutEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   skyportCareFeaturesRows,
   skyportCareFeaturesDone,
@@ -178,6 +178,7 @@ export default function SkyportCare({
         <nav className="skyport-home-nav" aria-label="Page sections">
           <a href="#roadmap">Roadmap</a>
           <a href="#demo">Concept Demo</a>
+          <a href="#current-demo">Current Demo</a>
           <a href="#competitor-comparison">Competitive Analysis</a>
         </nav>
       </header>
@@ -452,6 +453,30 @@ export default function SkyportCare({
           >
             Open interactive demo ↗
           </a>
+        </p>
+      </section>
+
+      <section
+        id="current-demo"
+        className="skyport-care-section skyport-care-section-demo"
+        aria-labelledby="skyport-care-current-demo-title"
+      >
+        <h2 id="skyport-care-current-demo-title" className="skyport-care-section-title">
+          SkyportCare – Current Demo
+        </h2>
+        <p className="skyport-care-section-desc">
+          Sign-in through the mocked dealer dashboard (customers, reminders, detail, help). Uses the same app routes as
+          the Test page links; this section is the roadmap entry point.
+        </p>
+        <p className="skyport-care-demo-cta-wrap">
+          <Link
+            to="/test-page/care-demo/login"
+            className="skyport-care-demo-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open dealer sign-in (demo)
+          </Link>
         </p>
       </section>
 

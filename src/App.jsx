@@ -15,13 +15,18 @@ import LifecycleGrowth from './pages/LifecycleGrowth'
 import Reference from './pages/Reference'
 import CapabilityDepth from './pages/CapabilityDepth'
 import Demos from './pages/Demos'
+import DemosSkyportHomeConcept from './pages/DemosSkyportHomeConcept'
 import DemosAnnotated from './pages/DemosAnnotated'
 import DemosCare from './pages/DemosCare'
 import ImagePage from './pages/ImagePage'
 import AppsPage from './pages/AppsPage'
 import StrategyPage from './pages/StrategyPage'
-import { FY26_BASE, FY26_DEFAULT_SECTION_ID } from './constants/fy26Nav'
+import { FY26_BASE, FY26_DEFAULT_SECTION_ID, FY26_LEGACY_PLAYBOOK_REDIRECT } from './constants/fy26Nav'
 import TestXlsxDemo from './pages/TestXlsxDemo'
+import TestPage from './pages/TestPage'
+import CareDemoPage from './pages/CareDemoPage'
+import { TEST_PAGE_VISIBLE } from './constants/devOnlyNav'
+import SkyportCareLoginPage from './pages/SkyportCareLoginPage'
 
 export default function App() {
   return (
@@ -30,7 +35,12 @@ export default function App() {
         <Layout>
         <Routes>
         <Route path="/" element={<HomePageTailwind />} />
+        <Route path="/test-page" element={TEST_PAGE_VISIBLE ? <TestPage /> : <Navigate to="/" replace />} />
+        <Route path="/test-page/care-demo/login" element={<SkyportCareLoginPage />} />
+        <Route path="/test-page/care-demo/help" element={<CareDemoPage />} />
+        <Route path="/test-page/care-demo" element={<CareDemoPage />} />
         <Route path="/demos" element={<Demos />} />
+        <Route path="/demos/skyport-home-concept" element={<DemosSkyportHomeConcept />} />
         <Route path="/demos/annotated" element={<DemosAnnotated />} />
         <Route path="/demos/care" element={<DemosCare />} />
         <Route path="/image" element={<ImagePage />} />
@@ -45,7 +55,10 @@ export default function App() {
           path="/strategy/fy26"
           element={<Navigate to={`${FY26_BASE}/${FY26_DEFAULT_SECTION_ID}`} replace />}
         />
+        <Route path="/strategy/fy26/test" element={<Navigate to={FY26_LEGACY_PLAYBOOK_REDIRECT} replace />} />
         <Route path="/strategy/fy26/:sectionId" element={<FY26 />} />
+        <Route path="/strategy/fy26-test" element={<Navigate to={FY26_LEGACY_PLAYBOOK_REDIRECT} replace />} />
+        <Route path="/strategy/hcm" element={<Navigate to={FY26_LEGACY_PLAYBOOK_REDIRECT} replace />} />
         <Route path="/strategy/operating" element={<Navigate to="/strategy/operating/overview" replace />} />
         <Route path="/strategy/operating/overview" element={<DigitalStrategy />} />
         <Route path="/strategy/operating/platform" element={<Platform />} />
