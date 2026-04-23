@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from '../auth/authConfig'
-import { TEST_PAGE_VISIBLE } from '../constants/devOnlyNav'
+import { TEST_PAGE_VISIBLE, SUPPORT_NAV_VISIBLE } from '../constants/devOnlyNav'
 import { DIGITAL_TOOLS_PUBLIC_SITE } from '../constants/digitalToolsPublicSite'
 import AuthNav from '../auth/AuthNav'
 import AuthNavBackend from '../auth/AuthNavBackend'
@@ -223,35 +223,37 @@ export default function Layout({ children }) {
                 )}
               </div>
 
-              <div className="app-nav-dropdown" ref={supportRef}>
-                <button
-                  type="button"
-                  className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/support') ? 'active' : ''}`}
-                  onClick={() => setSupportOpen((o) => !o)}
-                  aria-expanded={supportOpen}
-                  aria-haspopup="true"
-                >
-                  Support ▾
-                </button>
-                {supportOpen && (
-                  <div className="app-nav-dropdown-menu">
-                    <NavLink
-                      to={SUPPORT_SKYPORTCARE_DEALER}
-                      className="app-nav-dropdown-item"
-                      onClick={() => setSupportOpen(false)}
-                    >
-                      SkyportCare dealer help
-                    </NavLink>
-                    <NavLink
-                      to={SUPPORT_TEST_PAGE}
-                      className="app-nav-dropdown-item"
-                      onClick={() => setSupportOpen(false)}
-                    >
-                      Test page · timeline
-                    </NavLink>
-                  </div>
-                )}
-              </div>
+              {SUPPORT_NAV_VISIBLE ? (
+                <div className="app-nav-dropdown" ref={supportRef}>
+                  <button
+                    type="button"
+                    className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/support') ? 'active' : ''}`}
+                    onClick={() => setSupportOpen((o) => !o)}
+                    aria-expanded={supportOpen}
+                    aria-haspopup="true"
+                  >
+                    Support ▾
+                  </button>
+                  {supportOpen && (
+                    <div className="app-nav-dropdown-menu">
+                      <NavLink
+                        to={SUPPORT_SKYPORTCARE_DEALER}
+                        className="app-nav-dropdown-item"
+                        onClick={() => setSupportOpen(false)}
+                      >
+                        SkyportCare dealer help
+                      </NavLink>
+                      <NavLink
+                        to={SUPPORT_TEST_PAGE}
+                        className="app-nav-dropdown-item"
+                        onClick={() => setSupportOpen(false)}
+                      >
+                        Test page · timeline
+                      </NavLink>
+                    </div>
+                  )}
+                </div>
+              ) : null}
 
               <div className="app-nav-dropdown" ref={strategyRef}>
                 <button

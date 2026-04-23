@@ -5,3 +5,10 @@
  */
 export const TEST_PAGE_VISIBLE =
   import.meta.env.VITE_SHOW_TEST_PAGE === 'true' || Boolean(import.meta.env.DEV)
+
+/**
+ * Support top-nav dropdown (dealer help, test timeline): on in `vite` dev; off in production builds.
+ * To show it on a deployed site, set `VITE_SHOW_SUPPORT_NAV=true`.
+ */
+export const SUPPORT_NAV_VISIBLE =
+  import.meta.env.VITE_SHOW_SUPPORT_NAV === 'true' || Boolean(import.meta.env.DEV)

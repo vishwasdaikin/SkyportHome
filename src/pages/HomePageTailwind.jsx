@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FY26_HCM_VISIBLE, FY26_BASE } from '../constants/fy26Nav'
-import { TEST_PAGE_VISIBLE } from '../constants/devOnlyNav'
+import { TEST_PAGE_VISIBLE, SUPPORT_NAV_VISIBLE } from '../constants/devOnlyNav'
 import { DIGITAL_TOOLS_PUBLIC_SITE } from '../constants/digitalToolsPublicSite'
 import { DIGITAL_TOOLS_PATH } from '../content/digitalToolsNav'
 import './HomePageTailwind.css'
@@ -37,9 +37,11 @@ export default function HomePageTailwind() {
           <Link to="/apps" className="home-repository-btn">
             App Suite
           </Link>
-          <Link to="/support/skyportcare-dealer" className="home-repository-btn">
-            Support
-          </Link>
+          {SUPPORT_NAV_VISIBLE ? (
+            <Link to="/support/skyportcare-dealer" className="home-repository-btn">
+              Support
+            </Link>
+          ) : null}
           <Link to="/strategy" className="home-repository-btn">
             All Strategy
           </Link>
