@@ -41,6 +41,17 @@ import {
 } from 'lucide-react'
 import CareDemoLocationsMap from './CareDemoLocationsMap.jsx'
 import CareDemoHelpContent from './CareDemoHelpContent.jsx'
+import CareDemoGuidedTour from './CareDemoGuidedTour.jsx'
+import CareDemoGuidedToursMenu from './CareDemoGuidedToursMenu.jsx'
+import {
+  CARE_DEMO_TOUR_ADD_TEAM_MEMBER,
+  CARE_DEMO_TOUR_HOMEOWNER_INVITE,
+  CARE_DEMO_TOUR_LICENSE_PURCHASE,
+  CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE,
+  CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH,
+  CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW,
+  careDemoTourCopy,
+} from '../constants/careDemoTours.js'
 import { isCareDemoAuthenticated, setCareDemoAuthenticated } from '../auth/careDemoSession.js'
 import './CareDemoPage.css'
 
@@ -360,8 +371,8 @@ const MOCK_CURRENT_CUSTOMERS_SEED = [
     name: 'Morgan Vale',
     loc1: '100 Practice Row',
     loc2: 'Sampleville, NC 28599',
-    licenseOk: true,
-    licenseBad: false,
+    licenseOk: false,
+    licenseBad: true,
     status: 'reminder',
     assigned: 'Riley Test',
   },
@@ -416,6 +427,17 @@ const MOCK_CURRENT_CUSTOMERS_SEED = [
     licenseBad: false,
     status: 'reminder',
     assigned: '—',
+  },
+  /** Licenses table “Indigo Shaw” row must link here — was incorrectly c1 (Morgan Vale). */
+  {
+    id: 'c7',
+    name: 'Indigo Shaw',
+    loc1: '150 Demo Saguaro Way',
+    loc2: 'Sampleton, AZ 85088',
+    licenseOk: false,
+    licenseBad: true,
+    status: 'reminder',
+    assigned: 'Riley Test',
   },
 ]
 
@@ -640,7 +662,14 @@ function getCustomerOverviewData(customer) {
   const base = makeExpandDetailFromRow(customer)
   const fullAddress = ex.fullAddress ?? base.fullAddress
   const { addressLine1, addressLine2 } = getAddressDisplayLines(customer, ex, fullAddress)
-  const zones = ex.zones?.length ? ex.zones : base.zones
+  let zones = ex.zones?.length ? ex.zones : base.zones
+  if (!customer.homeSold && customer.licenseBad) {
+    zones = zones.map((z, i) =>
+      i === 0
+        ? { ...z, system: 'main room', thermostat: 'main room', thermostatKind: 'alert' }
+        : z,
+    )
+  }
   const h = careDemoDetailIdChecksum(customer.id)
   const hasReminder =
     !customer.homeSold &&
@@ -847,7 +876,7 @@ const MOCK_INVITED_CUSTOMERS = [
 const MOCK_LICENSE_ROWS = [
   {
     id: 'lic-1',
-    linkedCustomerId: 'c1',
+    linkedCustomerId: 'c7',
     name: 'Indigo Shaw',
     location: '150 Demo Saguaro Way, Sampleton, AZ 85088',
     licenseTier: 'expired',
@@ -917,6 +946,24 @@ function licenseRowMatchesCheckboxes(row, boxes) {
 }
 
 /** License purchase modal — zones from optional `licenseZoneGroups`, multiple `systemIds`, or single zone. */
+/** Build license modal row from a Current Customer drill-down (extend flow). */
+function licenseModalRowFromCustomer(customer) {
+  const ov = getCustomerOverviewData(customer)
+  const z0 = ov.zones[0] ?? { system: 'main room', equipment: ['DH6VSA4210'] }
+  const systemLabel = String(z0.system ?? 'main room').trim() || 'main room'
+  const ids = Array.isArray(z0.equipment) && z0.equipment.length > 0 ? z0.equipment : ['DH6VSA4210']
+  const locationParts = [ov.addressLine1, ov.addressLine2].filter((s) => s && String(s).trim() && s !== '—')
+  const location = locationParts.join(', ') || ov.fullAddress || '—'
+  return {
+    id: `detail-lic-${customer.id}`,
+    name: customer.name,
+    location,
+    licenseTier: 'expired',
+    systemLabel,
+    systemIds: ids,
+  }
+}
+
 function licenseZonesFromRow(row) {
   const ids = row.systemIds ?? []
   const base = String(row.systemLabel ?? 'system').trim() || 'system'
@@ -934,6 +981,13 @@ function licenseZonesFromRow(row) {
     ]
   }
   return [{ id: `${row.id}-z0`, groupLabel: `${base}:`, checked: true, plan: 'oneYear' }]
+}
+
+/** Standard License Renewal tour: show Lifetime ($400) in the live modal to match reference screenshots. */
+function initialLicenseZonesForRow(row, tourLifetimeDemo) {
+  const base = licenseZonesFromRow(row)
+  if (!tourLifetimeDemo) return base
+  return base.map((z) => ({ ...z, plan: 'lifetime' }))
 }
 
 /** Top-bar search: substring match on display name (case-insensitive). */
@@ -1407,7 +1461,11 @@ function AlertsPanel() {
     <div className="care-demo-alerts">
       <div className="care-demo-alerts__list">
         {rows.map((row, i) => (
-          <div className="care-demo-alerts__row" key={`${alertPage}-${i}-${row.title}`}>
+          <div
+            className="care-demo-alerts__row"
+            key={`${alertPage}-${i}-${row.title}`}
+            {...(i === 0 ? { 'data-care-demo-tour': 'dashboard-alerts-first-row' } : {})}
+          >
             <div className="care-demo-alerts__main">
               <AlertDangerIcon />
               <div className="care-demo-alerts__text-col">
@@ -1415,17 +1473,33 @@ function AlertsPanel() {
                 <div className="care-demo-alerts__item-when">{row.when}</div>
               </div>
             </div>
-            <ArrowRight
-              className="care-demo-alerts__arrow"
-              size={20}
-              strokeWidth={2.25}
-              color={WIDGET_LINK_BLUE}
-              aria-hidden
-            />
+            {i === 0 ? (
+              <span data-care-demo-tour="dashboard-alerts-first-row-chevron" className="care-demo-alerts__arrow-wrap">
+                <ArrowRight
+                  className="care-demo-alerts__arrow"
+                  size={20}
+                  strokeWidth={2.25}
+                  color={WIDGET_LINK_BLUE}
+                  aria-hidden
+                />
+              </span>
+            ) : (
+              <ArrowRight
+                className="care-demo-alerts__arrow"
+                size={20}
+                strokeWidth={2.25}
+                color={WIDGET_LINK_BLUE}
+                aria-hidden
+              />
+            )}
           </div>
         ))}
       </div>
-      <nav className="care-demo-alerts__pagination" aria-label="Alert pages">
+      <nav
+        className="care-demo-alerts__pagination"
+        aria-label="Alert pages"
+        data-care-demo-tour="dashboard-alerts-pagination"
+      >
         <button
           type="button"
           className="care-demo-alerts__page-btn"
@@ -1455,7 +1529,7 @@ function AlertsPanel() {
 function RemindersPanel({ onRowNavigate }) {
   return (
     <ul className="care-demo-reminders">
-      {REMINDER_ROWS.map((row) => {
+      {REMINDER_ROWS.map((row, idx) => {
         const inner = (
           <>
             <span className="care-demo-reminders__leading">
@@ -1475,13 +1549,28 @@ function RemindersPanel({ onRowNavigate }) {
                 <span className="care-demo-reminders__rest">{row.rest}</span>
               </span>
             </span>
-            <ArrowRight
-              className="care-demo-reminders__arrow"
-              size={20}
-              strokeWidth={2.25}
-              color="#0072a0"
-              aria-hidden
-            />
+            {idx === 0 ? (
+              <span
+                data-care-demo-tour="dashboard-reminders-first-row-chevron"
+                className="care-demo-reminders__arrow-wrap"
+              >
+                <ArrowRight
+                  className="care-demo-reminders__arrow"
+                  size={20}
+                  strokeWidth={2.25}
+                  color="#0072a0"
+                  aria-hidden
+                />
+              </span>
+            ) : (
+              <ArrowRight
+                className="care-demo-reminders__arrow"
+                size={20}
+                strokeWidth={2.25}
+                color="#0072a0"
+                aria-hidden
+              />
+            )}
           </>
         )
         return (
@@ -1490,6 +1579,7 @@ function RemindersPanel({ onRowNavigate }) {
               type="button"
               className="care-demo-reminders__row care-demo-reminders__row--clickable"
               onClick={() => onRowNavigate(row.range)}
+              {...(idx === 0 ? { 'data-care-demo-tour': 'dashboard-reminders-first-row' } : {})}
             >
               {inner}
             </button>
@@ -1507,15 +1597,19 @@ function splitStreetAndRest(location) {
   return { line1: location.slice(0, i).trim(), line2: location.slice(i + 1).trim() }
 }
 
-function InviteCustomersModal({ open, onClose }) {
+function InviteCustomersModal({ open, onClose, tourPrefillInviteActive = false }) {
   const [email, setEmail] = useState('')
   const [done, setDone] = useState(false)
 
   useEffect(() => {
     if (!open) return
-    setEmail('')
+    if (tourPrefillInviteActive) {
+      setEmail(`homeowner@${DEMO_FAKE_EMAIL_DOMAIN}`)
+    } else {
+      setEmail('')
+    }
     setDone(false)
-  }, [open])
+  }, [open, tourPrefillInviteActive])
 
   useEffect(() => {
     if (!open) return
@@ -1543,6 +1637,7 @@ function InviteCustomersModal({ open, onClose }) {
         aria-modal="true"
         aria-labelledby="care-demo-invite-title"
         className="care-demo-invite-modal"
+        data-care-demo-tour="invite-customers-dialog"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <h2 id="care-demo-invite-title" className="care-demo-invite-modal__title">
@@ -1585,6 +1680,7 @@ function InviteCustomersModal({ open, onClose }) {
               <button
                 type="button"
                 className="care-demo-invite-modal__btn care-demo-invite-modal__btn--primary"
+                data-care-demo-tour="invite-customers-send"
                 disabled={!canSend}
                 onClick={() => setDone(true)}
               >
@@ -1877,13 +1973,19 @@ function formatLicenseMoney(amount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
 }
 
-function SkyportCareLicenseModal({ row, onClose }) {
+function SkyportCareLicenseModal({
+  row,
+  onClose,
+  standardLicenseRenewalTour = false,
+  warrantyExpressLicenseTour = false,
+  licenseTourStep = null,
+}) {
   /** Sync with `row` on mount (`key={row.id}` remounts when row changes). */
-  const [zones, setZones] = useState(() => licenseZonesFromRow(row))
+  const [zones, setZones] = useState(() => initialLicenseZonesForRow(row, standardLicenseRenewalTour))
   /** Card purchase vs post-purchase activation (Warranty Express). */
   const [mode, setMode] = useState('renew')
   const [warrantyLocationId, setWarrantyLocationId] = useState(() => {
-    const z = licenseZonesFromRow(row)
+    const z = initialLicenseZonesForRow(row, standardLicenseRenewalTour)
     return z.length >= 2 ? z[1].id : z[0]?.id ?? null
   })
   const [outdoorSerial, setOutdoorSerial] = useState('')
@@ -1895,6 +1997,25 @@ function SkyportCareLicenseModal({ row, onClose }) {
       document.body.style.overflow = prev
     }
   }, [])
+
+  useEffect(() => {
+    if (!standardLicenseRenewalTour || licenseTourStep == null) return
+    if (licenseTourStep >= 2) setMode('reviewOrder')
+    else setMode('renew')
+  }, [standardLicenseRenewalTour, licenseTourStep])
+
+  useEffect(() => {
+    if (!warrantyExpressLicenseTour || licenseTourStep == null) return
+    /** Demo outdoor SN so “Activate License” is enabled on the guided Step 3 (users may edit). */
+    const warrantyTourDemoSerial = 'WXT-DEMO-SN7741'
+    if (licenseTourStep >= 2) {
+      setMode('warrantyExpress')
+      setOutdoorSerial((prev) => (prev.trim() ? prev : warrantyTourDemoSerial))
+    } else {
+      setMode('renew')
+      setOutdoorSerial('')
+    }
+  }, [warrantyExpressLicenseTour, licenseTourStep])
 
   const { line1, line2 } = splitStreetAndRest(row.location)
 
@@ -1960,6 +2081,7 @@ function SkyportCareLicenseModal({ row, onClose }) {
         aria-modal="true"
         aria-labelledby="care-demo-skyport-license-title"
         className="care-demo-invite-modal care-demo-license-modal"
+        data-care-demo-tour="license-modal-dialog"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <h2 id="care-demo-skyport-license-title" className="care-demo-license-modal__title">
@@ -1972,7 +2094,7 @@ function SkyportCareLicenseModal({ row, onClose }) {
             <div className="care-demo-license-modal__rule" aria-hidden />
             {customerBlockRenew}
 
-            <div className="care-demo-license-modal__zones">
+            <div className="care-demo-license-modal__zones" data-care-demo-tour="license-plans-section">
               {zones.map((z) => (
                 <div key={z.id} className="care-demo-license-modal__zone">
                   <label className="care-demo-license-modal__zone-head">
@@ -2022,6 +2144,7 @@ function SkyportCareLicenseModal({ row, onClose }) {
             <button
               type="button"
               className="care-demo-license-modal__warranty-link"
+              data-care-demo-tour="license-warranty-express-link"
               onClick={() => {
                 setMode('warrantyExpress')
                 setOutdoorSerial('')
@@ -2040,6 +2163,7 @@ function SkyportCareLicenseModal({ row, onClose }) {
               <button
                 type="button"
                 className="care-demo-invite-modal__btn care-demo-invite-modal__btn--primary"
+                data-care-demo-tour="license-review-order-btn"
                 disabled={!canProceedToReview}
                 onClick={() => setMode('reviewOrder')}
               >
@@ -2092,7 +2216,7 @@ function SkyportCareLicenseModal({ row, onClose }) {
               </div>
             </fieldset>
 
-            <div className="care-demo-license-modal__activation">
+            <div className="care-demo-license-modal__activation" data-care-demo-tour="license-warranty-activation-section">
               <div className="care-demo-license-modal__activation-title" id="care-demo-license-activation-label">
                 License Activation
               </div>
@@ -2106,6 +2230,7 @@ function SkyportCareLicenseModal({ row, onClose }) {
                 id="care-demo-license-outdoor-serial"
                 type="text"
                 className="care-demo-license-modal__serial-input"
+                data-care-demo-tour="license-warranty-serial-input"
                 placeholder="Enter outdoor unit serial number*"
                 value={outdoorSerial}
                 onChange={(e) => setOutdoorSerial(e.target.value)}
@@ -2140,31 +2265,32 @@ function SkyportCareLicenseModal({ row, onClose }) {
             <div className="care-demo-license-modal__rule" aria-hidden />
             {customerBlock}
 
-            <div className="care-demo-license-modal__review">
-              {checkoutZones.map((z) => (
-                <div key={z.id} className="care-demo-license-modal__review-zone">
-                  <div className="care-demo-license-modal__review-zone-title">{z.groupLabel}</div>
-                  <div className="care-demo-license-modal__review-row">
-                    <span>{licensePlanLineLabel(z.plan)}</span>
-                    <span className="care-demo-license-modal__review-row-price">{formatLicenseMoney(licenseZoneLinePrice(z.plan))}</span>
+            <div data-care-demo-tour="license-review-checkout-section">
+              <div className="care-demo-license-modal__review">
+                {checkoutZones.map((z) => (
+                  <div key={z.id} className="care-demo-license-modal__review-zone">
+                    <div className="care-demo-license-modal__review-zone-title">{z.groupLabel}</div>
+                    <div className="care-demo-license-modal__review-row">
+                      <span>{licensePlanLineLabel(z.plan)}</span>
+                      <span className="care-demo-license-modal__review-row-price">{formatLicenseMoney(licenseZoneLinePrice(z.plan))}</span>
+                    </div>
                   </div>
+                ))}
+                <div className="care-demo-license-modal__review-row care-demo-license-modal__review-row--tax">
+                  <span>Estimated tax*</span>
+                  <span className="care-demo-license-modal__review-row-price">{formatLicenseMoney(orderEstimatedTax)}</span>
                 </div>
-              ))}
-              <div className="care-demo-license-modal__review-row care-demo-license-modal__review-row--tax">
-                <span>Estimated tax*</span>
-                <span className="care-demo-license-modal__review-row-price">{formatLicenseMoney(orderEstimatedTax)}</span>
+                <div className="care-demo-license-modal__review-row care-demo-license-modal__review-row--total">
+                  <span>Total</span>
+                  <span className="care-demo-license-modal__review-row-price">{formatLicenseMoney(orderTotal)}</span>
+                </div>
+                <p className="care-demo-license-modal__review-footnote">
+                  *The final sales tax will be displayed once the order is confirmed.
+                </p>
               </div>
-              <div className="care-demo-license-modal__review-row care-demo-license-modal__review-row--total">
-                <span>Total</span>
-                <span className="care-demo-license-modal__review-row-price">{formatLicenseMoney(orderTotal)}</span>
-              </div>
-              <p className="care-demo-license-modal__review-footnote">
-                *The final sales tax will be displayed once the order is confirmed.
-              </p>
-            </div>
 
-            <div className="care-demo-license-modal__rule" aria-hidden />
-            <div className="care-demo-license-modal__footer care-demo-invite-modal__footer care-demo-invite-modal__footer--spread">
+              <div className="care-demo-license-modal__rule" aria-hidden />
+              <div className="care-demo-license-modal__footer care-demo-invite-modal__footer care-demo-invite-modal__footer--spread">
               <button
                 type="button"
                 className="care-demo-invite-modal__btn care-demo-license-modal__btn--back"
@@ -2172,9 +2298,15 @@ function SkyportCareLicenseModal({ row, onClose }) {
               >
                 Back
               </button>
-              <button type="button" className="care-demo-invite-modal__btn care-demo-invite-modal__btn--primary" onClick={onClose}>
+              <button
+                type="button"
+                className="care-demo-invite-modal__btn care-demo-invite-modal__btn--primary"
+                data-care-demo-tour="license-checkout-btn"
+                onClick={onClose}
+              >
                 Checkout
               </button>
+            </div>
             </div>
           </>
         ) : null}
@@ -2187,12 +2319,13 @@ function SkyportCareLicenseModal({ row, onClose }) {
 
 const ADD_MEMBER_ROLES = ['Admin', 'Tech', 'Installer']
 
-function AddMemberModal({ open, onClose }) {
+function AddMemberModal({ open, onClose, onInviteComplete, tourPrefillForStep3 = false }) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('Admin')
   const [done, setDone] = useState(false)
+  const prevTourPrefillForStep3 = useRef(false)
 
   useEffect(() => {
     if (!open) return
@@ -2202,6 +2335,26 @@ function AddMemberModal({ open, onClose }) {
     setRole('Admin')
     setDone(false)
   }, [open])
+
+  useEffect(() => {
+    if (!open) {
+      prevTourPrefillForStep3.current = false
+      return
+    }
+    if (tourPrefillForStep3) {
+      setFirstName('Jordan')
+      setLastName('Martinez')
+      setEmail(`jordan.martinez@${DEMO_FAKE_EMAIL_DOMAIN}`)
+      setRole('Tech')
+      prevTourPrefillForStep3.current = true
+    } else if (prevTourPrefillForStep3.current) {
+      setFirstName('')
+      setLastName('')
+      setEmail('')
+      setRole('Admin')
+      prevTourPrefillForStep3.current = false
+    }
+  }, [open, tourPrefillForStep3])
 
   useEffect(() => {
     if (!open) return
@@ -2230,6 +2383,7 @@ function AddMemberModal({ open, onClose }) {
         aria-modal="true"
         aria-labelledby="care-demo-add-member-title"
         className="care-demo-invite-modal care-demo-add-member-modal"
+        data-care-demo-tour="add-member-dialog"
         onMouseDown={(e) => e.stopPropagation()}
       >
         {done ? (
@@ -2266,6 +2420,7 @@ function AddMemberModal({ open, onClose }) {
                 <X size={20} strokeWidth={2} color="#888" />
               </button>
             </div>
+            <div data-care-demo-tour="add-member-form-details">
             <div className="care-demo-add-member-modal__grid">
               <div className="care-demo-add-member-modal__field">
                 <label className="care-demo-add-member-modal__label" htmlFor="care-demo-add-member-first">
@@ -2297,7 +2452,7 @@ function AddMemberModal({ open, onClose }) {
                   required
                 />
               </div>
-              <div className="care-demo-add-member-modal__field">
+              <div className="care-demo-add-member-modal__field care-demo-add-member-modal__field--email">
                 <label className="care-demo-add-member-modal__label" htmlFor="care-demo-add-member-email">
                   Email Address<span aria-hidden> *</span>
                 </label>
@@ -2312,7 +2467,10 @@ function AddMemberModal({ open, onClose }) {
                   required
                 />
               </div>
-              <div className="care-demo-add-member-modal__field">
+              <div
+                className="care-demo-add-member-modal__field"
+                data-care-demo-tour="add-member-role-field"
+              >
                 <label className="care-demo-add-member-modal__label" htmlFor="care-demo-add-member-role">
                   Role
                 </label>
@@ -2337,11 +2495,16 @@ function AddMemberModal({ open, onClose }) {
               <button
                 type="button"
                 className="care-demo-invite-modal__btn care-demo-add-member-modal__btn-primary"
+                data-care-demo-tour="add-member-invite-btn"
                 disabled={!canInvite}
-                onClick={() => setDone(true)}
+                onClick={() => {
+                  onInviteComplete?.()
+                  setDone(true)
+                }}
               >
                 Invite Member
               </button>
+            </div>
             </div>
           </>
         )}
@@ -2470,6 +2633,7 @@ function SoldHomesModal({ open, onClose, onViewInCustomerList, onSelectCustomerN
         aria-modal="true"
         aria-labelledby="care-demo-sold-homes-title"
         className="care-demo-invite-modal care-demo-sold-homes-modal"
+        data-care-demo-tour="sold-homes-modal-dialog"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <h2 id="care-demo-sold-homes-title" className="care-demo-sold-homes-modal__title">
@@ -2601,7 +2765,12 @@ function SoldHomesModal({ open, onClose, onViewInCustomerList, onSelectCustomerN
           <button type="button" className="care-demo-invite-modal__btn care-demo-invite-modal__btn--muted" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="care-demo-sold-homes-modal__btn-list" onClick={onViewInCustomerList}>
+          <button
+            type="button"
+            className="care-demo-sold-homes-modal__btn-list"
+            data-care-demo-tour="sold-homes-view-customers-btn"
+            onClick={onViewInCustomerList}
+          >
             View in Customer List
           </button>
         </div>
@@ -2755,7 +2924,7 @@ const CDETAIL_NOTIF_CARD_STYLE = {
   boxSizing: 'border-box',
 }
 
-function CustomerDetailView({ customer, onBack, onEditCustomer }) {
+function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense }) {
   const overview = useMemo(() => getCustomerOverviewData(customer), [customer])
   const [selectedZoneIdx, setSelectedZoneIdx] = useState(0)
   const [detailMainView, setDetailMainView] = useState('overview')
@@ -3033,6 +3202,8 @@ function CustomerDetailView({ customer, onBack, onEditCustomer }) {
 
   const reportRowKey = (r) => `${r.type}::${r.name}`
 
+  const licenseAccessExpired = Boolean(!customer.homeSold && customer.licenseBad)
+
   const onReportMenuTriggerClick = (e, row) => {
     setCustomerNavMenuOpen(false)
     setGenerateReportMenuOpen(false)
@@ -3170,7 +3341,36 @@ function CustomerDetailView({ customer, onBack, onEditCustomer }) {
           </div>
           <div className="care-demo-cdetail__aside-rail care-demo-cdetail__aside-rail--right" aria-hidden />
         </div>
-        {!customer.homeSold && overview.lifetimeLicenseActivated ? (
+        {licenseAccessExpired ? (
+          <div className="care-demo-cdetail__page-head-banner">
+            <div
+              className="care-demo-cdetail__lic-banner care-demo-cdetail__lic-banner--inline care-demo-cdetail__lic-banner--expired-access"
+              role="alert"
+              data-care-demo-tour="customer-detail-license-banner"
+            >
+              <div className="care-demo-cdetail__lic-expired-inner">
+                <span className="care-demo-cdetail__lic-expired-warn-ic" role="img" aria-label="Warning">
+                  <span className="care-demo-cdetail__lic-expired-warn-bang" aria-hidden>
+                    !
+                  </span>
+                </span>
+                <div className="care-demo-cdetail__lic-expired-text">
+                  <span className="care-demo-cdetail__lic-expired-title">System access expired.</span>
+                  <span className="care-demo-cdetail__lic-expired-sub">Extend license to continue access.</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="care-demo-cdetail__lic-extend-btn"
+                data-care-demo-tour="customer-detail-extend-license"
+                disabled={!onExtendLicense}
+                onClick={() => onExtendLicense?.()}
+              >
+                Extend License
+              </button>
+            </div>
+          </div>
+        ) : !customer.homeSold && overview.lifetimeLicenseActivated ? (
           <div className="care-demo-cdetail__page-head-banner">
             <div className="care-demo-cdetail__lic-banner care-demo-cdetail__lic-banner--inline" role="status">
               <span className="care-demo-cdetail__lic-banner-inner">
@@ -3188,6 +3388,13 @@ function CustomerDetailView({ customer, onBack, onEditCustomer }) {
         ) : null}
       </header>
 
+      <div
+        className={
+          licenseAccessExpired
+            ? 'care-demo-cdetail__below-head care-demo-cdetail__below-head--license-dimmed'
+            : 'care-demo-cdetail__below-head'
+        }
+      >
       {customer.homeSold ? (
         <div className="care-demo-cdetail__sold-banner care-demo-cdetail__banner-row" role="region" aria-label="Sold home notice">
           <p className="care-demo-cdetail__sold-banner-title">This Customer May Have Sold Their Home.</p>
@@ -3739,6 +3946,7 @@ function CustomerDetailView({ customer, onBack, onEditCustomer }) {
             </>
           )}
         </div>
+      </div>
       </div>
 
       {customerNavMenuOpen
@@ -6387,6 +6595,13 @@ function CustomersHubView({
   onOpenCustomerDetail,
   onCloseCustomerDetail,
   customerSearchQuery,
+  licenseTourActive = false,
+  /** Lifetime + review-step sync for Standard License Renewal only (not Warranty Express tour). */
+  licenseTourStandardRenewal = false,
+  warrantyExpressLicenseTour = false,
+  licenseTourOpenSignal = 0,
+  licenseTourCloseSignal = 0,
+  licenseTourStep = null,
 }) {
   const [openMenuId, setOpenMenuId] = useState(null)
   const [currentRowMenuId, setCurrentRowMenuId] = useState(null)
@@ -6395,6 +6610,7 @@ function CustomersHubView({
   const [addCustomerOpen, setAddCustomerOpen] = useState(false)
   const [inviteOpen, setInviteOpen] = useState(false)
   const [licenseModalRow, setLicenseModalRow] = useState(null)
+  const prevLicenseTourActiveRef = useRef(false)
   const [currentCustomersPage, setCurrentCustomersPage] = useState(0)
   const [currentCustomersPageSize, setCurrentCustomersPageSize] = useState(10)
   const [expandedCurrentCustomerId, setExpandedCurrentCustomerId] = useState(null)
@@ -6454,6 +6670,26 @@ function CustomersHubView({
   useEffect(() => {
     setLicenseModalRow(null)
   }, [hub.customerView])
+
+  useEffect(() => {
+    if (!licenseTourOpenSignal) return
+    if (hub.customerView !== 'current') return
+    if (detailCustomerId !== 'c7') return
+    const c = MOCK_CURRENT_CUSTOMERS.find((x) => x.id === 'c7')
+    if (c) setLicenseModalRow(licenseModalRowFromCustomer(c))
+  }, [licenseTourOpenSignal, hub.customerView, detailCustomerId])
+
+  useEffect(() => {
+    if (!licenseTourCloseSignal) return
+    setLicenseModalRow(null)
+  }, [licenseTourCloseSignal])
+
+  useEffect(() => {
+    if (prevLicenseTourActiveRef.current && !licenseTourActive) {
+      setLicenseModalRow(null)
+    }
+    prevLicenseTourActiveRef.current = licenseTourActive
+  }, [licenseTourActive])
 
   useEffect(() => {
     if (detailCustomerId) setLicenseModalRow(null)
@@ -6594,16 +6830,16 @@ function CustomersHubView({
         setEditCustomer(null)
         return
       }
+      if (licenseModalRow) {
+        setLicenseModalRow(null)
+        return
+      }
       if (detailCustomerId) {
         onCloseCustomerDetail()
         return
       }
       if (addCustomerOpen) {
         setAddCustomerOpen(false)
-        return
-      }
-      if (licenseModalRow) {
-        setLicenseModalRow(null)
         return
       }
       if (inviteOpen) {
@@ -6698,6 +6934,7 @@ function CustomersHubView({
           customer={detailCustomer}
           onBack={onCloseCustomerDetail}
           onEditCustomer={() => setEditCustomer(currentRowToEditCustomerPayload(detailCustomer))}
+          onExtendLicense={() => setLicenseModalRow(licenseModalRowFromCustomer(detailCustomer))}
         />
         <DownloadXlsxModal open={xlsxModalOpen} onClose={() => setXlsxModalOpen(false)} customers={MOCK_ACTIVE_REMINDER_CUSTOMERS} />
         <AddCustomerModal open={addCustomerOpen} onClose={() => setAddCustomerOpen(false)} />
@@ -6706,6 +6943,9 @@ function CustomersHubView({
             key={licenseModalRow.id}
             row={licenseModalRow}
             onClose={() => setLicenseModalRow(null)}
+            standardLicenseRenewalTour={licenseTourStandardRenewal}
+            warrantyExpressLicenseTour={warrantyExpressLicenseTour}
+            licenseTourStep={licenseTourActive ? licenseTourStep : null}
           />
         ) : null}
         <EditCustomerModal
@@ -6719,7 +6959,7 @@ function CustomersHubView({
   }
 
   return (
-    <div className="care-demo-custrm">
+    <div className="care-demo-custrm" data-care-demo-tour="customers-hub-root">
       <div className="care-demo-custrm__title-row">
         <h1 className="care-demo__view-title care-demo-custrm__title">Customers</h1>
         <button
@@ -7023,7 +7263,10 @@ function CustomersHubView({
 
       {hub.customerView === 'current' ? (
         <>
-          <div className="care-demo-custrm__table-scroll">
+          <div
+            className="care-demo-custrm__table-scroll"
+            data-care-demo-tour="customers-hub-current-customers-panel"
+          >
             <table className="care-demo-custrm__table care-demo-custrm__table--current">
               <thead>
                 <tr>
@@ -7561,7 +7804,14 @@ function CustomersHubView({
       <DownloadXlsxModal open={xlsxModalOpen} onClose={() => setXlsxModalOpen(false)} customers={MOCK_ACTIVE_REMINDER_CUSTOMERS} />
       <AddCustomerModal open={addCustomerOpen} onClose={() => setAddCustomerOpen(false)} />
       {licenseModalRow ? (
-        <SkyportCareLicenseModal key={licenseModalRow.id} row={licenseModalRow} onClose={() => setLicenseModalRow(null)} />
+        <SkyportCareLicenseModal
+          key={licenseModalRow.id}
+          row={licenseModalRow}
+          onClose={() => setLicenseModalRow(null)}
+          standardLicenseRenewalTour={licenseTourStandardRenewal}
+          warrantyExpressLicenseTour={warrantyExpressLicenseTour}
+          licenseTourStep={licenseTourActive ? licenseTourStep : null}
+        />
       ) : null}
       <EditCustomerModal
         open={editCustomer != null}
@@ -7588,8 +7838,8 @@ function SystemHealthDonut() {
               cy="50%"
               startAngle={90}
               endAngle={-270}
-              innerRadius={64}
-              outerRadius={94}
+              innerRadius="54%"
+              outerRadius="82%"
               paddingAngle={0.4}
               stroke="#fff"
               strokeWidth={1.5}
@@ -7601,12 +7851,15 @@ function SystemHealthDonut() {
               <Label
                 content={({ viewBox }) => {
                   if (!viewBox || viewBox.cx == null) return null
+                  const or = Number(viewBox.outerRadius) || 94
+                  const numSize = Math.max(20, Math.round(or * 0.42))
+                  const subSize = Math.max(10, Math.round(or * 0.21))
                   return (
                     <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                      <tspan x={viewBox.cx} y={viewBox.cy - 12} fontSize={42} fontWeight={700} fill="#333333">
+                      <tspan x={viewBox.cx} y={viewBox.cy - or * 0.13} fontSize={numSize} fontWeight={700} fill="#333333">
                         {totalErrors}
                       </tspan>
-                      <tspan x={viewBox.cx} y={viewBox.cy + 26} fontSize={21} fill="#666666" fontWeight={400}>
+                      <tspan x={viewBox.cx} y={viewBox.cy + or * 0.28} fontSize={subSize} fill="#666666" fontWeight={400}>
                         Errors
                       </tspan>
                     </text>
@@ -7642,8 +7895,16 @@ export default function CareDemoPage() {
   const [customersHub, setCustomersHub] = useState(() => ({ ...DEFAULT_CUSTOMERS_HUB }))
   const [dashboardInviteOpen, setDashboardInviteOpen] = useState(false)
   const [dashboardAddMemberOpen, setDashboardAddMemberOpen] = useState(false)
+  const [guidedTourId, setGuidedTourId] = useState(null)
+  const [guidedTourStep, setGuidedTourStep] = useState(0)
+  /** Increment so CustomersHubView opens the license modal (Standard License Renewal — after step 0 Next). */
+  const [licenseTourOpenSignal, setLicenseTourOpenSignal] = useState(0)
+  /** Increment to close the license modal when backing from tour step 1 → 0. */
+  const [licenseTourCloseSignal, setLicenseTourCloseSignal] = useState(0)
   const [sidebarNavOpen, setSidebarNavOpen] = useState(false)
   const [soldHomesModalOpen, setSoldHomesModalOpen] = useState(false)
+  /** Remount AlertsPanel when starting the Alerts tour so pagination resets to page 1. */
+  const [alertsPanelMountKey, setAlertsPanelMountKey] = useState(0)
   const [customerDetailId, setCustomerDetailId] = useState(null)
   const [customerSearchQuery, setCustomerSearchQuery] = useState('')
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
@@ -7661,6 +7922,111 @@ export default function CareDemoPage() {
     setSidebarNavOpen(false)
   }
 
+  const exitGuidedTour = useCallback(() => {
+    if (dashboardAddMemberOpen) setDashboardAddMemberOpen(false)
+    if (dashboardInviteOpen) setDashboardInviteOpen(false)
+    setSoldHomesModalOpen(false)
+    setCustomerDetailId(null)
+    setCareSubView('dashboard')
+    setGuidedTourId(null)
+    setGuidedTourStep(0)
+  }, [dashboardAddMemberOpen, dashboardInviteOpen])
+
+  /** After “Done” on the final tour step — return to the main dashboard view. */
+  const completeGuidedTour = useCallback(() => {
+    setCareSubView('dashboard')
+    setCustomerDetailId(null)
+    setSidebarNavOpen(false)
+  }, [])
+
+  const startGuidedTour = useCallback(
+    (tourId) => {
+      if (!careDemoTourCopy[tourId]) return
+      if (location.pathname === CARE_DEMO_HELP_PATH) navigate(CARE_DEMO_BASE_PATH)
+      setDashboardInviteOpen(false)
+      setDashboardAddMemberOpen(false)
+      setSoldHomesModalOpen(false)
+      if (tourId === CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH) {
+        setAlertsPanelMountKey((k) => k + 1)
+      }
+      if (tourId === CARE_DEMO_TOUR_LICENSE_PURCHASE || tourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE) {
+        setCustomersHub(() => ({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'current' }))
+        setCareSubView('active-reminders')
+        setSidebarNavOpen(false)
+        setGuidedTourId(tourId)
+        setGuidedTourStep(0)
+        setCustomerDetailId('c7')
+        return
+      }
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      setSidebarNavOpen(false)
+      setGuidedTourId(tourId)
+      setGuidedTourStep(0)
+    },
+    [location.pathname, navigate],
+  )
+
+  const closeAddMemberModal = useCallback(() => {
+    setDashboardAddMemberOpen(false)
+    if (guidedTourId !== CARE_DEMO_TOUR_ADD_TEAM_MEMBER) return
+    if (guidedTourStep === 2) {
+      setGuidedTourStep(1)
+    } else if (guidedTourStep === 1) {
+      setGuidedTourStep(0)
+    }
+  }, [guidedTourId, guidedTourStep])
+
+  const closeDashboardInviteModal = useCallback(() => {
+    setDashboardInviteOpen(false)
+    if (guidedTourId !== CARE_DEMO_TOUR_HOMEOWNER_INVITE) return
+    if (guidedTourStep === 1) {
+      setGuidedTourStep(0)
+    }
+  }, [guidedTourId, guidedTourStep])
+
+  const openTourStep1Modal = useCallback(() => {
+    if (guidedTourId === CARE_DEMO_TOUR_ADD_TEAM_MEMBER) setDashboardAddMemberOpen(true)
+    else if (guidedTourId === CARE_DEMO_TOUR_HOMEOWNER_INVITE) setDashboardInviteOpen(true)
+    else if (guidedTourId === CARE_DEMO_TOUR_LICENSE_PURCHASE || guidedTourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE)
+      setLicenseTourOpenSignal((n) => n + 1)
+    else if (guidedTourId === CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW) setSoldHomesModalOpen(true)
+  }, [guidedTourId])
+
+  const closeTourStep1ModalForBack = useCallback(() => {
+    if (guidedTourId === CARE_DEMO_TOUR_ADD_TEAM_MEMBER) closeAddMemberModal()
+    else if (guidedTourId === CARE_DEMO_TOUR_HOMEOWNER_INVITE) closeDashboardInviteModal()
+    else if (guidedTourId === CARE_DEMO_TOUR_LICENSE_PURCHASE || guidedTourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE)
+      setLicenseTourCloseSignal((n) => n + 1)
+    else if (guidedTourId === CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW) setSoldHomesModalOpen(false)
+  }, [guidedTourId, closeAddMemberModal, closeDashboardInviteModal])
+
+  useEffect(() => {
+    if (guidedTourId !== CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW) return
+    if (guidedTourStep === 0) {
+      setSoldHomesModalOpen(false)
+      return
+    }
+    if (guidedTourStep === 1) {
+      setCareSubView('dashboard')
+      setCustomerDetailId(null)
+      setSoldHomesModalOpen(true)
+      return
+    }
+  }, [guidedTourId, guidedTourStep])
+
+  useEffect(() => {
+    if (guidedTourId !== CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH) return
+    if (guidedTourStep === 2) {
+      setCareSubView('active-reminders')
+      setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'current' })
+      setCustomerDetailId(null)
+      return
+    }
+    setCustomerDetailId(null)
+    setCareSubView('dashboard')
+  }, [guidedTourId, guidedTourStep])
+
   useEffect(() => {
     if (!accountMenuOpen) return
     const onDocDown = (e) => {
@@ -7675,6 +8041,7 @@ export default function CareDemoPage() {
 
   useEffect(() => {
     if (
+      !guidedTourId &&
       !dashboardInviteOpen &&
       !dashboardAddMemberOpen &&
       !sidebarNavOpen &&
@@ -7688,6 +8055,10 @@ export default function CareDemoPage() {
       return
     const onKey = (e) => {
       if (e.key !== 'Escape') return
+      if (guidedTourId) {
+        exitGuidedTour()
+        return
+      }
       if (accountMenuOpen) {
         setAccountMenuOpen(false)
         return
@@ -7719,6 +8090,8 @@ export default function CareDemoPage() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [
+    guidedTourId,
+    exitGuidedTour,
     dashboardInviteOpen,
     dashboardAddMemberOpen,
     sidebarNavOpen,
@@ -7888,6 +8261,7 @@ export default function CareDemoPage() {
               className={`care-demo__nav-icon ${careSubView === 'active-reminders' ? 'care-demo__nav-icon--active' : ''}`}
               aria-current={careSubView === 'active-reminders' ? 'page' : undefined}
               aria-label="Customers"
+              data-care-demo-tour="care-demo-sidebar-customers"
               onClick={() => {
                 leaveHelpIfOnHelp()
                 setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB })
@@ -7930,6 +8304,20 @@ export default function CareDemoPage() {
                   onOpenCustomerDetail={(id) => setCustomerDetailId(id)}
                   onCloseCustomerDetail={() => setCustomerDetailId(null)}
                   customerSearchQuery={customerSearchQuery}
+                  licenseTourActive={
+                    guidedTourId === CARE_DEMO_TOUR_LICENSE_PURCHASE ||
+                    guidedTourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE
+                  }
+                  licenseTourStandardRenewal={guidedTourId === CARE_DEMO_TOUR_LICENSE_PURCHASE}
+                  warrantyExpressLicenseTour={guidedTourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE}
+                  licenseTourOpenSignal={licenseTourOpenSignal}
+                  licenseTourCloseSignal={licenseTourCloseSignal}
+                  licenseTourStep={
+                    guidedTourId === CARE_DEMO_TOUR_LICENSE_PURCHASE ||
+                    guidedTourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE
+                      ? guidedTourStep
+                      : null
+                  }
                 />
               </>
             ) : careSubView === 'organization' ? (
@@ -7942,7 +8330,10 @@ export default function CareDemoPage() {
               <CareDemoProfileView />
             ) : (
               <div className="care-demo__dashboard">
-                <h1 className="care-demo__view-title">Dashboard</h1>
+                <div className="care-demo__dashboard-head">
+                  <h1 className="care-demo__view-title">Dashboard</h1>
+                  <CareDemoGuidedToursMenu variant="dashboard" onSelectTour={startGuidedTour} />
+                </div>
                 <div className="care-demo__grid">
               <section className="care-demo__card care-demo__card--panel" aria-labelledby="care-widget-access">
                 <h2 id="care-widget-access" className="care-demo__card-title care-demo__card-title--panel">
@@ -7956,18 +8347,20 @@ export default function CareDemoPage() {
               <section
                 className="care-demo__card care-demo__card--panel care-demo__card--alerts"
                 aria-labelledby="care-widget-alerts"
+                data-care-demo-tour="dashboard-alerts-card"
               >
                 <h2 id="care-widget-alerts" className="care-demo__card-title care-demo__card-title--alerts">
                   Alerts
                 </h2>
                 <div className="care-demo__card-body care-demo__card-body--panel care-demo__card-body--alerts">
-                  <AlertsPanel />
+                  <AlertsPanel key={alertsPanelMountKey} />
                 </div>
               </section>
 
               <section
                 className="care-demo__card care-demo__card--panel care-demo__card--reminders"
                 aria-labelledby="care-widget-reminders"
+                data-care-demo-tour="dashboard-reminders-card"
               >
                 <h2 id="care-widget-reminders" className="care-demo__card-title care-demo__card-title--reminders">
                   Reminders
@@ -7997,6 +8390,7 @@ export default function CareDemoPage() {
               <section
                 className="care-demo__card care-demo__card--panel care-demo__card--customers"
                 aria-labelledby="care-widget-customers"
+                data-care-demo-tour="dashboard-customers-card"
               >
                 <h2 id="care-widget-customers" className="care-demo__card-title care-demo__card-title--customers">
                   Customers
@@ -8009,6 +8403,9 @@ export default function CareDemoPage() {
                           type="button"
                           className="care-demo-customers__row care-demo-customers__row-btn"
                           aria-label={`Customers: ${row.num} ${row.label}`}
+                          data-care-demo-tour={
+                            row.label === 'active customers' ? 'dashboard-customers-active-row' : undefined
+                          }
                           onClick={() => {
                             setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: row.customerView })
                             setCareSubView('active-reminders')
@@ -8040,6 +8437,7 @@ export default function CareDemoPage() {
                       <button
                         type="button"
                         className="care-demo-customers__link care-demo-customers__link-btn"
+                        data-care-demo-tour="dashboard-sold-homes-entry"
                         onClick={() => setSoldHomesModalOpen(true)}
                       >
                         View details.
@@ -8047,7 +8445,10 @@ export default function CareDemoPage() {
                     </p>
                   </div>
                 </div>
-                <div className="care-demo__card-action--panel care-demo__card-action--customers">
+                <div
+                  className="care-demo__card-action--panel care-demo__card-action--customers"
+                  data-care-demo-tour="dashboard-invite-customers-btn"
+                >
                   <button
                     type="button"
                     className="care-demo__card-action-customers-btn"
@@ -8062,6 +8463,7 @@ export default function CareDemoPage() {
               <section
                 className="care-demo__card care-demo__card--panel care-demo__card--team"
                 aria-labelledby="care-widget-team"
+                data-care-demo-tour="dashboard-team-card"
               >
                 <h2 id="care-widget-team" className="care-demo__card-title care-demo__card-title--team">
                   Team Members
@@ -8105,10 +8507,14 @@ export default function CareDemoPage() {
                     Manage members of your team by selecting &quot;Organization&quot; from the menu in the upper right.
                   </p>
                 </div>
-                <div className="care-demo__card-action--panel care-demo__card-action--team">
+                <div
+                  className="care-demo__card-action--panel care-demo__card-action--team"
+                  data-care-demo-tour="dashboard-add-member-widget"
+                >
                   <button
                     type="button"
                     className="care-demo__card-action-team-btn"
+                    data-care-demo-tour="dashboard-add-member"
                     onClick={() => setDashboardAddMemberOpen(true)}
                   >
                     <User size={20} strokeWidth={2} color={TEAM_BLUE} aria-hidden />
@@ -8121,62 +8527,83 @@ export default function CareDemoPage() {
             )}
           </main>
         </div>
+
+        <footer className="care-demo__footer">
+          <div className="care-demo__footer-brands care-demo__footer-brands--daikin-only" aria-label="Daikin">
+            <img
+              className="care-demo__footer-brands-img"
+              src={CARE_DEMO_FOOTER_BRANDS_SVG}
+              alt="Daikin"
+              width={222}
+              height={30}
+              decoding="async"
+              loading="lazy"
+            />
+          </div>
+          <div className="care-demo__footer-legal">
+            <p>© 2026 Daikin Comfort Technologies North America, Inc. All rights reserved.</p>
+            <p>
+              Amana® is a registered trademark of Maytag Corporation or its related companies and is used under license.
+            </p>
+          </div>
+          <nav className="care-demo__footer-links" aria-label="Footer">
+            <button
+              type="button"
+              className="care-demo__footer-link-btn"
+              aria-current={isHelpPage ? 'page' : undefined}
+              onClick={() => navigate(CARE_DEMO_HELP_PATH)}
+            >
+              Help
+            </button>
+            <span className="care-demo__footer-sep" aria-hidden>
+              |
+            </span>
+            <a href="https://daikincomfort.com/privacy-notice" target="_blank" rel="noopener noreferrer">
+              Privacy Policy
+            </a>
+            <span className="care-demo__footer-sep" aria-hidden>
+              |
+            </span>
+            <a href="https://daikincomfort.com/terms-of-use" target="_blank" rel="noopener noreferrer">
+              Terms of Use
+            </a>
+            <span className="care-demo__footer-sep" aria-hidden>
+              |
+            </span>
+            <a
+              href="https://www.daikincity.com/DaikinCityB2BTermsOfUse.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              B2B Account Terms
+            </a>
+          </nav>
+        </footer>
       </div>
 
-      <footer className="care-demo__footer">
-        <div className="care-demo__footer-brands care-demo__footer-brands--daikin-only" aria-label="Daikin">
-          <img
-            className="care-demo__footer-brands-img"
-            src={CARE_DEMO_FOOTER_BRANDS_SVG}
-            alt="Daikin"
-            width={222}
-            height={30}
-            decoding="async"
-            loading="lazy"
-          />
-        </div>
-        <div className="care-demo__footer-legal">
-          <p>© 2026 Daikin Comfort Technologies North America, Inc. All rights reserved.</p>
-          <p>
-            Amana® is a registered trademark of Maytag Corporation or its related companies and is used under license.
-          </p>
-        </div>
-        <nav className="care-demo__footer-links" aria-label="Footer">
-          <button
-            type="button"
-            className="care-demo__footer-link-btn"
-            aria-current={isHelpPage ? 'page' : undefined}
-            onClick={() => navigate(CARE_DEMO_HELP_PATH)}
-          >
-            Help
-          </button>
-          <span className="care-demo__footer-sep" aria-hidden>
-            |
-          </span>
-          <a href="https://daikincomfort.com/privacy-notice" target="_blank" rel="noopener noreferrer">
-            Privacy Policy
-          </a>
-          <span className="care-demo__footer-sep" aria-hidden>
-            |
-          </span>
-          <a href="https://daikincomfort.com/terms-of-use" target="_blank" rel="noopener noreferrer">
-            Terms of Use
-          </a>
-          <span className="care-demo__footer-sep" aria-hidden>
-            |
-          </span>
-          <a
-            href="https://www.daikincity.com/DaikinCityB2BTermsOfUse.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            B2B Account Terms
-          </a>
-        </nav>
-      </footer>
-
-      <InviteCustomersModal open={dashboardInviteOpen} onClose={() => setDashboardInviteOpen(false)} />
-      <AddMemberModal open={dashboardAddMemberOpen} onClose={() => setDashboardAddMemberOpen(false)} />
+      <InviteCustomersModal
+        open={dashboardInviteOpen}
+        onClose={closeDashboardInviteModal}
+        tourPrefillInviteActive={guidedTourId === CARE_DEMO_TOUR_HOMEOWNER_INVITE && guidedTourStep === 1}
+      />
+      <AddMemberModal
+        open={dashboardAddMemberOpen}
+        onClose={closeAddMemberModal}
+        onInviteComplete={() => {}}
+        tourPrefillForStep3={
+          guidedTourId === CARE_DEMO_TOUR_ADD_TEAM_MEMBER && guidedTourStep === 2
+        }
+      />
+      <CareDemoGuidedTour
+        active={Boolean(guidedTourId && careDemoTourCopy[guidedTourId])}
+        tourId={guidedTourId}
+        step={guidedTourStep}
+        setStep={setGuidedTourStep}
+        onExit={exitGuidedTour}
+        onCompleteTour={completeGuidedTour}
+        onOpenTourStep1Modal={openTourStep1Modal}
+        onCloseTourStep1ModalForBack={closeTourStep1ModalForBack}
+      />
       <SoldHomesModal
         open={soldHomesModalOpen}
         onClose={() => setSoldHomesModalOpen(false)}

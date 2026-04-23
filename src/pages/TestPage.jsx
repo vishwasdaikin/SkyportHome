@@ -18,7 +18,11 @@ import {
   parsePctLabelToDecimal,
 } from '../content/digitalPlatformsForecastFunnel.js'
 import { getActiveLicensePenetrationFY23to25ChartData } from '../content/funnelActiveLicensePenetrationFYDisplay.js'
-import { getCombinedEndUserCategoryEffortChartData } from '../content/combinedAppSuiteEndUserCategoryShare.js'
+import {
+  getCombinedEndUserCategoryEffortChartData,
+  getEndUserCategoryProductSplitData,
+} from '../content/combinedAppSuiteEndUserCategoryShare.js'
+import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import './TestPage.css'
 
@@ -38,6 +42,12 @@ const Y_MAX = 650_000
 
 const SOLD_COLOR = '#0097e0'
 const CONNECTED_COLOR = '#0d9488'
+/** Thermostats chart “dark background” mode: panel + light lines (contrast on ~#000040 navy). */
+const THERMOSTAT_DARK_PANEL_BG = '#000040'
+const THERMOSTAT_LINE_SOLD_ON_DARK = '#a5d8ff'
+const THERMOSTAT_LINE_CONNECTED_ON_DARK = '#7fd9be'
+/** SkyportCare roadmap-mix bars on #000040 — light mint fill for contrast on the dark panel. */
+const APP_SUITE_CARE_MIX_BAR_ON_DARK = '#b8f5d8'
 /** Fusion30 outlook: purple SkyportHome users (bars use solid; FY26 chart uses semi-transparent). */
 const SKYPORTHOME_USERS_PURPLE = '#7c3aed'
 
@@ -106,6 +116,19 @@ const FEEDBACK_BAR_COLOR = '#0097e0'
 
 /** SkyportHome + SkyportCare roadmap rows: share by end-user category (five pillars only). */
 const APP_SUITE_END_USER_MIX_DATA = getCombinedEndUserCategoryEffortChartData()
+const APP_SUITE_SPLIT_DATA = getEndUserCategoryProductSplitData()
+const APP_SUITE_SPLIT_PEAK = Math.max(
+  0,
+  ...APP_SUITE_SPLIT_DATA.flatMap((d) => [d.homeOnlyPct, d.careOnlyPct]),
+)
+const APP_SUITE_SPLIT_Y_MAX = Math.min(100, Math.max(40, Math.ceil(APP_SUITE_SPLIT_PEAK / 5) * 5))
+const APP_SUITE_SPLIT_Y_TICKS = (() => {
+  const step = APP_SUITE_SPLIT_Y_MAX <= 50 ? 10 : 20
+  /** @type {number[]} */
+  const out = []
+  for (let v = 0; v <= APP_SUITE_SPLIT_Y_MAX; v += step) out.push(v)
+  return out
+})()
 const APP_SUITE_END_USER_MIX_Y_MAX = Math.min(
   100,
   Math.ceil(Math.max(...APP_SUITE_END_USER_MIX_DATA.map((d) => d.combinedPct), 0) / 5) * 5 + 5,
@@ -125,6 +148,31 @@ function appSuiteEndUserMixTopLabel(props) {
     </text>
   )
 }
+
+/** X-axis ticks for roadmap-mix bars: numeric scale (values are still percentage points of share). */
+function appSuiteSplitAxisTickNumber(v) {
+  return String(v)
+}
+
+const APP_SUITE_DARK_TOOLTIP = {
+  fontSize: 12,
+  borderRadius: 8,
+  border: '1px solid rgba(248, 250, 252, 0.14)',
+  background: '#0a0a55',
+  color: '#f1f5f9',
+}
+
+const APP_SUITE_LIGHT_TOOLTIP = {
+  fontSize: 12,
+  borderRadius: 8,
+  border: '1px solid #e2e8f0',
+  background: '#ffffff',
+  color: '#0f172a',
+}
+
+/** Light pastel fills for App Suite compare grid (white / gray panel). */
+const APP_SUITE_HOME_BAR_LIGHT = '#bfdbfe'
+const APP_SUITE_CARE_BAR_LIGHT = '#a7f3d0'
 
 /** Must not set `barSize` on `<Bar />` or Recharts ignores `barCategoryGap` (v3). */
 const BAR_CATEGORY_GAP = '32%'
@@ -170,7 +218,8 @@ function yTickK(v) {
   return `${v / 1000}K`
 }
 
-function endLineLabel(text, fill) {
+/** Line-end labels use the same color as the line stroke. */
+function endLineLabel(text, lineColor) {
   const lastIdx = SPARKLINE_QUARTERLY.length - 1
   const gapBelowDot = 14
   return function SparklineEndLabel(props) {
@@ -180,7 +229,7 @@ function endLineLabel(text, fill) {
       <text
         x={x}
         y={y + gapBelowDot}
-        fill={fill}
+        fill={lineColor}
         fontSize={12}
         fontWeight={600}
         dominantBaseline="hanging"
@@ -192,9 +241,93 @@ function endLineLabel(text, fill) {
   }
 }
 
+/**
+ * @param {{
+ *   chartId: string
+ *   title: string
+ *   subtitle: string
+ *   pctKey: 'homeOnlyPct' | 'careOnlyPct'
+ *   countKey: 'homeCount' | 'careCount'
+ *   productLabel: string
+ *   barFill: string
+ * }} props
+ */
+function AppSuiteEndUserMixDarkChart({ chartId, title, subtitle, pctKey, countKey, productLabel, barFill }) {
+  return (
+    <div className="test-page-tile test-page-tile--feedback test-page-tile--app-suite-dark-wrap" id={chartId}>
+      <div className="test-page-app-suite-mix-dark-panel">
+        <h2 className="test-page-app-suite-mix-dark-title">{title}</h2>
+        <p className="test-page-app-suite-mix-dark-sub">{subtitle}</p>
+        <div className="test-page-feedback-chart-wrap test-page-feedback-chart-wrap--taller test-page-app-suite-mix-dark-chart-wrap">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              layout="vertical"
+              data={APP_SUITE_SPLIT_DATA}
+              margin={{ top: 8, right: 12, left: 8, bottom: 32 }}
+              barCategoryGap={BAR_CATEGORY_GAP}
+              isAnimationActive={false}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(248, 250, 252, 0.14)" horizontal={false} />
+              <XAxis
+                type="number"
+                domain={[0, APP_SUITE_SPLIT_Y_MAX]}
+                ticks={APP_SUITE_SPLIT_Y_TICKS}
+                axisLine={{ stroke: '#ffffff' }}
+                tickLine={false}
+                tick={{ fill: '#ffffff', fontSize: 13 }}
+                tickFormatter={appSuiteSplitAxisTickNumber}
+              />
+              <YAxis
+                type="category"
+                dataKey="categoryShort"
+                width={128}
+                axisLine={{ stroke: '#ffffff' }}
+                tickLine={false}
+                tick={{ fill: '#ffffff', fontSize: 13 }}
+                interval={0}
+              />
+              <Tooltip
+                formatter={(value, _name, entry) => {
+                  if (typeof value !== 'number') return [value, productLabel]
+                  const rounded = Math.round(value * 10) / 10
+                  const row = entry?.payload
+                  const n = row?.[countKey]
+                  const countPart = typeof n === 'number' ? ` (${n} feature${n !== 1 ? 's' : ''})` : ''
+                  return [`${rounded}%${countPart}`, productLabel]
+                }}
+                labelFormatter={(_, p) => p?.[0]?.payload?.category ?? ''}
+                contentStyle={APP_SUITE_DARK_TOOLTIP}
+                labelStyle={{ color: '#e2e8f0' }}
+                itemStyle={{ color: '#f8fafc' }}
+                cursor={{ fill: 'rgba(248, 250, 252, 0.06)' }}
+              />
+              <Bar
+                dataKey={pctKey}
+                name={productLabel}
+                fill={barFill}
+                fillOpacity={0.95}
+                radius={[0, 6, 6, 0]}
+                maxBarSize={BAR_MAX_WIDTH}
+                isAnimationActive={false}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <p className="test-page-app-suite-mix-dark-foot">
+          Share of in-scope features in each pillar for this product only (five categories sum to 100%).
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function TestPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [thermostatChartDarkBg, setThermostatChartDarkBg] = useState(false)
+  const thermostatsSoldStroke = thermostatChartDarkBg ? THERMOSTAT_LINE_SOLD_ON_DARK : SOLD_COLOR
+  const thermostatsConnectedStroke = thermostatChartDarkBg ? THERMOSTAT_LINE_CONNECTED_ON_DARK : CONNECTED_COLOR
+  const thermostatsDotRingStroke = thermostatChartDarkBg ? THERMOSTAT_DARK_PANEL_BG : '#fff'
 
   return (
     <article className="test-page">
@@ -246,7 +379,7 @@ export default function TestPage() {
             <a href="#test-thermostats-line">Thermostats sold vs connected</a>
           </li>
           <li>
-            <a href="#test-skyporthome-users">SkyportHome users (FY26–30)</a>
+            <a href="#test-skyport-home-users">SkyportHome users (FY26–30)</a>
           </li>
           <li>
             <a href="#test-fusion30-revenue">Fusion30 total revenue (FY26–30)</a>
@@ -256,6 +389,15 @@ export default function TestPage() {
           </li>
           <li>
             <a href="#test-app-suite-end-user-mix">App Suite end-user category mix</a>
+          </li>
+          <li>
+            <a href="#test-app-suite-end-user-mix-dark">App Suite mix by category (compare)</a>
+          </li>
+          <li>
+            <a href="#test-app-suite-skyport-home-mix-dark">SkyportHome — end-user mix (dark)</a>
+          </li>
+          <li>
+            <a href="#test-app-suite-skyport-care-mix-dark">SkyportCare — end-user mix (dark)</a>
           </li>
           <li>
             <a href="#test-license-roadmap">Active license penetration (FY26–30)</a>
@@ -269,88 +411,131 @@ export default function TestPage() {
         </ul>
       </nav>
       <div className="test-page-tile" id="test-thermostats-line">
-        <div className="test-page-tile-header">
-          <h2 className="test-page-line-chart-title">
-            Thermostats Sold vs. Wi-Fi Connected (Cumulative)
-          </h2>
-        </div>
-        <div className="test-page-chart-wrap">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={SPARKLINE_QUARTERLY}
-              margin={{ top: 8, right: 28, left: 12, bottom: 32 }}
-              isAnimationActive={false}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-              <XAxis
-                type="number"
-                dataKey="idx"
-                domain={LINE_X_DOMAIN}
-                ticks={LINE_X_TICKS}
-                tickFormatter={(v) => SPARKLINE_QUARTERLY[v]?.quarter ?? ''}
-                axisLine={{ stroke: '#cbd5e1' }}
-                tickLine={false}
-                tick={{ fill: '#475569', fontSize: 15 }}
-                allowDecimals={false}
+        <div
+          className={
+            thermostatChartDarkBg
+              ? 'test-page-thermostats-chart test-page-thermostats-chart--dark-bg'
+              : 'test-page-thermostats-chart'
+          }
+        >
+          <div className="test-page-tile-header test-page-thermostats-chart__header">
+            <h2 className="test-page-line-chart-title">
+              Thermostats Sold vs. Wi-Fi Connected (Cumulative)
+            </h2>
+            <label className="test-page-thermostats-chart__dark-toggle">
+              <input
+                type="checkbox"
+                checked={thermostatChartDarkBg}
+                onChange={(e) => setThermostatChartDarkBg(e.target.checked)}
               />
-              <YAxis
-                domain={[0, Y_MAX]}
-                ticks={[0, 300_000, 600_000]}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={yTickK}
-                width={52}
-                tick={{ fill: '#64748b', fontSize: 14 }}
-              />
-              <Tooltip
-                formatter={(value, name) => [
-                  typeof value === 'number' ? value.toLocaleString('en-US') : value,
-                  name === 'sold' ? 'Thermostats sold (cumulative)' : 'Wi‑Fi connected (cumulative)',
-                ]}
-                labelFormatter={(label) =>
-                  typeof label === 'number' && SPARKLINE_QUARTERLY[label]
-                    ? SPARKLINE_QUARTERLY[label].quarter
-                    : label
-                }
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="sold"
-                name="sold"
-                stroke={SOLD_COLOR}
-                strokeWidth={2.25}
-                dot={{ r: 3.5, fill: SOLD_COLOR, stroke: '#fff', strokeWidth: 2 }}
-                activeDot={{ r: 5 }}
+              <span>Style for dark background</span>
+            </label>
+          </div>
+          <div className="test-page-chart-wrap">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={SPARKLINE_QUARTERLY}
+                margin={{ top: 8, right: 28, left: 12, bottom: 32 }}
                 isAnimationActive={false}
               >
-                <LabelList content={endLineLabel('Sold', SOLD_COLOR)} />
-              </Line>
-              <Line
-                type="monotone"
-                dataKey="connected"
-                name="connected"
-                stroke={CONNECTED_COLOR}
-                strokeWidth={2.25}
-                dot={{ r: 3.5, fill: CONNECTED_COLOR, stroke: '#fff', strokeWidth: 2 }}
-                activeDot={{ r: 5 }}
-                isAnimationActive={false}
-              >
-                <LabelList content={endLineLabel('Connected', CONNECTED_COLOR)} />
-              </Line>
-            </LineChart>
-          </ResponsiveContainer>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={thermostatChartDarkBg ? 'rgba(248, 250, 252, 0.14)' : '#e2e8f0'}
+                  vertical={false}
+                />
+                <XAxis
+                  type="number"
+                  dataKey="idx"
+                  domain={LINE_X_DOMAIN}
+                  ticks={LINE_X_TICKS}
+                  tickFormatter={(v) => SPARKLINE_QUARTERLY[v]?.quarter ?? ''}
+                  axisLine={{ stroke: thermostatChartDarkBg ? 'rgba(248, 250, 252, 0.35)' : '#cbd5e1' }}
+                  tickLine={false}
+                  tick={{ fill: thermostatChartDarkBg ? '#e2e8f0' : '#475569', fontSize: 15 }}
+                  allowDecimals={false}
+                />
+                <YAxis
+                  domain={[0, Y_MAX]}
+                  ticks={[0, 300_000, 600_000]}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={yTickK}
+                  width={52}
+                  tick={{ fill: thermostatChartDarkBg ? '#cbd5e1' : '#64748b', fontSize: 14 }}
+                />
+                <Tooltip
+                  formatter={(value, name) => [
+                    typeof value === 'number' ? value.toLocaleString('en-US') : value,
+                    name === 'sold' ? 'Thermostats sold (cumulative)' : 'Wi‑Fi connected (cumulative)',
+                  ]}
+                  labelFormatter={(label) =>
+                    typeof label === 'number' && SPARKLINE_QUARTERLY[label]
+                      ? SPARKLINE_QUARTERLY[label].quarter
+                      : label
+                  }
+                  contentStyle={{
+                    fontSize: 12,
+                    borderRadius: 8,
+                    border: thermostatChartDarkBg
+                      ? '1px solid rgba(248, 250, 252, 0.14)'
+                      : '1px solid #e2e8f0',
+                    background: thermostatChartDarkBg ? '#0a0a55' : '#fff',
+                    color: thermostatChartDarkBg ? '#f1f5f9' : undefined,
+                  }}
+                  labelStyle={{ color: thermostatChartDarkBg ? '#e2e8f0' : '#334155' }}
+                  itemStyle={{ color: thermostatChartDarkBg ? '#f8fafc' : '#0f172a' }}
+                  cursor={{ stroke: thermostatChartDarkBg ? 'rgba(248, 250, 252, 0.25)' : '#cbd5e1' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="sold"
+                  name="sold"
+                  stroke={thermostatsSoldStroke}
+                  strokeWidth={2.25}
+                  dot={{
+                    r: 3.5,
+                    fill: thermostatsSoldStroke,
+                    stroke: thermostatsDotRingStroke,
+                    strokeWidth: 2,
+                  }}
+                  activeDot={{ r: 5 }}
+                  isAnimationActive={false}
+                >
+                  <LabelList content={endLineLabel('Sold', thermostatsSoldStroke)} />
+                </Line>
+                <Line
+                  type="monotone"
+                  dataKey="connected"
+                  name="connected"
+                  stroke={thermostatsConnectedStroke}
+                  strokeWidth={2.25}
+                  dot={{
+                    r: 3.5,
+                    fill: thermostatsConnectedStroke,
+                    stroke: thermostatsDotRingStroke,
+                    strokeWidth: 2,
+                  }}
+                  activeDot={{ r: 5 }}
+                  isAnimationActive={false}
+                >
+                  <LabelList content={endLineLabel('Connected', thermostatsConnectedStroke)} />
+                </Line>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <p
+            className={
+              thermostatChartDarkBg
+                ? 'test-page-footnote test-page-footnote--on-dark'
+                : 'test-page-footnote'
+            }
+          >
+            FY25 connection rate declined vs FY24 (44% vs 57%)
+          </p>
         </div>
-        <p className="test-page-footnote">
-          FY25 connection rate declined vs FY24 (44% vs 57%)
-        </p>
       </div>
 
-      <div className="test-page-tile test-page-tile--feedback" id="test-skyporthome-users">
+      <div className="test-page-tile test-page-tile--feedback" id="test-skyport-home-users">
         <h2 className="test-page-feedback-title">
           SkyportHome user growth
           <br />
@@ -476,62 +661,67 @@ export default function TestPage() {
         <p className="test-page-feedback-footnote">{FUSION30_REVENUE_SOURCE}</p>
       </div>
 
-      <div className="test-page-tile test-page-tile--feedback" id="test-feedback-volume">
-        <h2 className="test-page-feedback-title">User Feedback Volume</h2>
-        <div className="test-page-feedback-chart-wrap">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={FEEDBACK_BAR_DATA}
-              margin={{ top: 32, right: 12, left: 2, bottom: 10 }}
-              barCategoryGap={BAR_CATEGORY_GAP}
-              isAnimationActive={false}
-            >
-              <XAxis
-                dataKey="category"
-                axisLine={{ stroke: '#cbd5e1' }}
-                tickLine={false}
-                tick={{ fill: '#475569', fontSize: 15 }}
-                interval={0}
-              />
-              <YAxis
-                domain={[0, 6000]}
-                ticks={FEEDBACK_Y_TICKS}
-                axisLine={false}
-                tickLine={false}
-                width={52}
-                tick={{ fill: '#64748b', fontSize: 14 }}
-                tickFormatter={(v) => v.toLocaleString('en-US')}
-              />
-              <Tooltip
-                formatter={(value) =>
-                  typeof value === 'number' ? `~${value.toLocaleString('en-US')}` : value
-                }
-                labelFormatter={(label) => label}
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                }}
-              />
-              <Bar
-                dataKey="count"
-                name="Volume"
-                fill={FEEDBACK_BAR_COLOR}
-                radius={[5, 5, 0, 0]}
-                maxBarSize={BAR_MAX_WIDTH}
+      <div
+        className="test-page-tile test-page-tile--feedback test-page-tile--app-suite-dark-wrap"
+        id="test-feedback-volume"
+      >
+        <div className="test-page-app-suite-mix-dark-panel">
+          <h2 className="test-page-app-suite-mix-dark-title">User Feedback Volume</h2>
+          <div className="test-page-feedback-chart-wrap test-page-feedback-chart-wrap--taller test-page-app-suite-mix-dark-chart-wrap">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={FEEDBACK_BAR_DATA}
+                margin={{ top: 32, right: 12, left: 2, bottom: 10 }}
+                barCategoryGap={BAR_CATEGORY_GAP}
                 isAnimationActive={false}
               >
-                <LabelList
-                  dataKey="labelAbove"
-                  position="top"
-                  fill="#334155"
-                  fontSize={13}
-                  fontWeight={600}
-                  offset={6}
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(248, 250, 252, 0.12)" vertical={false} />
+                <XAxis
+                  dataKey="category"
+                  axisLine={{ stroke: '#ffffff' }}
+                  tickLine={false}
+                  tick={{ fill: '#ffffff', fontSize: 15 }}
+                  interval={0}
                 />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <YAxis
+                  domain={[0, 6000]}
+                  ticks={FEEDBACK_Y_TICKS}
+                  axisLine={{ stroke: '#ffffff' }}
+                  tickLine={false}
+                  width={52}
+                  tick={{ fill: '#ffffff', fontSize: 14 }}
+                  tickFormatter={(v) => v.toLocaleString('en-US')}
+                />
+                <Tooltip
+                  formatter={(value) =>
+                    typeof value === 'number' ? `~${value.toLocaleString('en-US')}` : value
+                  }
+                  labelFormatter={(label) => label}
+                  contentStyle={APP_SUITE_DARK_TOOLTIP}
+                  labelStyle={{ color: '#e2e8f0' }}
+                  itemStyle={{ color: '#f8fafc' }}
+                  cursor={{ fill: 'rgba(248, 250, 252, 0.06)' }}
+                />
+                <Bar
+                  dataKey="count"
+                  name="Volume"
+                  fill={THERMOSTAT_LINE_SOLD_ON_DARK}
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={BAR_MAX_WIDTH}
+                  isAnimationActive={false}
+                >
+                  <LabelList
+                    dataKey="labelAbove"
+                    position="top"
+                    fill="#0f172a"
+                    fontSize={13}
+                    fontWeight={600}
+                    offset={6}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
@@ -613,6 +803,155 @@ export default function TestPage() {
         <p className="test-page-feedback-footnote">{APP_SUITE_END_USER_MIX_SOURCE}</p>
       </div>
 
+      <div className="test-page-tile test-page-tile--feedback" id="test-app-suite-end-user-mix-dark">
+        <h2 className="test-page-feedback-title">
+          App Suite mix by category (compare)
+          <br />
+          <span className="test-page-feedback-subtitle">
+            SkyportHome and SkyportCare separately · light theme · same data as stacked chart above
+          </span>
+        </h2>
+        <div className="test-page-app-suite-compare-grid">
+          <div className="test-page-app-suite-light-panel">
+            <h3 className="test-page-app-suite-light-panel__title">SkyportHome</h3>
+            <div className="test-page-app-suite-light-panel__chart">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={APP_SUITE_SPLIT_DATA}
+                  margin={{ top: 8, right: 12, left: 8, bottom: 32 }}
+                  barCategoryGap={BAR_CATEGORY_GAP}
+                  isAnimationActive={false}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical horizontal={false} />
+                  <XAxis
+                    type="number"
+                    domain={[0, APP_SUITE_SPLIT_Y_MAX]}
+                    ticks={APP_SUITE_SPLIT_Y_TICKS}
+                    axisLine={{ stroke: '#64748b' }}
+                    tickLine={false}
+                    tick={{ fill: '#334155', fontSize: 13 }}
+                    tickFormatter={appSuiteSplitAxisTickNumber}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="categoryShort"
+                    width={128}
+                    axisLine={{ stroke: '#64748b' }}
+                    tickLine={false}
+                    tick={{ fill: '#334155', fontSize: 13 }}
+                    interval={0}
+                  />
+                  <Tooltip
+                    formatter={(value, _name, entry) => {
+                      if (typeof value !== 'number') return [value, 'SkyportHome']
+                      const rounded = Math.round(value * 10) / 10
+                      const row = entry?.payload
+                      const n = row?.homeCount
+                      const countPart = typeof n === 'number' ? ` (${n} feature${n !== 1 ? 's' : ''})` : ''
+                      return [`${rounded}%${countPart}`, 'SkyportHome']
+                    }}
+                    labelFormatter={(_, p) => p?.[0]?.payload?.category ?? ''}
+                    contentStyle={APP_SUITE_LIGHT_TOOLTIP}
+                    labelStyle={{ color: '#0f172a' }}
+                    itemStyle={{ color: '#0f172a' }}
+                    cursor={{ fill: 'rgba(15, 23, 42, 0.06)' }}
+                  />
+                  <Bar
+                    dataKey="homeOnlyPct"
+                    name="SkyportHome"
+                    fill={APP_SUITE_HOME_BAR_LIGHT}
+                    radius={[0, 8, 8, 0]}
+                    maxBarSize={BAR_MAX_WIDTH}
+                    isAnimationActive={false}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className="test-page-app-suite-light-panel">
+            <h3 className="test-page-app-suite-light-panel__title">SkyportCare</h3>
+            <div className="test-page-app-suite-light-panel__chart">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  layout="vertical"
+                  data={APP_SUITE_SPLIT_DATA}
+                  margin={{ top: 8, right: 12, left: 8, bottom: 32 }}
+                  barCategoryGap={BAR_CATEGORY_GAP}
+                  isAnimationActive={false}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical horizontal={false} />
+                  <XAxis
+                    type="number"
+                    domain={[0, APP_SUITE_SPLIT_Y_MAX]}
+                    ticks={APP_SUITE_SPLIT_Y_TICKS}
+                    axisLine={{ stroke: '#64748b' }}
+                    tickLine={false}
+                    tick={{ fill: '#334155', fontSize: 13 }}
+                    tickFormatter={appSuiteSplitAxisTickNumber}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="categoryShort"
+                    width={128}
+                    axisLine={{ stroke: '#64748b' }}
+                    tickLine={false}
+                    tick={{ fill: '#334155', fontSize: 13 }}
+                    interval={0}
+                  />
+                  <Tooltip
+                    formatter={(value, _name, entry) => {
+                      if (typeof value !== 'number') return [value, 'SkyportCare']
+                      const rounded = Math.round(value * 10) / 10
+                      const row = entry?.payload
+                      const n = row?.careCount
+                      const countPart = typeof n === 'number' ? ` (${n} feature${n !== 1 ? 's' : ''})` : ''
+                      return [`${rounded}%${countPart}`, 'SkyportCare']
+                    }}
+                    labelFormatter={(_, p) => p?.[0]?.payload?.category ?? ''}
+                    contentStyle={APP_SUITE_LIGHT_TOOLTIP}
+                    labelStyle={{ color: '#0f172a' }}
+                    itemStyle={{ color: '#0f172a' }}
+                    cursor={{ fill: 'rgba(15, 23, 42, 0.06)' }}
+                  />
+                  <Bar
+                    dataKey="careOnlyPct"
+                    name="SkyportCare"
+                    fill={APP_SUITE_CARE_BAR_LIGHT}
+                    radius={[0, 8, 8, 0]}
+                    maxBarSize={BAR_MAX_WIDTH}
+                    isAnimationActive={false}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+        <p className="test-page-app-suite-compare-footnote">
+          Per-product share of in-scope features by pillar (same rows as the stacked chart above). Horizontal scale is
+          numeric (percentage points); hover for % and feature counts.
+        </p>
+      </div>
+
+      <AppSuiteEndUserMixDarkChart
+        chartId="test-app-suite-skyport-home-mix-dark"
+        title="SkyportHome — roadmap mix by end-user category"
+        subtitle="Share of SkyportHome in-scope features (five pillars)"
+        pctKey="homeOnlyPct"
+        countKey="homeCount"
+        productLabel="SkyportHome"
+        barFill={THERMOSTAT_LINE_SOLD_ON_DARK}
+      />
+      <AppSuiteEndUserMixDarkChart
+        chartId="test-app-suite-skyport-care-mix-dark"
+        title="SkyportCare — roadmap mix by end-user category"
+        subtitle="Share of SkyportCare in-scope features (five pillars)"
+        pctKey="careOnlyPct"
+        countKey="careCount"
+        productLabel="SkyportCare"
+        barFill={APP_SUITE_CARE_MIX_BAR_ON_DARK}
+      />
+
       <div className="test-page-tile test-page-tile--feedback" id="test-license-roadmap">
         <h2 className="test-page-feedback-title">
           Active License Penetration
@@ -678,68 +1017,72 @@ export default function TestPage() {
         <p className="test-page-feedback-footnote">{LICENSE_ROADMAP_SOURCE}</p>
       </div>
 
-      <div className="test-page-tile test-page-tile--feedback" id="test-penetration-by-year">
-        <h2 className="test-page-feedback-title">
-          Active penetration rate
-          <br />
-          (% of connected systems, by fiscal year)
-        </h2>
-        <div className="test-page-feedback-chart-wrap">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={PENETRATION_BY_YEAR_DATA}
-              margin={{ top: 32, right: 12, left: 2, bottom: 10 }}
-              barCategoryGap={BAR_CATEGORY_GAP}
-              isAnimationActive={false}
-            >
-              <XAxis
-                dataKey="fiscalYear"
-                axisLine={{ stroke: '#cbd5e1' }}
-                tickLine={false}
-                tick={{ fill: '#475569', fontSize: 15 }}
-                interval={0}
-              />
-              <YAxis
-                domain={[0, 8]}
-                ticks={PENETRATION_BY_YEAR_Y_TICKS}
-                axisLine={false}
-                tickLine={false}
-                width={44}
-                tick={{ fill: '#64748b', fontSize: 14 }}
-                tickFormatter={(v) => `${v}%`}
-              />
-              <Tooltip
-                formatter={(value) =>
-                  typeof value === 'number' ? `${value}% of connected systems` : value
-                }
-                labelFormatter={(label) => label}
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                }}
-              />
-              <Bar
-                dataKey="pct"
-                name="Penetration rate"
-                fill={FEEDBACK_BAR_COLOR}
-                radius={[5, 5, 0, 0]}
-                maxBarSize={BAR_MAX_WIDTH}
+      <div
+        className="test-page-tile test-page-tile--feedback test-page-tile--app-suite-dark-wrap"
+        id="test-penetration-by-year"
+      >
+        <div className="test-page-app-suite-mix-dark-panel">
+          <h2 className="test-page-app-suite-mix-dark-title">Active penetration rate</h2>
+          <p className="test-page-app-suite-mix-dark-sub">
+            (% of connected systems, by fiscal year)
+          </p>
+          <div className="test-page-feedback-chart-wrap test-page-feedback-chart-wrap--taller test-page-app-suite-mix-dark-chart-wrap">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={PENETRATION_BY_YEAR_DATA}
+                margin={{ top: 32, right: 12, left: 2, bottom: 10 }}
+                barCategoryGap={BAR_CATEGORY_GAP}
                 isAnimationActive={false}
               >
-                <LabelList
-                  dataKey="labelAbove"
-                  position="top"
-                  fill="#334155"
-                  fontSize={13}
-                  fontWeight={600}
-                  offset={6}
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(248, 250, 252, 0.12)" vertical={false} />
+                <XAxis
+                  dataKey="fiscalYear"
+                  axisLine={{ stroke: '#ffffff' }}
+                  tickLine={false}
+                  tick={{ fill: '#ffffff', fontSize: 15 }}
+                  interval={0}
                 />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <YAxis
+                  domain={[0, 8]}
+                  ticks={PENETRATION_BY_YEAR_Y_TICKS}
+                  axisLine={{ stroke: '#ffffff' }}
+                  tickLine={false}
+                  width={44}
+                  tick={{ fill: '#ffffff', fontSize: 14 }}
+                  tickFormatter={(v) => `${v}%`}
+                />
+                <Tooltip
+                  formatter={(value) =>
+                    typeof value === 'number' ? `${value}% of connected systems` : value
+                  }
+                  labelFormatter={(label) => label}
+                  contentStyle={APP_SUITE_DARK_TOOLTIP}
+                  labelStyle={{ color: '#e2e8f0' }}
+                  itemStyle={{ color: '#f8fafc' }}
+                  cursor={{ fill: 'rgba(248, 250, 252, 0.06)' }}
+                />
+                <Bar
+                  dataKey="pct"
+                  name="Penetration rate"
+                  fill={THERMOSTAT_LINE_CONNECTED_ON_DARK}
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={BAR_MAX_WIDTH}
+                  isAnimationActive={false}
+                >
+                  <LabelList
+                    dataKey="labelAbove"
+                    position="top"
+                    fill="#0f172a"
+                    fontSize={13}
+                    fontWeight={600}
+                    offset={6}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="test-page-app-suite-mix-dark-foot">{PENETRATION_BY_YEAR_SOURCE}</p>
         </div>
-        <p className="test-page-feedback-footnote">{PENETRATION_BY_YEAR_SOURCE}</p>
       </div>
 
       <div className="test-page-tile test-page-tile--feedback" id="test-fit-wifi">

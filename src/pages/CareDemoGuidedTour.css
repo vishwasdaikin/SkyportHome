@@ -1,0 +1,337 @@
+/* Guided tour — spotlight + tooltip (above modals when needed) */
+
+/* Shared dim + blur (single fullscreen layer or one of four spotlight panels — no clip-path, stable at browser zoom). */
+.care-demo-guided-tour__shade {
+  position: fixed;
+  z-index: 4300;
+  background: rgba(17, 24, 39, 0.4);
+  -webkit-backdrop-filter: blur(4px) saturate(0.92);
+  backdrop-filter: blur(4px) saturate(0.92);
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+  box-sizing: border-box;
+}
+
+.care-demo-guided-tour__shade--fullscreen {
+  inset: 0;
+}
+
+.care-demo-guided-tour__shade--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Secondary callout inside the primary spotlight (e.g. Add Member on Team card) */
+.care-demo-guided-tour__accent-ring {
+  position: fixed;
+  z-index: 4380;
+  pointer-events: none;
+  box-sizing: border-box;
+  border-radius: 7px;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 5px #f59e0b,
+    0 0 0 8px rgba(245, 158, 11, 0.35),
+    0 4px 18px rgba(245, 158, 11, 0.45);
+}
+
+.care-demo-guided-tour__tooltip {
+  position: fixed;
+  z-index: 4600;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 1.75rem));
+  max-width: 100%;
+  max-height: min(78vh, 640px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 1rem 1.15rem 0.95rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Invisible box tracking the target; tooltip is position:absolute inside (stable vs zoom vs fixed px). */
+.care-demo-guided-tour__anchor {
+  position: fixed;
+  z-index: 4590;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.care-demo-guided-tour__anchor .care-demo-guided-tour__tooltip {
+  pointer-events: auto;
+}
+
+/* Dock anchor is often a narrow CTA; force normal tour panel width (not shrink-to-fit to the button). */
+.care-demo-guided-tour__anchor .care-demo-guided-tour__tooltip.care-demo-guided-tour__tooltip--dock-anchor {
+  width: min(420px, calc(100vw - 1.75rem));
+  min-width: min(320px, calc(100vw - 2rem));
+  max-width: min(420px, calc(100vw - 1.75rem));
+  box-sizing: border-box;
+}
+
+/* Spotlight steps: tooltip beside target (relative to .care-demo-guided-tour__anchor).
+   Top-align (not vertical center): centering on short header CTAs pushes the panel above the viewport. */
+.care-demo-guided-tour__tooltip--dock-anchor {
+  position: absolute;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  top: 0;
+  transform: none;
+  max-height: min(85vh, 560px);
+}
+
+/* Panel opens below the primary highlight (e.g. under the expired-license strip). */
+.care-demo-guided-tour__tooltip--dock-anchor.care-demo-guided-tour__tooltip--dock-below {
+  left: 0;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  margin: 0;
+}
+
+/* Panel sits to the right of the primary (gap in layout); bottom-aligned inside a same-height anchor strip. */
+.care-demo-guided-tour__tooltip--dock-anchor.care-demo-guided-tour__tooltip--dock-trailing {
+  left: 0;
+  right: auto;
+  top: auto;
+  bottom: 0;
+  margin: 0;
+  transform: none;
+  max-height: min(560px, calc(100% - 10px));
+}
+
+/* Trailing dock flipped to the left of a wide modal (tour strip sits between panel and viewport edge). */
+.care-demo-guided-tour__tooltip--dock-anchor.care-demo-guided-tour__tooltip--dock-trailing-left {
+  left: auto;
+  right: 0;
+  top: auto;
+  bottom: 0;
+  margin: 0;
+  transform: none;
+  max-height: min(560px, calc(100% - 10px));
+}
+
+/* Top-align within trailing strip (default is bottom) — keeps tall tour content in view on short viewports. */
+.care-demo-guided-tour__tooltip--dock-anchor.care-demo-guided-tour__tooltip--dock-trail-top {
+  top: 0;
+  bottom: auto;
+}
+
+.care-demo-guided-tour__tooltip--dock-anchor.care-demo-guided-tour__tooltip--beside-right {
+  left: 100%;
+  right: auto;
+  margin-left: 28px;
+  margin-right: 0;
+}
+
+.care-demo-guided-tour__tooltip--dock-anchor.care-demo-guided-tour__tooltip--beside-left {
+  right: 100%;
+  left: auto;
+  margin-right: 28px;
+  margin-left: 0;
+}
+
+/* Step 3 (modal): pin below top safe area */
+.care-demo-guided-tour__tooltip--anchored-top {
+  bottom: auto;
+  max-height: min(44vh, 420px);
+}
+
+.care-demo-guided-tour__tooltip--wide {
+  width: min(560px, calc(100vw - 1.25rem));
+}
+
+.care-demo-guided-tour__tooltip--anchored {
+  transform: none;
+  left: auto;
+  bottom: auto;
+}
+
+.care-demo-guided-tour__eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #007096;
+}
+
+.care-demo-guided-tour__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.care-demo-guided-tour__title--plain {
+  font-weight: 400;
+}
+
+.care-demo-guided-tour__body {
+  margin: 0 0 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.care-demo-guided-tour__matrix-wrap {
+  margin: 0 0 0.85rem;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.care-demo-guided-tour__matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: #1f2937;
+}
+
+.care-demo-guided-tour__matrix th,
+.care-demo-guided-tour__matrix td {
+  padding: 0.4rem 0.45rem;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.care-demo-guided-tour__matrix thead th {
+  font-weight: 700;
+  color: #111827;
+  background: #f3f4f6;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.care-demo-guided-tour__matrix-corner {
+  text-align: left !important;
+  width: 38%;
+  min-width: 7.5rem;
+}
+
+.care-demo-guided-tour__matrix-rowhead {
+  text-align: left !important;
+  font-weight: 600;
+  color: #374151;
+  background: #fff;
+  hyphens: auto;
+}
+
+.care-demo-guided-tour__matrix-cell {
+  font-weight: 600;
+}
+
+.care-demo-guided-tour__check {
+  display: inline-block;
+  color: #0096db;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.care-demo-guided-tour__dash {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.care-demo-guided-tour__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.15rem;
+}
+
+.care-demo-guided-tour__btn {
+  margin: 0;
+  padding: 0.45rem 0.95rem;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+
+.care-demo-guided-tour__btn:hover {
+  background: #f9fafb;
+}
+
+.care-demo-guided-tour__btn--primary {
+  border-color: #007096;
+  background: #007096;
+  color: #fff;
+}
+
+.care-demo-guided-tour__btn--primary:hover:not(:disabled) {
+  background: #005d7a;
+  border-color: #005d7a;
+}
+
+.care-demo-guided-tour__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.care-demo-guided-tour__progress {
+  margin-right: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Dealer Help Guide page screenshot (e.g. license checkout reference) */
+.care-demo-guided-tour__tooltip--reference {
+  width: min(720px, calc(100vw - 1.25rem));
+  max-height: min(88vh, 900px);
+}
+
+/* Optional: ~½ linear dimensions vs default reference tooltip (e.g. KinPay step). */
+.care-demo-guided-tour__tooltip--reference.care-demo-guided-tour__tooltip--reference-half {
+  width: min(360px, calc(100vw - 1.25rem));
+  max-height: min(44vh, 460px);
+}
+
+.care-demo-guided-tour__tooltip--reference-half .care-demo-guided-tour__reference-img {
+  max-height: min(26vh, 210px);
+}
+
+.care-demo-guided-tour__reference {
+  margin: 0 0 0.85rem;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.care-demo-guided-tour__reference-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(52vh, 420px);
+  object-fit: contain;
+  object-position: top center;
+  background: #fff;
+}
+
+.care-demo-guided-tour__reference-cap {
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  line-height: 1.35;
+  border-top: 1px solid #e5e7eb;
+  background: #fafafa;
+}

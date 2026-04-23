@@ -25,7 +25,10 @@ describe('Layout top nav', () => {
     const nav = screen.getByRole('navigation', { name: 'Main' })
 
     expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
+    expect(within(nav).queryByRole('link', { name: 'Product Plan' })).not.toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /digital tools menu/i })).toBeInTheDocument()
     expect(within(nav).getByRole('button', { name: /app suite/i })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /support/i })).toBeInTheDocument()
   })
 
   it('opens App Suite menu with Apps Overview and product links', async () => {
@@ -39,6 +42,40 @@ describe('Layout top nav', () => {
     expect(screen.getByRole('link', { name: 'SkyportHome' })).toHaveAttribute('href', '/apps/skyport-home')
     expect(screen.getByRole('link', { name: 'SkyportCare' })).toHaveAttribute('href', '/apps/skyport-care')
     expect(screen.getByRole('link', { name: 'SkyportEnergy' })).toHaveAttribute('href', '/apps/skyport-energy')
+  })
+
+  it('opens Digital Tools menu: tiles page plus three product links', async () => {
+    const user = userEvent.setup()
+    renderNav()
+    const nav = screen.getByRole('navigation', { name: 'Main' })
+
+    await user.click(within(nav).getByRole('button', { name: /digital tools menu/i }))
+
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('href', '/digital-tools')
+    expect(screen.queryByRole('link', { name: 'MatchupXpress' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'TechHub' })).toHaveAttribute('href', '/product-board?product=techhub')
+    expect(screen.getByRole('link', { name: 'HVAC Learning Campus' })).toHaveAttribute(
+      'href',
+      '/product-board?product=hvac-learning-campus',
+    )
+    expect(screen.getByRole('link', { name: 'Daikin City' })).toHaveAttribute('href', '/product-board?product=daikin-city')
+  })
+
+  it('opens Support menu with dealer help and test page links', async () => {
+    const user = userEvent.setup()
+    renderNav()
+    const nav = screen.getByRole('navigation', { name: 'Main' })
+
+    await user.click(within(nav).getByRole('button', { name: /support/i }))
+
+    expect(screen.getByRole('link', { name: 'SkyportCare dealer help' })).toHaveAttribute(
+      'href',
+      '/support/skyportcare-dealer',
+    )
+    expect(screen.getByRole('link', { name: 'Test page · timeline' })).toHaveAttribute(
+      'href',
+      '/support/test-page',
+    )
   })
 
   it('opens Strategy menu and lists section links', async () => {

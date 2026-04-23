@@ -1,25 +1,28 @@
 /**
- * Writes public/generated-roadmaps/*.json from root workbooks (production static files).
+ * Writes public/generated-roadmaps/*.json from workbook files (production static files).
  * Dev still uses /local-data/*.json from the Vite plugin (live xlsx) so we avoid shadowing that with public/.
  * Run: npm run export-roadmaps
+ *
+ * Paths: optional env LOCAL_XLSX_FILE, LOCAL_SKYPORTCARE_XLSX_FILE, LOCAL_DIGITAL_PLATFORMS_XLSX_FILE
+ * (absolute paths to OneDrive, etc.) or default *.xlsx in project root. Loads `.env` / `.env.local` first.
  *
  * SKIP_ROADMAP_EXPORT=1 — exit 0 without writing (use when JSON is already committed and xlsx absent in CI).
  */
 import fs from 'node:fs'
 import path from 'node:path'
 import * as XLSX from 'xlsx'
+import {
+  loadEnvFiles,
+  resolveSkyportHomeWorkbook,
+  resolveSkyportCareWorkbook,
+  resolveDigitalPlatformsWorkbook,
+  resolveSupportGanttTestWorkbook,
+  resolveDigitalFrameworkWorkbook,
+} from './workbook-paths.mjs'
 
 const OUT_DIR = path.resolve(process.cwd(), 'public/generated-roadmaps')
 
-function resolveHomeWorkbookPath() {
-  const envName = process.env.LOCAL_XLSX_FILE?.trim()
-  const candidates = [envName || null, 'SkyportHome_Roadmap.xlsx', 'Test.xlsx'].filter(Boolean)
-  for (const rel of candidates) {
-    const abs = path.resolve(process.cwd(), rel)
-    if (fs.existsSync(abs)) return { absPath: abs, fileName: rel }
-  }
-  return null
-}
+loadEnvFiles(process.cwd())
 
 function workbookToPayload(absPath, fileName) {
   const buf = fs.readFileSync(absPath)
@@ -67,30 +70,60 @@ if (process.env.SKIP_ROADMAP_EXPORT === '1') {
   process.exit(0)
 }
 
-const home = resolveHomeWorkbookPath()
+const cwd = process.cwd()
+const home = resolveSkyportHomeWorkbook(cwd)
 if (!home) {
   console.error(
-    '[export-roadmaps] No home roadmap workbook found. Add one of: LOCAL_XLSX_FILE, SkyportHome_Roadmap.xlsx, Test.xlsx',
+    '[export-roadmaps] No home roadmap workbook found. Add SkyportHome_Roadmap.xlsx under OneDrive …/Skyport-Web-Shared-Test/, set LOCAL_XLSX_FILE, or add SkyportHome_Roadmap.xlsx / Test.xls / Test.xlsx in the project root.',
   )
   process.exit(1)
 }
 
-const carePath = path.resolve(process.cwd(), 'SkyportCare_Roadmap.xlsx')
-if (!fs.existsSync(carePath)) {
-  console.error('[export-roadmaps] Missing SkyportCare_Roadmap.xlsx in project root.')
+const care = resolveSkyportCareWorkbook(cwd)
+if (!care) {
+  console.error(
+    '[export-roadmaps] No SkyportCare workbook found. Set LOCAL_SKYPORTCARE_XLSX_FILE or add SkyportCare_Roadmap.xlsx in the project root.',
+  )
   process.exit(1)
 }
+
+const bm = resolveDigitalPlatformsWorkbook(cwd)
+if (!bm) {
+  console.error(
+    '[export-roadmaps] No Digital Platforms business model workbook found. Set LOCAL_DIGITAL_PLATFORMS_XLSX_FILE or add Digital_Platforms_Business_Model.xlsx in the project root.',
+  )
+  process.exit(1)
+}
+
+console.log(`[export-roadmaps] SkyportHome: ${home.absPath}`)
+console.log(`[export-roadmaps] SkyportCare: ${care.absPath}`)
+console.log(`[export-roadmaps] Business model: ${bm.absPath}`)
 
 writeJson('test-sheet.json', workbookToPayload(home.absPath, home.fileName))
-writeJson('skyport-care-roadmap.json', workbookToPayload(carePath, 'SkyportCare_Roadmap.xlsx'))
 
-const bmPath = path.resolve(process.cwd(), 'Digital_Platforms_Business_Model.xlsx')
-if (!fs.existsSync(bmPath)) {
-  console.error('[export-roadmaps] Missing Digital_Platforms_Business_Model.xlsx in project root.')
-  process.exit(1)
+const supportGantt = resolveSupportGanttTestWorkbook(cwd)
+if (supportGantt) {
+  console.log(`[export-roadmaps] Support Gantt (Test only): ${supportGantt.absPath}`)
+  writeJson('support-gantt-test-sheet.json', workbookToPayload(supportGantt.absPath, supportGantt.fileName))
+} else {
+  console.warn(
+    '[export-roadmaps] Skipped support-gantt-test-sheet.json (add Test.xlsx or Test.xls under OneDrive …/Skyport-Web-Shared-Test/).',
+  )
 }
+
+const digitalFramework = resolveDigitalFrameworkWorkbook(cwd)
+if (digitalFramework) {
+  console.log(`[export-roadmaps] Digital Framework (Product Board): ${digitalFramework.absPath}`)
+  writeJson('digital-framework.json', workbookToPayload(digitalFramework.absPath, digitalFramework.fileName))
+} else {
+  console.warn(
+    '[export-roadmaps] Skipped digital-framework.json (add Digital_Framework.xlsx under OneDrive …/Skyport-Web-Shared-Test/).',
+  )
+}
+
+writeJson('skyport-care-roadmap.json', workbookToPayload(care.absPath, care.fileName))
 writeJson(
   'digital-platforms-business-model.json',
-  workbookToGridPayload(bmPath, 'Digital_Platforms_Business_Model.xlsx'),
+  workbookToGridPayload(bm.absPath, bm.fileName),
 )
 console.log('[export-roadmaps] Done.')

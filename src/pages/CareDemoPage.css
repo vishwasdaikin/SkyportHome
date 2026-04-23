@@ -12,11 +12,12 @@
 }
 
 .care-demo {
-  /* Fill app-main--skyport-home-app (100dvh) so shell + footer can pin to viewport */
-  flex: 1;
-  min-height: 0;
-  height: 100%;
-  max-height: 100%;
+  /* app-main--care-demo: grow with content; window scroll shows footer after main area */
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 100%;
+  height: auto;
+  max-height: none;
   min-width: 0;
   overflow-x: hidden;
   /* Three greys: dark header, medium sidebar, lightest main; active nav = lighter tile on sidebar */
@@ -56,7 +57,7 @@
 }
 
 .care-demo__shell {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -133,6 +134,171 @@
   flex-shrink: 0;
   gap: 0.35rem;
   min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.care-demo__tour-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 30px;
+  padding: 0 0.55rem 0 0.45rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--sc-accent);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.care-demo__tour-pill:hover {
+  filter: brightness(1.08);
+  color: #ffffff;
+}
+
+.care-demo__tour-pill:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.care-demo__tour-pill-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.care-demo__tour-pill-label {
+  line-height: 1;
+  padding-right: 0.05rem;
+}
+
+.care-demo__guided-tours-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.care-demo__guided-tours-wrap--topbar {
+  flex-shrink: 0;
+}
+
+.care-demo__guided-tours-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.care-demo__guided-tours-trigger--topbar {
+  height: 30px;
+  padding: 0 0.5rem 0 0.4rem;
+  border-radius: 999px;
+  background: var(--sc-accent);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.care-demo__guided-tours-trigger--topbar:hover {
+  filter: brightness(1.08);
+  color: #ffffff;
+}
+
+.care-demo__guided-tours-trigger--topbar:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.care-demo__guided-tours-trigger-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.care-demo__guided-tours-trigger-label {
+  line-height: 1;
+  padding-right: 0.02rem;
+}
+
+.care-demo__guided-tours-chevron {
+  flex-shrink: 0;
+  color: inherit;
+  opacity: 0.92;
+  transition: transform 0.15s ease;
+}
+
+.care-demo__guided-tours-chevron--open {
+  transform: rotate(180deg);
+}
+
+.care-demo__guided-tours-trigger--dashboard {
+  padding: 0.4rem 0.65rem 0.4rem 0.75rem;
+  border-radius: 5px;
+  border: 1px solid #007096;
+  background: #fff;
+  color: #007096;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.care-demo__guided-tours-trigger--dashboard:hover {
+  background: rgba(0, 112, 150, 0.08);
+}
+
+.care-demo__guided-tours-trigger--dashboard:focus-visible {
+  outline: 2px solid #007096;
+  outline-offset: 2px;
+}
+
+.care-demo__guided-tours-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 208px;
+  padding: 0.35rem 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  z-index: 4700;
+}
+
+.care-demo__guided-tours-wrap:not(.care-demo__guided-tours-wrap--topbar) .care-demo__guided-tours-menu {
+  right: 0;
+  left: auto;
+}
+
+.care-demo__guided-tours-menu-item {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.72rem 1.35rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  text-align: left;
+  color: #666;
+  cursor: pointer;
+}
+
+.care-demo__guided-tours-menu-item:hover,
+.care-demo__guided-tours-menu-item:focus-visible {
+  background: #f5f5f5;
+  outline: none;
 }
 
 .care-demo__topbar-sep {
@@ -262,12 +428,12 @@
 }
 
 .care-demo__body {
-  flex: 1 1 0;
+  flex: 0 0 auto;
   display: flex;
   align-items: stretch;
   min-height: 0;
   gap: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .care-demo__sidebar {
@@ -361,7 +527,7 @@
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.85rem clamp(0.65rem, 1.5vw, 1.15rem) 1rem;
-  overflow: auto;
+  overflow: visible;
 }
 
 .care-demo__main--map {
@@ -380,6 +546,41 @@
   width: 100%;
   box-sizing: border-box;
   padding-inline: 0;
+  /* Six tiles: vertical padding / gaps / chart (lower = shorter) */
+  --care-demo-dash-tile-v-scale: 0.64;
+}
+
+.care-demo__dashboard-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.care-demo__dashboard-head .care-demo__view-title {
+  margin-bottom: 0;
+}
+
+.care-demo__guided-tour-start {
+  margin: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: 5px;
+  border: 1px solid #007096;
+  background: #fff;
+  color: #007096;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.care-demo__guided-tour-start:hover {
+  background: rgba(0, 112, 150, 0.08);
 }
 
 /**
@@ -403,15 +604,46 @@
   gap: clamp(0.6rem, 0.35rem + 1.1vw, 1.35rem);
 }
 
+/* Dashboard 3×2 only: two equal-height rows (bottom row track = top row track). Low floor keeps tiles short; grid still grows with content. */
+@media (min-width: 1201px) {
+  .care-demo__dashboard .care-demo__grid {
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    min-height: clamp(4rem, 8dvh, 10rem);
+  }
+
+  .care-demo__dashboard .care-demo__grid > section.care-demo__card {
+    height: 100%;
+    min-height: 0;
+  }
+}
+
 @media (max-width: 1200px) {
   .care-demo__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .care-demo__dashboard .care-demo__grid {
+    grid-template-rows: none;
+    min-height: 0;
+  }
+
+  .care-demo__dashboard .care-demo__grid > section.care-demo__card {
+    height: auto;
   }
 }
 
 @media (max-width: 768px) {
   .care-demo__grid {
     grid-template-columns: 1fr;
+  }
+
+  .care-demo__dashboard .care-demo__grid {
+    grid-template-rows: none;
+    min-height: 0;
+  }
+
+  .care-demo__dashboard .care-demo__grid > section.care-demo__card {
+    height: auto;
   }
 
   .care-demo .care-demo__search-wrap {
@@ -431,7 +663,7 @@
   }
 
   .care-demo-health__chart {
-    width: min(248px, min(72vw, 100%));
+    width: min(288px, min(78vw, 100%));
   }
 }
 
@@ -443,10 +675,10 @@
   }
 
   .care-demo-health__chart {
-    width: min(240px, 82vw);
-    height: min(240px, 82vw);
-    max-width: 82vw;
-    max-height: 82vw;
+    width: min(272px, 86vw);
+    height: min(272px, 86vw);
+    max-width: 86vw;
+    max-height: 86vw;
   }
 
   .care-demo-health__legend {
@@ -687,7 +919,7 @@
 }
 
 .care-demo-health__chart {
-  width: min(248px, 100%);
+  width: min(288px, 100%);
   max-width: 100%;
   aspect-ratio: 1;
   height: auto;
@@ -1050,6 +1282,95 @@ button.care-demo-customers__link-btn:hover {
   padding: 0.95rem 1.85rem 1.05rem;
 }
 
+/* Six dashboard tiles: shorter vertically via --care-demo-dash-tile-v-scale on .care-demo__dashboard */
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-title {
+  padding-top: calc(1.35rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(1.05rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-body--system-access-inner {
+  padding: calc(1.6rem * var(--care-demo-dash-tile-v-scale)) 1.85rem calc(1.85rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-body--alerts {
+  padding: calc(1.1rem * var(--care-demo-dash-tile-v-scale)) 1.85rem calc(1.35rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-body--reminders {
+  padding: calc(1.1rem * var(--care-demo-dash-tile-v-scale)) 1.85rem calc(1.45rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-body--health {
+  padding-top: calc(1.35rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(1.6rem * var(--care-demo-dash-tile-v-scale));
+  padding-left: clamp(0.75rem, 2.5vw, 2.35rem);
+  padding-right: clamp(0.75rem, 2.5vw, 1.85rem);
+  gap: calc(1.1rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-body--customers {
+  padding: calc(1.35rem * var(--care-demo-dash-tile-v-scale)) 1.85rem calc(1.6rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-body--team {
+  padding: calc(1.35rem * var(--care-demo-dash-tile-v-scale)) 1.85rem calc(1.6rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid > section > .care-demo__card-action--panel {
+  padding-top: calc(0.85rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(1rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo__card-action--panel.care-demo__card-action--team {
+  padding-top: calc(0.95rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(1.05rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-sa {
+  row-gap: calc(1.125rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-sa__track {
+  height: calc(27px * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-alerts__row {
+  padding-top: calc(0.85rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(0.85rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-alerts__pagination {
+  margin-top: calc(0.65rem * var(--care-demo-dash-tile-v-scale));
+  padding-top: calc(0.35rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-reminders__row,
+.care-demo__dashboard .care-demo__grid .care-demo-reminders__row--clickable {
+  padding-top: calc(0.7rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(0.7rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-customers__row {
+  padding-top: calc(0.38rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(0.38rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-team__row,
+.care-demo__dashboard .care-demo__grid .care-demo-team__row-btn {
+  padding-top: calc(0.5rem * var(--care-demo-dash-tile-v-scale));
+  padding-bottom: calc(0.5rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-team__hint {
+  margin-top: calc(1.25rem * var(--care-demo-dash-tile-v-scale));
+}
+
+.care-demo__dashboard .care-demo__grid .care-demo-health__chart {
+  /* Larger than generic tile scale so the donut stays readable in short tiles */
+  width: min(calc(300px * var(--care-demo-dash-tile-v-scale)), 100%);
+  max-width: 100%;
+}
+
 /* Dashboard: slightly tighter tiles; padding and horizontal span scale up with viewport */
 @media (min-width: 481px) {
   .care-demo__dashboard .care-demo__card-title--panel,
@@ -1058,69 +1379,72 @@ button.care-demo-customers__link-btn:hover {
   .care-demo__dashboard .care-demo__card-title--system-health,
   .care-demo__dashboard .care-demo__card-title--customers,
   .care-demo__dashboard .care-demo__card-title--team {
-    padding: clamp(0.88rem, 0.52rem + 0.7vw, 1.15rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(0.88rem, 0.52rem + 0.7vw, 1.15rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(0.62rem, 0.38rem + 0.45vw, 0.92rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(0.62rem, 0.38rem + 0.45vw, 0.92rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--panel {
-    padding: clamp(1.05rem, 0.78rem + 0.55vw, 1.28rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(1.05rem, 0.78rem + 0.55vw, 1.28rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(1.15rem, 0.92rem + 0.5vw, 1.42rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.15rem, 0.92rem + 0.5vw, 1.42rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--panel.care-demo__card-body--system-access-inner {
-    padding: clamp(1.2rem, 0.95rem + 0.55vw, 1.45rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(1.2rem, 0.95rem + 0.55vw, 1.45rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(1.28rem, 1.05rem + 0.5vw, 1.58rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.28rem, 1.05rem + 0.5vw, 1.58rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--alerts {
-    padding: clamp(0.92rem, 0.72rem + 0.45vw, 1.1rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(0.92rem, 0.72rem + 0.45vw, 1.1rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(1.05rem, 0.82rem + 0.42vw, 1.25rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.05rem, 0.82rem + 0.42vw, 1.25rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--reminders {
-    padding: clamp(0.92rem, 0.72rem + 0.45vw, 1.1rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(0.92rem, 0.72rem + 0.45vw, 1.1rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(1.08rem, 0.85rem + 0.48vw, 1.32rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.08rem, 0.85rem + 0.48vw, 1.32rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--customers {
-    padding: clamp(1.05rem, 0.78rem + 0.55vw, 1.28rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(1.05rem, 0.78rem + 0.55vw, 1.28rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(1.15rem, 0.92rem + 0.5vw, 1.42rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.15rem, 0.92rem + 0.5vw, 1.42rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--team {
-    padding: clamp(1.05rem, 0.78rem + 0.55vw, 1.28rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(1.05rem, 0.78rem + 0.55vw, 1.28rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(1.05rem, 0.85rem + 0.42vw, 1.22rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.05rem, 0.85rem + 0.42vw, 1.22rem));
   }
 
   .care-demo__dashboard .care-demo__card-body--health {
-    padding: clamp(1.05rem, 0.78rem + 0.55vw, 1.25rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(1.05rem, 0.78rem + 0.55vw, 1.25rem))
       clamp(0.55rem, 0.3rem + 1.75vw, 2.1rem)
-      clamp(1.12rem, 0.9rem + 0.52vw, 1.38rem)
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(1.12rem, 0.9rem + 0.52vw, 1.38rem))
       clamp(0.55rem, 0.3rem + 1.75vw, 1.72rem);
-    gap: clamp(0.85rem, 0.55rem + 0.65vw, 1.05rem);
+    gap: calc(var(--care-demo-dash-tile-v-scale) * clamp(0.85rem, 0.55rem + 0.65vw, 1.05rem));
   }
 
   .care-demo__dashboard .care-demo__card-action--panel.care-demo__card-action--customers,
   .care-demo__dashboard .care-demo__card-action--panel.care-demo__card-action--team {
-    padding: clamp(0.72rem, 0.52rem + 0.42vw, 0.88rem)
+    padding: calc(var(--care-demo-dash-tile-v-scale) * clamp(0.72rem, 0.52rem + 0.42vw, 0.88rem))
       clamp(1rem, 0.5rem + 2vw, 1.75rem)
-      clamp(0.82rem, 0.62rem + 0.38vw, 0.98rem);
+      calc(var(--care-demo-dash-tile-v-scale) * clamp(0.82rem, 0.62rem + 0.38vw, 0.98rem));
   }
 
   .care-demo__dashboard .care-demo-sa {
     column-gap: clamp(1.05rem, 0.65rem + 1.4vw, 1.4rem);
-    row-gap: clamp(0.88rem, 0.65rem + 0.45vw, 1.02rem);
+    row-gap: calc(var(--care-demo-dash-tile-v-scale) * clamp(0.88rem, 0.65rem + 0.45vw, 1.02rem));
   }
 
   .care-demo__dashboard .care-demo-health__chart {
-    width: min(clamp(216px, 17vw, 268px), 100%);
+    width: min(
+      clamp(calc(252px * var(--care-demo-dash-tile-v-scale)), 17vw, calc(320px * var(--care-demo-dash-tile-v-scale))),
+      100%
+    );
   }
 }
 
@@ -1186,6 +1510,13 @@ button.care-demo-customers__link-btn:hover {
 
 .care-demo-alerts__arrow {
   flex-shrink: 0;
+}
+
+.care-demo-alerts__arrow-wrap {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
 }
 
 .care-demo-alerts__pagination {
@@ -1270,6 +1601,13 @@ button.care-demo-customers__link-btn:hover {
   cursor: pointer;
 }
 
+.care-demo-reminders__arrow-wrap {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
 .care-demo-reminders__row--clickable:hover {
   background: rgba(0, 114, 166, 0.06);
 }
@@ -1335,6 +1673,7 @@ button.care-demo-customers__link-btn:hover {
 
 .care-demo__footer {
   flex: 0 0 auto;
+  flex-shrink: 0;
   margin-top: 0;
   width: 100%;
   box-sizing: border-box;
@@ -5769,11 +6108,13 @@ button.care-demo-custrm__download {
 }
 
 .care-demo-locations__map-image {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
-  vertical-align: top;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
   background: #d8e8f5;
 }
 
@@ -5907,7 +6248,7 @@ button.care-demo-custrm__download {
 
 /* —— Sold homes (Zillow) modal —— */
 .care-demo-sold-homes-modal {
-  max-width: 680px;
+  max-width: 480px;
   overflow: visible;
 }
 
@@ -6249,6 +6590,128 @@ button.care-demo-sold-homes-modal__menu-item:hover {
   min-width: 0;
   flex: 1 1 auto;
   padding-left: calc(0.65rem + var(--cdetail-content-inset, clamp(1.2rem, 2.9vw, 1.9rem)));
+}
+
+/* Expired license — warning strip (warm yellow bar + red ! badge + lighter-yellow Extend chip) */
+.care-demo-cdetail__lic-banner--inline.care-demo-cdetail__lic-banner--expired-access {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  width: 100%;
+  margin: 0;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  background: #f9d648;
+  border: 1px solid #e2b320;
+  border-radius: 0 3px 3px 0;
+  border-left: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: #1f1f1f;
+  font-weight: 500;
+  padding: 0.65rem 1rem 0.65rem 0;
+}
+
+.care-demo-cdetail--immersive .care-demo-cdetail__lic-banner--inline.care-demo-cdetail__lic-banner--expired-access {
+  padding-right: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.care-demo-cdetail__lic-expired-inner {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding-left: calc(0.65rem + var(--cdetail-content-inset, clamp(1.2rem, 2.9vw, 1.9rem)));
+}
+
+/* Red disk + white “!” — matches live expired-access strip */
+.care-demo-cdetail__lic-expired-warn-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e53935;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.care-demo-cdetail__lic-expired-warn-bang {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  margin-top: -0.05em;
+}
+
+.care-demo-cdetail__lic-expired-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.care-demo-cdetail__lic-expired-title {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: #1a1a1a;
+}
+
+.care-demo-cdetail__lic-expired-sub {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #3d3510;
+  line-height: 1.35;
+}
+
+/* Lighter yellow chip on the warning strip (product: same hue family, higher lightness) */
+.care-demo-cdetail__lic-extend-btn {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border: 1px solid rgba(200, 165, 40, 0.35);
+  border-radius: 4px;
+  background: #fff4c8;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1f1f1f;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.care-demo-cdetail__lic-extend-btn:hover:not(:disabled) {
+  background: #ffecb0;
+  border-color: rgba(180, 145, 30, 0.45);
+}
+
+.care-demo-cdetail__lic-extend-btn:focus-visible {
+  outline: 2px solid #007096;
+  outline-offset: 2px;
+}
+
+.care-demo-cdetail__lic-extend-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.care-demo-cdetail__below-head {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.care-demo-cdetail__below-head--license-dimmed {
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
 }
 
 .care-demo-cdetail__page-head:not(:has(.care-demo-cdetail__page-head-banner)) {

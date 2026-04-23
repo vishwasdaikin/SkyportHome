@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { FY26_HCM_VISIBLE, FY26_BASE } from '../constants/fy26Nav'
 import { TEST_PAGE_VISIBLE } from '../constants/devOnlyNav'
+import { DIGITAL_TOOLS_PUBLIC_SITE } from '../constants/digitalToolsPublicSite'
+import { DIGITAL_TOOLS_PATH } from '../content/digitalToolsNav'
 import './HomePageTailwind.css'
 
 const scrollToId = (id) => {
@@ -35,6 +37,9 @@ export default function HomePageTailwind() {
           <Link to="/apps" className="home-repository-btn">
             App Suite
           </Link>
+          <Link to="/support/skyportcare-dealer" className="home-repository-btn">
+            Support
+          </Link>
           <Link to="/strategy" className="home-repository-btn">
             All Strategy
           </Link>
@@ -62,34 +67,55 @@ export default function HomePageTailwind() {
       <section id="overview" className="pt-0 pb-14 sm:pt-0 sm:pb-20 bg-white scroll-mt-20 -mt-1">
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">What you’ll find</h2>
         <ul className="mt-4 space-y-4 text-lg text-gray-600">
-          <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
-            <span>
-              <strong className="text-gray-800">App Suite</strong> — SkyportHome, SkyportCare,
-              SkyportEnergy, each with its own roadmap and materials
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
-            <span>
-              <strong className="text-gray-800">Strategy &amp; playbooks</strong> — operating
-              narrative, FY plans, and platform context
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
-            <span>
-              <strong className="text-gray-800">Documents &amp; flows</strong> — PDFs, process
-              views, and links surfaced where they’re relevant (e.g. energy programs)
-            </span>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
-            <span>
-              <strong className="text-gray-800">Demos &amp; references</strong> — supporting
-              artifacts as the repository grows
-            </span>
-          </li>
+          {DIGITAL_TOOLS_PUBLIC_SITE ? (
+            <>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
+                <span>
+                  <strong className="text-gray-800">Digital Tools</strong> — TechHub, HVAC Learning
+                  Campus, and Daikin City: mission, owner, and roadmap tables from the product board.
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
+                <span>
+                  Open <Link className="text-daikin-blue underline font-medium" to={DIGITAL_TOOLS_PATH}>Digital Tools</Link> for
+                  the overview, or jump straight to each tool from the header menu.
+                </span>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
+                <span>
+                  <strong className="text-gray-800">App Suite</strong> — SkyportHome, SkyportCare,
+                  SkyportEnergy, each with its own roadmap and materials
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
+                <span>
+                  <strong className="text-gray-800">Strategy &amp; playbooks</strong> — operating
+                  narrative, FY plans, and platform context
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
+                <span>
+                  <strong className="text-gray-800">Documents &amp; flows</strong> — PDFs, process
+                  views, and links surfaced where they’re relevant (e.g. energy programs)
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-daikin-blue" />
+                <span>
+                  <strong className="text-gray-800">Demos &amp; references</strong> — supporting
+                  artifacts as the repository grows
+                </span>
+              </li>
+            </>
+          )}
         </ul>
       </section>
     </article>

@@ -186,6 +186,66 @@
   margin-bottom: 0.25rem;
 }
 
+.test-page-thermostats-chart {
+  position: relative;
+}
+
+.test-page-thermostats-chart--dark-bg {
+  margin: -0.35rem -0.5rem 0;
+  padding: 1rem 0.85rem 2.35rem;
+  /* Match slide / deck dark navy (~#000040) */
+  background: #000040;
+  border-radius: var(--radius, 10px);
+  border: 1px solid rgba(248, 250, 252, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.test-page-thermostats-chart__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+.test-page-thermostats-chart--dark-bg .test-page-line-chart-title {
+  color: #f8fafc;
+}
+
+.test-page-thermostats-chart__dark-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  user-select: none;
+}
+
+.test-page-thermostats-chart--dark-bg .test-page-thermostats-chart__dark-toggle {
+  color: #cbd5e1;
+}
+
+.test-page-thermostats-chart__dark-toggle input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--daikin-blue, #0097e0);
+  cursor: pointer;
+}
+
+.test-page-footnote--on-dark {
+  color: #cbd5e1 !important;
+}
+
+.test-page-thermostats-chart--dark-bg .test-page-chart-wrap .recharts-cartesian-axis-tick-value {
+  fill: #cbd5e1;
+}
+
+.test-page-thermostats-chart--dark-bg .test-page-chart-wrap .recharts-xAxis .recharts-cartesian-axis-tick-value {
+  fill: #e2e8f0;
+}
+
 .test-page-line-chart-title {
   margin: 0;
   max-width: 100%;
@@ -237,6 +297,184 @@
   margin-top: 1.5rem;
   padding: 1.25rem 1rem 1.25rem;
   min-height: 0;
+}
+
+/* App Suite — SkyportHome / SkyportCare split bars for dark slide paste (#000040) */
+.test-page-tile--app-suite-dark-wrap {
+  margin-top: 1.5rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-height: 0;
+}
+
+.test-page-app-suite-mix-dark-panel {
+  padding: 1.1rem 1rem 1.35rem;
+  background: #000040;
+  border-radius: var(--radius, 10px);
+  border: 1px solid rgba(248, 250, 252, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.test-page-app-suite-mix-dark-title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #f8fafc;
+  text-align: center;
+}
+
+.test-page-app-suite-mix-dark-sub {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.test-page-app-suite-mix-dark-chart-wrap {
+  width: 100%;
+}
+
+/* SkyportHome / SkyportCare roadmap-mix (dark): white axis ticks + lines on #000040 (X = % scale). */
+#test-app-suite-skyport-home-mix-dark .recharts-cartesian-axis-tick-value,
+#test-app-suite-skyport-home-mix-dark .recharts-cartesian-axis-tick text,
+#test-app-suite-skyport-care-mix-dark .recharts-cartesian-axis-tick-value,
+#test-app-suite-skyport-care-mix-dark .recharts-cartesian-axis-tick text {
+  fill: #ffffff;
+}
+
+#test-app-suite-skyport-home-mix-dark .recharts-xAxis .recharts-cartesian-axis-tick-value,
+#test-app-suite-skyport-home-mix-dark .recharts-xAxis .recharts-cartesian-axis-tick text {
+  fill: #ffffff;
+}
+
+#test-app-suite-skyport-home-mix-dark .recharts-cartesian-axis-line,
+#test-app-suite-skyport-care-mix-dark .recharts-cartesian-axis-line {
+  stroke: #ffffff;
+}
+
+/* User Feedback Volume + Active penetration FY23–25: chart-wrap tick fill beats Recharts tick prop */
+#test-feedback-volume .recharts-cartesian-axis-tick-value,
+#test-feedback-volume .recharts-xAxis .recharts-cartesian-axis-tick-value,
+#test-penetration-by-year .recharts-cartesian-axis-tick-value,
+#test-penetration-by-year .recharts-xAxis .recharts-cartesian-axis-tick-value {
+  fill: #ffffff;
+}
+
+#test-feedback-volume .recharts-cartesian-axis-line,
+#test-penetration-by-year .recharts-cartesian-axis-line {
+  stroke: #ffffff;
+}
+
+.test-page-app-suite-mix-dark-foot {
+  margin: 0.65rem 0 0;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: #94a3b8;
+  font-weight: 500;
+  text-align: center;
+}
+
+.test-page-app-suite-dark-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 720px) {
+  .test-page-app-suite-dark-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* App Suite SkyportHome + SkyportCare side-by-side (light panels) */
+.test-page-app-suite-compare-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 720px) {
+  .test-page-app-suite-compare-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.test-page-app-suite-light-panel {
+  background: #f8fafc;
+  border-radius: var(--radius, 10px);
+  padding: 1rem 0.85rem 1.1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.test-page-app-suite-light-panel__title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #0f172a;
+  text-align: center;
+}
+
+.test-page-app-suite-light-panel__chart {
+  width: 100%;
+  height: 300px;
+  overflow: visible;
+}
+
+.test-page-app-suite-light-panel__chart .recharts-wrapper,
+.test-page-app-suite-mix-dark-chart-wrap .recharts-wrapper {
+  overflow: visible;
+}
+
+.test-page-app-suite-compare-footnote {
+  margin: 0.75rem auto 0;
+  max-width: 90%;
+  padding: 0 0.25rem;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--text-secondary, #64748b);
+  font-weight: 500;
+  text-align: center;
+}
+
+.test-page-app-suite-dark-panel {
+  background: #000040;
+  border-radius: var(--radius, 10px);
+  padding: 1rem 0.85rem 1.1rem;
+  border: 1px solid rgba(248, 250, 252, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.test-page-app-suite-dark-panel__title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #f8fafc;
+  text-align: center;
+}
+
+.test-page-app-suite-dark-panel__chart {
+  width: 100%;
+  height: 300px;
+}
+
+.test-page-app-suite-dark-footnote {
+  margin: 0.75rem auto 0;
+  max-width: 90%;
+  padding: 0 0.25rem;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: #94a3b8;
+  font-weight: 500;
+  text-align: center;
 }
 
 .test-page-feedback-footnote {

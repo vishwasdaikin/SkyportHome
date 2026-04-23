@@ -2,27 +2,44 @@ import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from '../auth/authConfig'
 import { TEST_PAGE_VISIBLE } from '../constants/devOnlyNav'
+import { DIGITAL_TOOLS_PUBLIC_SITE } from '../constants/digitalToolsPublicSite'
 import AuthNav from '../auth/AuthNav'
 import AuthNavBackend from '../auth/AuthNavBackend'
 import './Layout.css'
 import { FY26_BASE, FY26_HCM_VISIBLE, FY26_NAV_ITEMS } from '../constants/fy26Nav'
+import {
+  DIGITAL_TOOLS_PATH,
+  DIGITAL_TOOLS_ITEMS,
+  productBoardPathForDigitalTool,
+} from '../content/digitalToolsNav'
 
 const APPS_BASE = '/apps'
+const SUPPORT_SKYPORTCARE_DEALER = '/support/skyportcare-dealer'
+const SUPPORT_TEST_PAGE = '/support/test-page'
+const PRODUCT_BOARD = '/product-board'
 const STRATEGY_OPERATING_BASE = '/strategy/operating'
 
 export default function Layout({ children }) {
   const [showBackToTop, setShowBackToTop] = useState(false)
   const [strategyOpen, setStrategyOpen] = useState(false)
   const [appsOpen, setAppsOpen] = useState(false)
+  const [supportOpen, setSupportOpen] = useState(false)
+  const [digitalToolsOpen, setDigitalToolsOpen] = useState(false)
   const strategyRef = useRef(null)
   const appsRef = useRef(null)
+  const supportRef = useRef(null)
+  const digitalToolsRef = useRef(null)
   const location = useLocation()
+  const isDigitalToolsBranchActive =
+    location.pathname === DIGITAL_TOOLS_PATH ||
+    location.pathname === PRODUCT_BOARD
   const isOperatingPlaybook = location.pathname.startsWith(STRATEGY_OPERATING_BASE)
   const isFy26Playbook = location.pathname.startsWith(`${FY26_BASE}/`)
   const isFy26HcmPage = FY26_HCM_VISIBLE && location.pathname === `${FY26_BASE}/hcm`
   const isPlaybookSubNav = isOperatingPlaybook || (isFy26Playbook && !isFy26HcmPage)
   const isSkyportHomeApp = location.pathname === '/demos/skyport-home-concept'
   const isCareDemoPage = location.pathname.startsWith('/test-page/care-demo')
+  const showFullMainNav = !DIGITAL_TOOLS_PUBLIC_SITE
 
   useEffect(() => {
     function onScroll() {
@@ -35,12 +52,16 @@ export default function Layout({ children }) {
   useEffect(() => {
     setStrategyOpen(false)
     setAppsOpen(false)
-  }, [location.pathname])
+    setSupportOpen(false)
+    setDigitalToolsOpen(false)
+  }, [location.pathname, location.search])
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (strategyRef.current && !strategyRef.current.contains(e.target)) setStrategyOpen(false)
       if (appsRef.current && !appsRef.current.contains(e.target)) setAppsOpen(false)
+      if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false)
+      if (digitalToolsRef.current && !digitalToolsRef.current.contains(e.target)) setDigitalToolsOpen(false)
     }
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
@@ -109,10 +130,12 @@ export default function Layout({ children }) {
           </span>
         </NavLink>
         <nav className="app-nav app-nav--centered" aria-label="Main">
+          <div className="app-nav-scroll">
           <NavLink to="/" className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`} end>
             Home
           </NavLink>
-          {TEST_PAGE_VISIBLE ? (
+
+          {showFullMainNav && TEST_PAGE_VISIBLE ? (
             <NavLink
               to="/test-page"
               className={({ isActive }) =>
@@ -123,87 +146,157 @@ export default function Layout({ children }) {
             </NavLink>
           ) : null}
 
-          <div className="app-nav-dropdown" ref={appsRef}>
+          <div className="app-nav-dropdown" ref={digitalToolsRef}>
             <button
               type="button"
-              className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith(APPS_BASE) ? 'active' : ''}`}
-              onClick={() => setAppsOpen((o) => !o)}
-              aria-expanded={appsOpen}
+              className={`app-nav-link app-nav-dropdown-trigger ${isDigitalToolsBranchActive ? 'active' : ''}`}
+              onClick={() => setDigitalToolsOpen((o) => !o)}
+              aria-expanded={digitalToolsOpen}
               aria-haspopup="true"
+              aria-label="Digital Tools menu"
             >
-              App Suite ▾
+              Digital Tools ▾
             </button>
-            {appsOpen && (
-              <div className="app-nav-dropdown-menu">
-                <NavLink to={APPS_BASE} end className="app-nav-dropdown-item" onClick={() => setAppsOpen(false)}>
-                  Apps Overview
-                </NavLink>
-                <NavLink
-                  to={`${APPS_BASE}/skyport-home`}
-                  className="app-nav-dropdown-item"
-                  onClick={() => setAppsOpen(false)}
-                >
-                  SkyportHome
-                </NavLink>
-                <NavLink
-                  to={`${APPS_BASE}/skyport-care`}
-                  className="app-nav-dropdown-item"
-                  onClick={() => setAppsOpen(false)}
-                >
-                  SkyportCare
-                </NavLink>
-                <NavLink
-                  to={`${APPS_BASE}/skyport-energy`}
-                  className="app-nav-dropdown-item"
-                  onClick={() => setAppsOpen(false)}
-                >
-                  SkyportEnergy
-                </NavLink>
-              </div>
-            )}
-          </div>
-
-          <div className="app-nav-dropdown" ref={strategyRef}>
-            <button
-              type="button"
-              className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/strategy') ? 'active' : ''}`}
-              onClick={() => setStrategyOpen((o) => !o)}
-              aria-expanded={strategyOpen}
-              aria-haspopup="true"
-            >
-              Strategy ▾
-            </button>
-            {strategyOpen && (
+            {digitalToolsOpen && (
               <div className="app-nav-dropdown-menu">
                 <NavLink
-                  to="/strategy"
+                  to={DIGITAL_TOOLS_PATH}
                   end
                   className="app-nav-dropdown-item"
-                  onClick={() => setStrategyOpen(false)}
+                  onClick={() => setDigitalToolsOpen(false)}
                 >
-                  All strategy
+                  Overview
                 </NavLink>
-                {FY26_NAV_ITEMS.map(({ sectionId, label }) => (
+                {DIGITAL_TOOLS_ITEMS.map((item) => (
                   <NavLink
-                    key={sectionId}
-                    to={`${FY26_BASE}/${sectionId}`}
+                    key={item.productId}
+                    to={productBoardPathForDigitalTool(item.productId)}
                     className="app-nav-dropdown-item"
-                    onClick={() => setStrategyOpen(false)}
+                    onClick={() => setDigitalToolsOpen(false)}
                   >
-                    FY26 · {label}
+                    {item.label}
                   </NavLink>
                 ))}
-                <NavLink
-                  to={`${STRATEGY_OPERATING_BASE}/overview`}
-                  className="app-nav-dropdown-item"
-                  onClick={() => setStrategyOpen(false)}
-                >
-                  Digital Strategy Principles
-                </NavLink>
               </div>
             )}
           </div>
 
+          {showFullMainNav ? (
+            <>
+              <div className="app-nav-dropdown" ref={appsRef}>
+                <button
+                  type="button"
+                  className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith(APPS_BASE) ? 'active' : ''}`}
+                  onClick={() => setAppsOpen((o) => !o)}
+                  aria-expanded={appsOpen}
+                  aria-haspopup="true"
+                >
+                  App Suite ▾
+                </button>
+                {appsOpen && (
+                  <div className="app-nav-dropdown-menu">
+                    <NavLink to={APPS_BASE} end className="app-nav-dropdown-item" onClick={() => setAppsOpen(false)}>
+                      Apps Overview
+                    </NavLink>
+                    <NavLink
+                      to={`${APPS_BASE}/skyport-home`}
+                      className="app-nav-dropdown-item"
+                      onClick={() => setAppsOpen(false)}
+                    >
+                      SkyportHome
+                    </NavLink>
+                    <NavLink
+                      to={`${APPS_BASE}/skyport-care`}
+                      className="app-nav-dropdown-item"
+                      onClick={() => setAppsOpen(false)}
+                    >
+                      SkyportCare
+                    </NavLink>
+                    <NavLink
+                      to={`${APPS_BASE}/skyport-energy`}
+                      className="app-nav-dropdown-item"
+                      onClick={() => setAppsOpen(false)}
+                    >
+                      SkyportEnergy
+                    </NavLink>
+                  </div>
+                )}
+              </div>
+
+              <div className="app-nav-dropdown" ref={supportRef}>
+                <button
+                  type="button"
+                  className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/support') ? 'active' : ''}`}
+                  onClick={() => setSupportOpen((o) => !o)}
+                  aria-expanded={supportOpen}
+                  aria-haspopup="true"
+                >
+                  Support ▾
+                </button>
+                {supportOpen && (
+                  <div className="app-nav-dropdown-menu">
+                    <NavLink
+                      to={SUPPORT_SKYPORTCARE_DEALER}
+                      className="app-nav-dropdown-item"
+                      onClick={() => setSupportOpen(false)}
+                    >
+                      SkyportCare dealer help
+                    </NavLink>
+                    <NavLink
+                      to={SUPPORT_TEST_PAGE}
+                      className="app-nav-dropdown-item"
+                      onClick={() => setSupportOpen(false)}
+                    >
+                      Test page · timeline
+                    </NavLink>
+                  </div>
+                )}
+              </div>
+
+              <div className="app-nav-dropdown" ref={strategyRef}>
+                <button
+                  type="button"
+                  className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/strategy') ? 'active' : ''}`}
+                  onClick={() => setStrategyOpen((o) => !o)}
+                  aria-expanded={strategyOpen}
+                  aria-haspopup="true"
+                >
+                  Strategy ▾
+                </button>
+                {strategyOpen && (
+                  <div className="app-nav-dropdown-menu">
+                    <NavLink
+                      to="/strategy"
+                      end
+                      className="app-nav-dropdown-item"
+                      onClick={() => setStrategyOpen(false)}
+                    >
+                      All strategy
+                    </NavLink>
+                    {FY26_NAV_ITEMS.map(({ sectionId, label }) => (
+                      <NavLink
+                        key={sectionId}
+                        to={`${FY26_BASE}/${sectionId}`}
+                        className="app-nav-dropdown-item"
+                        onClick={() => setStrategyOpen(false)}
+                      >
+                        FY26 · {label}
+                      </NavLink>
+                    ))}
+                    <NavLink
+                      to={`${STRATEGY_OPERATING_BASE}/overview`}
+                      className="app-nav-dropdown-item"
+                      onClick={() => setStrategyOpen(false)}
+                    >
+                      Digital Strategy Principles
+                    </NavLink>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : null}
+
+          </div>
         </nav>
         {!isAuthSkipped() && (
           <div className="app-header-auth">
@@ -245,13 +338,15 @@ export default function Layout({ children }) {
       )}
       <main
         className={`app-main ${
-          isSkyportHomeApp || isCareDemoPage
+          isSkyportHomeApp
             ? 'app-main--skyport-home-app'
-            : isFy26HcmPage
-              ? 'app-main--fy26-hcm'
-              : location.pathname === '/demos' || location.pathname === '/demos/care'
-                ? 'app-main--full-bleed'
-                : ''
+            : isCareDemoPage
+              ? 'app-main--care-demo'
+              : isFy26HcmPage
+                ? 'app-main--fy26-hcm'
+                : location.pathname === '/demos' || location.pathname === '/demos/care'
+                  ? 'app-main--full-bleed'
+                  : ''
         }`}
       >
         {children}

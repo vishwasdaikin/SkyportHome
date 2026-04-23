@@ -11,7 +11,8 @@ const SHEET_JSON_URL = import.meta.env.DEV
   : localDataUrl('generated-roadmaps/test-sheet.json')
 
 /**
- * Loads rows from Test.xlsx (project root) via the dev-server plugin.
+ * Loads rows from the “test” workbook (`Test.xls` / `Test.xlsx`, `LOCAL_XLSX_FILE`, or `SkyportHome_Roadmap.xlsx`)
+ * via the dev-server plugin (`/local-data/test-sheet.json`).
  * Polls every `pollMs` while in dev so edits in Excel show up without refresh.
  *
  * Production: this URL is not served by Vite — use a real API or put a JSON/CSV

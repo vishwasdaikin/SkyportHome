@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base,
-    plugins: [react(), localTestXlsx()],
+    plugins: [react(), localTestXlsx(env, base)],
     define: {
       'import.meta.env.AUTH_MICROSOFT_ENTRA_ID_ID': JSON.stringify(
         env.AUTH_MICROSOFT_ENTRA_ID_ID ?? process.env.AUTH_MICROSOFT_ENTRA_ID_ID ?? ''

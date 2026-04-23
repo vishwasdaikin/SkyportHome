@@ -3,12 +3,13 @@
  * Monetization Model, Target, Priority (1–3), Development (UI / Data / Algorithm scope).
  * Empty featureGroup means same group as previous row.
  */
+/** Row order matches `SkyportCare` sheet in SkyportCare_Roadmap.xlsx (execution order, not theme sort). */
 const _skyportCareFeaturesRowsRaw = [
-  { featureGroup: "Dealer Operations & Experience", feature: "Aggregated summary view", initiativeType: "New Feature Introduction", endUserCategory: "Ease of Use & Accessibility", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
+  { featureGroup: "Dealer Operations & Experience", feature: "Dealer On-boarding & Set-up", initiativeType: "New Feature Introduction", endUserCategory: "Trust, Security & Reliability", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
+  { featureGroup: "", feature: "Aggregated summary view", initiativeType: "New Feature Introduction", endUserCategory: "Ease of Use & Accessibility", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
   { featureGroup: "", feature: "Dealer Report", initiativeType: "New Feature Introduction", endUserCategory: "Ease of Use & Accessibility", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
   { featureGroup: "", feature: "Homeowner Report", initiativeType: "New Feature Introduction", endUserCategory: "Trust, Security & Reliability", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
   { featureGroup: "Performance, Energy & Runtime Intelligence", feature: "Performance Insights", initiativeType: "New Feature Introduction", endUserCategory: "Intelligence & Automation", monetizationModel: "Basic (Free)", priority: 1, development: "UI + Data" },
-  { featureGroup: "Dealer Operations & Experience", feature: "Dealer On-boarding & Set-up", initiativeType: "New Feature Introduction", endUserCategory: "Trust, Security & Reliability", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
   { featureGroup: "", feature: "Ability for dealers to submit feature requests intuitively", initiativeType: "New Feature Introduction", endUserCategory: "Engagement & Personalization", monetizationModel: "Basic (Free)", priority: 1, development: "UI + Data" },
   { featureGroup: "", feature: "SkyportHome communication w/homeowner (including Dealer brand)", initiativeType: "New Feature Introduction", endUserCategory: "Engagement & Personalization", monetizationModel: "Paid", priority: 1, development: "UI + Data" },
   { featureGroup: "", feature: "Remote Adjust", initiativeType: "New Feature Introduction", endUserCategory: "Ease of Use & Accessibility", monetizationModel: "Basic (Free)", priority: 1, development: "UI only" },
@@ -47,11 +48,11 @@ const _skyportCareFeaturesRowsRaw = [
 
 /** Execution focus / sequencing; index aligns with `_skyportCareFeaturesRowsRaw`. */
 const SKYPORT_CARE_FEATURE_FOCUS_TIMEFRAMES = [
-  "Q1 FY26",
-  "Q1 FY26",
-  "Q1 FY26",
-  "Q1 FY26",
   "Q2 FY26",
+  "Q1 FY26",
+  "Q1 FY26",
+  "Q1 FY26",
+  "Q1 FY26",
   "Q2 FY26",
   "Q2 FY26",
   "Q2 FY26",

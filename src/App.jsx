@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import RequireAuth from './auth/RequireAuth'
 import SitePasswordGate from './auth/SitePasswordGate'
@@ -27,12 +27,29 @@ import TestPage from './pages/TestPage'
 import CareDemoPage from './pages/CareDemoPage'
 import { TEST_PAGE_VISIBLE } from './constants/devOnlyNav'
 import SkyportCareLoginPage from './pages/SkyportCareLoginPage'
+import SkyportCareDealerSupportPage from './pages/SkyportCareDealerSupportPage'
+import SupportTestGanttPage from './pages/SupportTestGanttPage'
+import ProductBoardPage from './pages/ProductBoardPage'
+import DigitalToolsPage from './pages/DigitalToolsPage'
+import {
+  DIGITAL_TOOLS_PUBLIC_SITE,
+  isPathAllowedOnDigitalToolsPublicSite,
+} from './constants/digitalToolsPublicSite'
+
+function DigitalToolsPublicRouteGuard({ children }) {
+  const location = useLocation()
+  if (DIGITAL_TOOLS_PUBLIC_SITE && !isPathAllowedOnDigitalToolsPublicSite(location.pathname)) {
+    return <Navigate to="/digital-tools" replace />
+  }
+  return children
+}
 
 export default function App() {
   return (
     <SitePasswordGate>
       <RequireAuth>
         <Layout>
+        <DigitalToolsPublicRouteGuard>
         <Routes>
         <Route path="/" element={<HomePageTailwind />} />
         <Route path="/test-page" element={TEST_PAGE_VISIBLE ? <TestPage /> : <Navigate to="/" replace />} />
@@ -50,6 +67,10 @@ export default function App() {
         <Route path="/apps/skyport-care" element={<AppSuiteTest2 />} />
         <Route path="/apps/test-2" element={<Navigate to="/apps/skyport-care" replace />} />
         <Route path="/apps/skyport-energy" element={<SkyportEnergy />} />
+        <Route path="/support/skyportcare-dealer" element={<SkyportCareDealerSupportPage />} />
+        <Route path="/support/test-page" element={<SupportTestGanttPage />} />
+        <Route path="/digital-tools" element={<DigitalToolsPage />} />
+        <Route path="/product-board" element={<ProductBoardPage />} />
         <Route path="/strategy/fy25" element={<FY25 />} />
         <Route
           path="/strategy/fy26"
@@ -70,6 +91,7 @@ export default function App() {
         <Route path="/dev/test-xlsx" element={<TestXlsxDemo />} />
         <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </DigitalToolsPublicRouteGuard>
       </Layout>
       </RequireAuth>
     </SitePasswordGate>

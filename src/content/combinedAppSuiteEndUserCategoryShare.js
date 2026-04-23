@@ -57,3 +57,21 @@ export function getCombinedEndUserCategoryEffortChartData() {
     }
   })
 }
+
+/**
+ * Same rows as {@link getCombinedEndUserCategoryEffortChartData}, plus per-product shares:
+ * `homeOnlyPct` = share of that product’s in-scope features in each pillar (sums to 100% across five bars);
+ * `careOnlyPct` = same for SkyportCare.
+ *
+ * @returns {Array<{ category: string, categoryShort: string, homeCount: number, careCount: number, homePct: number, carePct: number, combinedPct: number, homeOnlyPct: number, careOnlyPct: number }>}
+ */
+export function getEndUserCategoryProductSplitData() {
+  const rows = getCombinedEndUserCategoryEffortChartData()
+  const homeTot = rows.reduce((s, r) => s + r.homeCount, 0)
+  const careTot = rows.reduce((s, r) => s + r.careCount, 0)
+  return rows.map((r) => ({
+    ...r,
+    homeOnlyPct: homeTot > 0 ? (r.homeCount / homeTot) * 100 : 0,
+    careOnlyPct: careTot > 0 ? (r.careCount / careTot) * 100 : 0,
+  }))
+}

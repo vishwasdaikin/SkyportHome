@@ -1,0 +1,155 @@
+{
+  "sectionImages": {
+    "SSO Account Set-up Process": [
+      "image1.png",
+      "image2.png",
+      "image3.png",
+      "image4.png",
+      "image5.png",
+      "image5.png",
+      "image6.png",
+      "image7.png",
+      "image8.png",
+      "image9.png",
+      "image10.png",
+      "image11.png",
+      "image10.png",
+      "image14.png",
+      "image10.png"
+    ],
+    "SSO Account Activation Process": [
+      "image16.png",
+      "image17.png",
+      "image18.png",
+      "image19.png",
+      "image20.png",
+      "image21.png",
+      "image22.png",
+      "image23.png",
+      "image24.png",
+      "image25.png"
+    ],
+    "Team Member Invitation Process": [
+      "image26.png",
+      "image27.png",
+      "image28.png"
+    ],
+    "Homeowner Invitation Process": [
+      "image26.png",
+      "image29.png"
+    ],
+    "License Purchase/Renewal Process: SkyportCare & Warranty Express": [
+      "image30.png",
+      "image31.png",
+      "image32.png",
+      "image33.png"
+    ],
+    "Warranty Express License Purchase Process": [
+      "image34.png",
+      "image35.jpg",
+      "image36.png",
+      "image37.png",
+      "image38.png"
+    ],
+    "Frequently Asked Questions": [
+      "image39.png",
+      "image40.png",
+      "image41.png",
+      "image42.png",
+      "image43.emf",
+      "image44.emf",
+      "image45.png",
+      "image46.png",
+      "image47.png",
+      "image48.png",
+      "image49.png"
+    ]
+  },
+  "ordered": [
+    {
+      "section": "SSO Account Set-up Process",
+      "files": [
+        "image1.png",
+        "image2.png",
+        "image3.png",
+        "image4.png",
+        "image5.png",
+        "image5.png",
+        "image6.png",
+        "image7.png",
+        "image8.png",
+        "image9.png",
+        "image10.png",
+        "image11.png",
+        "image10.png",
+        "image14.png",
+        "image10.png"
+      ]
+    },
+    {
+      "section": "SSO Account Activation Process",
+      "files": [
+        "image16.png",
+        "image17.png",
+        "image18.png",
+        "image19.png",
+        "image20.png",
+        "image21.png",
+        "image22.png",
+        "image23.png",
+        "image24.png",
+        "image25.png"
+      ]
+    },
+    {
+      "section": "Team Member Invitation Process",
+      "files": [
+        "image26.png",
+        "image27.png",
+        "image28.png"
+      ]
+    },
+    {
+      "section": "Homeowner Invitation Process",
+      "files": [
+        "image26.png",
+        "image29.png"
+      ]
+    },
+    {
+      "section": "License Purchase/Renewal Process: SkyportCare & Warranty Express",
+      "files": [
+        "image30.png",
+        "image31.png",
+        "image32.png",
+        "image33.png"
+      ]
+    },
+    {
+      "section": "Warranty Express License Purchase Process",
+      "files": [
+        "image34.png",
+        "image35.jpg",
+        "image36.png",
+        "image37.png",
+        "image38.png"
+      ]
+    },
+    {
+      "section": "Frequently Asked Questions",
+      "files": [
+        "image39.png",
+        "image40.png",
+        "image41.png",
+        "image42.png",
+        "image43.emf",
+        "image44.emf",
+        "image45.png",
+        "image46.png",
+        "image47.png",
+        "image48.png",
+        "image49.png"
+      ]
+    }
+  ]
+}

@@ -36,6 +36,7 @@
     "autoprefixer": "^10.4.27",
     "country-state-city": "^3.2.1",
     "d3-geo": "^2.0.2",
+    "exceljs": "^4.4.0",
     "jsdom": "^29.0.0",
     "postcss": "^8.5.8",
     "puppeteer-core": "^24.15.0",

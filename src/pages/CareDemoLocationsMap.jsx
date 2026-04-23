@@ -36,7 +36,7 @@ const INITIAL_SUB = {
   homeSold: false,
 }
 
-/** Product screenshot used as a reliable static map preview (see `public/care-demo/locations-map-static.png`). */
+/** Cropped product screenshot (map + pins only; chrome / legend overlay removed — see `public/care-demo/locations-map-static.png`). */
 const LOCATIONS_MAP_IMAGE_SRC = `${import.meta.env.BASE_URL}care-demo/locations-map-static.png`
 
 export default function CareDemoLocationsMap() {
@@ -156,7 +156,7 @@ export default function CareDemoLocationsMap() {
         </div>
 
         <p className="care-demo-locations__hint">
-          Demo — static map preview. Filters mirror production controls; the map image does not change with filters.
+          Demo — static map image (no live map). Filters mirror production controls; the map does not change with filters.
         </p>
       </aside>
     </div>

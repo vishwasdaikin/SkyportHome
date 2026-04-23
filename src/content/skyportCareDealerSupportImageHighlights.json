@@ -1,0 +1,465 @@
+{
+  "byFilename": {
+    "image1.png": [
+      {
+        "xPct": 31,
+        "yPct": 46.5,
+        "wPct": 38,
+        "hPct": 7,
+        "label": "Sign In"
+      }
+    ],
+    "image2.png": [
+      {
+        "xPct": 50,
+        "yPct": 54,
+        "wPct": 38,
+        "hPct": 7,
+        "label": "Continue"
+      }
+    ],
+    "image3.png": [
+      {
+        "xPct": 10,
+        "yPct": 38,
+        "wPct": 80,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image4.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image5.png": [
+      {
+        "xPct": 27,
+        "yPct": 84,
+        "wPct": 46,
+        "hPct": 5,
+        "label": "Add a New Business"
+      }
+    ],
+    "image6.png": [
+      {
+        "xPct": 51,
+        "yPct": 87,
+        "wPct": 22,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image7.png": [
+      {
+        "xPct": 51,
+        "yPct": 87,
+        "wPct": 22,
+        "hPct": 7,
+        "label": "Register"
+      }
+    ],
+    "image8.png": [
+      {
+        "xPct": 51,
+        "yPct": 79,
+        "wPct": 22,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image9.png": [
+      {
+        "xPct": 51,
+        "yPct": 86,
+        "wPct": 20,
+        "hPct": 6,
+        "label": "Next"
+      }
+    ],
+    "image10.png": [
+      {
+        "xPct": 51,
+        "yPct": 86,
+        "wPct": 20,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image11.png": [
+      {
+        "xPct": 51,
+        "yPct": 88,
+        "wPct": 24,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image14.png": [
+      {
+        "xPct": 51,
+        "yPct": 88,
+        "wPct": 24,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image16.png": [
+      {
+        "xPct": 41,
+        "yPct": 77,
+        "wPct": 18,
+        "hPct": 9,
+        "label": "Sign In"
+      }
+    ],
+    "image17.png": [
+      {
+        "xPct": 22,
+        "yPct": 70,
+        "wPct": 28,
+        "hPct": 10,
+        "label": "Account administrator"
+      }
+    ],
+    "image18.png": [
+      {
+        "xPct": 83,
+        "yPct": 84,
+        "wPct": 14,
+        "hPct": 9,
+        "label": "Confirm"
+      }
+    ],
+    "image19.png": [
+      {
+        "xPct": 35,
+        "yPct": 76,
+        "wPct": 30,
+        "hPct": 5,
+        "label": "Accept Invitation"
+      }
+    ],
+    "image20.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image21.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image22.png": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image23.png": [
+      {
+        "xPct": 9,
+        "yPct": 76,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image24.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "image25.png": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Finish"
+      }
+    ],
+    "image27.png": [
+      {
+        "xPct": 74,
+        "yPct": 82,
+        "wPct": 23,
+        "hPct": 12,
+        "label": "Invite Member"
+      }
+    ],
+    "image28.png": [
+      {
+        "xPct": 4,
+        "yPct": 10,
+        "wPct": 92,
+        "hPct": 78,
+        "label": "Permissions"
+      }
+    ],
+    "image29.png": [
+      {
+        "xPct": 70,
+        "yPct": 83,
+        "wPct": 27,
+        "hPct": 9,
+        "label": "Send invitation"
+      }
+    ],
+    "image30.png": [
+      {
+        "xPct": 82,
+        "yPct": 2.5,
+        "wPct": 16,
+        "hPct": 6,
+        "label": "Extend License"
+      }
+    ],
+    "image31.png": [
+      {
+        "xPct": 9,
+        "yPct": 76,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Checkout"
+      }
+    ],
+    "image32.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Warranty Express"
+      }
+    ],
+    "image33.png": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "KinPay"
+      }
+    ],
+    "image34.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Warranty Express"
+      }
+    ],
+    "image35.jpg": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Distributor"
+      }
+    ],
+    "image36.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Serial / contract"
+      }
+    ],
+    "image37.png": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "E-sign"
+      }
+    ],
+    "image38.png": [
+      {
+        "xPct": 9,
+        "yPct": 75,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Confirmation"
+      }
+    ],
+    "image39.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "License"
+      }
+    ],
+    "image40.png": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Association"
+      }
+    ],
+    "image41.png": [
+      {
+        "xPct": 9,
+        "yPct": 75,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Admin portal"
+      }
+    ],
+    "image42.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Business info"
+      }
+    ],
+    "image45.png": [
+      {
+        "xPct": 32,
+        "yPct": 70,
+        "wPct": 22,
+        "hPct": 7,
+        "label": "Add Customer"
+      }
+    ],
+    "image46.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "System"
+      }
+    ],
+    "image47.png": [
+      {
+        "xPct": 9,
+        "yPct": 78,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "SkyportHome"
+      }
+    ],
+    "image48.png": [
+      {
+        "xPct": 9,
+        "yPct": 81,
+        "wPct": 82,
+        "hPct": 7,
+        "label": "Notifications"
+      }
+    ],
+    "image49.png": [
+      {
+        "xPct": 88,
+        "yPct": 2,
+        "wPct": 10,
+        "hPct": 8,
+        "label": "Help"
+      }
+    ]
+  },
+  "byInstanceKey": {
+    "team-member-invite:0:0": [
+      {
+        "xPct": 69,
+        "yPct": 78,
+        "wPct": 16,
+        "hPct": 6,
+        "label": "Add Member"
+      }
+    ],
+    "homeowner-invitation:0:0": [
+      {
+        "xPct": 39,
+        "yPct": 78,
+        "wPct": 18,
+        "hPct": 6,
+        "label": "Add Customer"
+      }
+    ],
+    "sso-account-setup:9:0": [
+      {
+        "xPct": 51,
+        "yPct": 86,
+        "wPct": 20,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "sso-account-setup:9:1": [
+      {
+        "xPct": 51,
+        "yPct": 88,
+        "wPct": 24,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "sso-account-setup:9:2": [
+      {
+        "xPct": 51,
+        "yPct": 86,
+        "wPct": 20,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "sso-account-setup:10:0": [
+      {
+        "xPct": 51,
+        "yPct": 88,
+        "wPct": 24,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "sso-account-setup:10:1": [
+      {
+        "xPct": 51,
+        "yPct": 86,
+        "wPct": 20,
+        "hPct": 7,
+        "label": "Next"
+      }
+    ],
+    "license-purchase-renewal:0:0": [
+      {
+        "xPct": 82,
+        "yPct": 2.5,
+        "wPct": 16,
+        "hPct": 6,
+        "label": "Extend License"
+      }
+    ]
+  }
+}
