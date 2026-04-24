@@ -44,11 +44,14 @@ import CareDemoHelpContent from './CareDemoHelpContent.jsx'
 import CareDemoGuidedTour from './CareDemoGuidedTour.jsx'
 import CareDemoGuidedToursMenu from './CareDemoGuidedToursMenu.jsx'
 import {
+  CARE_DEMO_TOUR_COMPLETE,
+  CARE_DEMO_COMPLETE_TOUR,
   CARE_DEMO_TOUR_ADD_TEAM_MEMBER,
   CARE_DEMO_TOUR_HOMEOWNER_INVITE,
   CARE_DEMO_TOUR_LICENSE_PURCHASE,
   CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE,
   CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH,
+  CARE_DEMO_TOUR_REMINDERS_OVERVIEW,
   CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW,
   careDemoTourCopy,
 } from '../constants/careDemoTours.js'
@@ -182,8 +185,8 @@ const MOCK_ACTIVE_REMINDER_CUSTOMERS = [
   {
     id: '1',
     linkedCustomerId: 'c1',
-    name: 'Avery North',
-    location: '100 Sample Maple Ln, Sampleton, CO 80977',
+    name: 'Harper Sampleton',
+    location: '100 Demo Lane NE, Sample City, SC 01001',
     reminders: [{ kind: 'Media filter', daysAgo: 590 }],
     indoor: 'DV36FECC14AA',
     outdoor: 'DZ17VSA361AA',
@@ -195,8 +198,8 @@ const MOCK_ACTIVE_REMINDER_CUSTOMERS = [
   {
     id: '2',
     linkedCustomerId: 'c2',
-    name: 'Blake East',
-    location: '220 Demo Harbor Ct, Fictown, SC 29488',
+    name: 'Logan Mockwell',
+    location: '200 Training Ave, Placeholder, PL 02002',
     reminders: [{ kind: 'Media filter', daysAgo: 255 }],
     indoor: 'DFVE48DP1300AA',
     outdoor: 'DH6VSA4210',
@@ -208,8 +211,8 @@ const MOCK_ACTIVE_REMINDER_CUSTOMERS = [
   {
     id: '3',
     linkedCustomerId: 'c3',
-    name: 'Casey Vale',
-    location: '340 Training Lake Blvd, Demo Vista, TX 78788',
+    name: 'Sage Fauxley',
+    location: '300 Practice Blvd, Fictionville, FV 03003',
     reminders: [{ kind: 'Media filter', daysAgo: 152 }],
     indoor: 'DFVE36CP0400AA',
     outdoor: 'DZ6VSA3610',
@@ -288,30 +291,42 @@ const MOCK_ACTIVE_REMINDER_CUSTOMERS = [
   },
 ]
 
+/** Reminders overview tour step 3: orange frame + spotlight hole over these rows (active list). */
+const REMINDER_TOUR_STEP3_CUSTOMER_IDS_ORDER = ['1', '2', '3']
+
 function customerMatchesReminderFilter(cust, range) {
   if (range === 'active') return cust.reminders?.length > 0
   const max = range === '30' ? 30 : range === '60' ? 60 : 90
   return cust.reminders?.some((r) => r.daysAgo <= max) ?? false
 }
 
-/** Modal + Current Customers — sold-home sheet matches product reference (demo addresses/names). */
+/** Modal + Current Customers — fictional demo data only (sold-home workflow). */
 const SOLD_HOMES_MODAL_ROWS = [
   {
-    address: '19001 Kermier Road, Waller, TX, USA, Waller, TX 77484',
-    customerId: 'sold-shingo',
-    customerName: 'Shingo Kise',
-    sellerEmail: `shingo.kise.seller@${DEMO_FAKE_EMAIL_DOMAIN}`,
+    address: '100 Demo Lane NE, Sample City, SC 01001',
+    customerId: 'sold-eldie',
+    customerName: 'Harper Sampleton',
+    sellerEmail: `harper.sampleton.seller@${DEMO_FAKE_EMAIL_DOMAIN}`,
   },
   {
-    address: '11330 Leeds Drive, Spring Hill, FL 34609',
+    address: '200 Training Ave, Placeholder, PL 02002',
+    customerId: 'sold-shingo',
+    customerName: 'Logan Mockwell',
+    sellerEmail: `logan.mockwell.seller@${DEMO_FAKE_EMAIL_DOMAIN}`,
+  },
+  {
+    address: '300 Practice Blvd, Fictionville, FV 03003',
     customerId: 'sold-daniel',
-    customerName: 'Daniel Olrich',
-    sellerEmail: `daniel.olrich.seller@${DEMO_FAKE_EMAIL_DOMAIN}`,
+    customerName: 'Sage Fauxley',
+    sellerEmail: `sage.fauxley.seller@${DEMO_FAKE_EMAIL_DOMAIN}`,
   },
 ]
 
-const EXPAND_DETAIL_SHINGO_KISE = {
-  fullAddress: '19001 Kermier Road, Waller, TX 77484',
+/** Sold-home tour step 3: table order matches product reference (not locale name sort). */
+const SOLD_HOME_TOUR_CURRENT_CUSTOMER_IDS_ORDER = ['sold-eldie', 'sold-shingo', 'sold-daniel']
+
+const EXPAND_DETAIL_SOLD_TOUR_MID = {
+  fullAddress: '200 Training Ave, Placeholder, PL 02002',
   zones: [
     {
       system: '24V',
@@ -332,9 +347,9 @@ const EXPAND_DETAIL_SHINGO_KISE = {
 const MOCK_CURRENT_CUSTOMERS_SEED = [
   {
     id: 'sold-eldie',
-    name: 'Edie Sampleton',
-    loc1: '18 Demo Placeholder Rd NE',
-    loc2: 'Sampleton, OR 97299',
+    name: 'Harper Sampleton',
+    loc1: '100 Demo Lane NE',
+    loc2: 'Sample City, SC 01001',
     homeSold: true,
     licenseOk: false,
     licenseBad: false,
@@ -343,27 +358,27 @@ const MOCK_CURRENT_CUSTOMERS_SEED = [
   },
   {
     id: 'sold-shingo',
-    name: 'Shingo Kise',
-    loc1: '19001 Kermier Road',
-    loc2: 'Waller, TX 77484',
+    name: 'Logan Mockwell',
+    loc1: '200 Training Ave',
+    loc2: 'Placeholder, PL 02002',
     homeSold: true,
     phone: '+1 (555) 011-2200',
-    email: `shingo.kise@${DEMO_FAKE_EMAIL_DOMAIN}`,
+    email: `logan.mockwell@${DEMO_FAKE_EMAIL_DOMAIN}`,
     licenseOk: false,
     licenseBad: false,
-    status: 'offline',
+    status: 'noAccess',
     assigned: '—',
   },
   {
     id: 'sold-daniel',
-    name: 'Daniel Olrich',
-    loc1: '11330 Leeds Drive',
-    loc2: 'Spring Hill, FL 34609',
+    name: 'Sage Fauxley',
+    loc1: '300 Practice Blvd',
+    loc2: 'Fictionville, FV 03003',
     homeSold: true,
-    email: `daniel.olrich@${DEMO_FAKE_EMAIL_DOMAIN}`,
+    email: `sage.fauxley@${DEMO_FAKE_EMAIL_DOMAIN}`,
     licenseOk: false,
     licenseBad: false,
-    status: 'ok',
+    status: 'offline',
     assigned: '—',
   },
   {
@@ -437,6 +452,19 @@ const MOCK_CURRENT_CUSTOMERS_SEED = [
     licenseOk: false,
     licenseBad: true,
     status: 'reminder',
+    assigned: 'Riley Test',
+  },
+  /** Alerts tour step 3 — drill-down only; fictional contact and address (not a real person). */
+  {
+    id: 'c-alert-tour',
+    name: 'Jordan Example',
+    loc1: '13170 Demo Howard Dr',
+    loc2: 'Sample City, OR 97099',
+    licenseOk: true,
+    licenseBad: false,
+    status: 'ok',
+    phone: '+1 (555) 014-0200',
+    email: `jordan.example@${DEMO_FAKE_EMAIL_DOMAIN}`,
     assigned: 'Riley Test',
   },
 ]
@@ -607,6 +635,21 @@ const EXPAND_DETAIL_ROB_BARNES = {
   ],
 }
 
+/** Alerts tour step 3 — fictional customer; layout matches product reference (addresses + zone list). */
+const EXPAND_DETAIL_ALERT_TOUR_DEMO = {
+  fullAddress: '13170 Demo Howard Dr, Sample City, OR 97099',
+  addressLine1: '13170 Demo Howard Dr',
+  addressLine2: 'Sample City, OR 97099',
+  /** Inserted after the zone at this index (0-based): first site line, then “Garage”, then this line, then “The Cottage”. */
+  sidebarExtraAddresses: [{ afterZoneIndex: 1, line1: 'Unit A, 13170 Southwest Howard Dr', line2: 'Sample City, OR 97099' }],
+  zones: [
+    { system: 'upstairs', thermostat: 'upstairs', thermostatKind: 'ok', equipment: ['DV36FECC14AA'] },
+    { system: 'Garage', thermostat: 'Garage', thermostatKind: 'alert', equipment: ['DFVE48DP1300AA'] },
+    { system: 'The Cottage', thermostat: 'The Cottage', thermostatKind: 'ok', equipment: ['DH6VSA4210'] },
+  ],
+  contactPhones: ['+1 (555) 014-0200', '+1 (555) 014-0200'],
+}
+
 function getAddressDisplayLines(customer, ex, fullAddress) {
   if (ex.addressLine1 != null || ex.addressLine2 != null) {
     return { addressLine1: ex.addressLine1 ?? '', addressLine2: ex.addressLine2 ?? '' }
@@ -625,7 +668,8 @@ function getAddressDisplayLines(customer, ex, fullAddress) {
 function makeExpandDetailFromRow(row) {
   const parts = [row.loc1, row.loc2].filter((s) => s && String(s).trim() && String(s).trim() !== '—')
   const fullAddress = parts.join(', ') || '—'
-  const upstairsKind = row.status === 'reminder' ? 'reminder' : row.status === 'offline' ? 'alert' : 'ok'
+  const upstairsKind =
+    row.status === 'reminder' ? 'reminder' : row.status === 'offline' || row.status === 'noAccess' ? 'alert' : 'ok'
   return {
     fullAddress,
     zones: [
@@ -686,7 +730,7 @@ function getCustomerOverviewData(customer) {
     { type: 'Homeowner', name: 'QA', date: 'December 15, 2022, 5:15 AM', createdBy: 'Test Admin' },
     { type: 'Commissioning', name: 'comm test report', date: 'December 12, 2022, 12:08 AM', createdBy: 'Test Admin' },
   ]
-  const online = customer.status !== 'offline'
+  const online = customer.status !== 'offline' && customer.status !== 'noAccess'
   const lifetimeLicenseActivated = !customer.homeSold && !!customer.licenseOk && !customer.licenseBad
   const assignedTech =
     customer.assigned && String(customer.assigned).trim() !== '—' ? customer.assigned : 'Bhavesh bharat'
@@ -721,6 +765,7 @@ function getCustomerOverviewData(customer) {
     assignedTech,
     contactPhones: ex.contactPhones ?? phones,
     displayEmail: customer.email ?? `t_${String(customer.id).replace(/[^a-z0-9]/gi, '')}@${DEMO_FAKE_EMAIL_DOMAIN}`,
+    sidebarExtraAddresses: Array.isArray(ex.sidebarExtraAddresses) ? ex.sidebarExtraAddresses : [],
   }
 }
 
@@ -731,8 +776,10 @@ function buildMockCurrentCustomers() {
       r.id === 'c1'
         ? EXPAND_DETAIL_ROB_BARNES
         : r.id === 'sold-shingo'
-          ? EXPAND_DETAIL_SHINGO_KISE
-          : makeExpandDetailFromRow(r),
+          ? EXPAND_DETAIL_SOLD_TOUR_MID
+          : r.id === 'c-alert-tour'
+            ? EXPAND_DETAIL_ALERT_TOUR_DEMO
+            : makeExpandDetailFromRow(r),
   }))
   const statuses = ['reminder', 'ok', 'offline']
   for (let i = rows.length + 1; i <= CURRENT_CUSTOMERS_TOTAL; i++) {
@@ -773,6 +820,12 @@ const CURRENT_CUSTOMER_TABLE_FILTERS_INITIAL = {
   homeSold: false,
 }
 
+/** Stable preset for sold-home tour step 3 — filtering must not depend on `ccTableFilters` state (other effects can reset it). */
+const SOLD_HOME_TOUR_CC_TABLE_FILTERS = {
+  ...CURRENT_CUSTOMER_TABLE_FILTERS_INITIAL,
+  homeSold: true,
+}
+
 const CURRENT_CUSTOMER_STATUS_FILTER_KEYS = [
   'criticalError',
   'needsAttention',
@@ -803,6 +856,7 @@ function getCurrentCustomerFilterTags(row) {
   if (row.status === 'reminder') tags.add('reminder')
   if (row.status === 'ok') tags.add('ok')
   if (row.status === 'offline') tags.add('offline')
+  if (row.status === 'noAccess') tags.add('noAccess')
 
   const h = hashCustomerRowId(row.id)
   if (h % 11 === 1) tags.add('criticalError')
@@ -2854,7 +2908,27 @@ const ALERT_HISTORY_SAMPLE_ROWS = [
   { code: '10', daysAgo: 89 },
   { code: '10', daysAgo: 473 },
   { code: '10', daysAgo: 12 },
-  { code: '10', daysAgo: 326, hilite: true },
+  {
+    code: 'U5',
+    daysAgo: 7,
+    hilite: true,
+    status: 'Active',
+    summarySeverity: 'Critical',
+    unitType: 'System',
+    detailSubtitle:
+      'Transmission error between IDU & remote/Malfunction of transmission between Hydrolic compartment and remote controller.',
+    correctiveLine: 'Reference Main.Sub Setting Final.',
+    triggeredDisplay: 'Triggered: April 16, 2026, 7:51 PM',
+    causesList: [
+      'Transmission error caused by noise.',
+      'Transmission error between indoor unit and remote controller.',
+      'Defective indoor unit control PCB.',
+      'Defective remote controller PCB.',
+      'Connection of 2 main remote controllers (when using 2 remote controllers).',
+    ],
+    /** Match product reference: breadcrumb + flat fault layout. */
+    alertDetailUiVariant: 'product',
+  },
   { code: '10', daysAgo: 44 },
   { code: '10', daysAgo: 156 },
   { code: '10', daysAgo: 8 },
@@ -2866,9 +2940,11 @@ const ALERT_HISTORY_SAMPLE_ROWS = [
 const ALERT_HISTORY_TOTAL_PAGES = Math.max(1, Math.ceil(ALERT_HISTORY_TOTAL_ENTRIES / ALERT_HISTORY_PAGE_SIZE))
 
 const ALERT_COMM_DETAIL_CAUSES = [
+  'Transmission error caused by noise.',
+  'Defective indoor unit control PCB.',
+  'Defective remote controller PCB.',
   'Manual reboot of thermostat.',
   'Loss of power to system.',
-  'Thermostat software update (OTA).',
 ]
 
 /** Demo “now” anchor for consistent Alert History timestamps (matches product-style copy). */
@@ -2924,7 +3000,10 @@ const CDETAIL_NOTIF_CARD_STYLE = {
   boxSizing: 'border-box',
 }
 
-function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense }) {
+/** Alert History row index used when opening the Alerts tour communication-error screen (U5 row). */
+const ALERT_TOUR_STEP3_HISTORY_INDEX = 3
+
+function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense, alertsTourStep3Open = false }) {
   const overview = useMemo(() => getCustomerOverviewData(customer), [customer])
   const [selectedZoneIdx, setSelectedZoneIdx] = useState(0)
   const [detailMainView, setDetailMainView] = useState('overview')
@@ -3017,6 +3096,13 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
     setCustomerNavMenuOpen(false)
     setGenerateReportMenuOpen(false)
   }, [customer.id, closeAddEquipModal, closeAssignCustomerModal])
+
+  useEffect(() => {
+    if (!alertsTourStep3Open || customer.id !== 'c-alert-tour') return
+    setSelectedZoneIdx(1)
+    setDetailMainView('alert-detail')
+    setAlertDetailIndex(ALERT_TOUR_STEP3_HISTORY_INDEX)
+  }, [alertsTourStep3Open, customer.id])
 
   useEffect(() => {
     if (!thermOverflowOpen) return undefined
@@ -3317,7 +3403,10 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
   }
 
   return (
-    <div className="care-demo-cdetail care-demo-cdetail--immersive">
+    <div
+      className="care-demo-cdetail care-demo-cdetail--immersive"
+      data-care-demo-tour="care-demo-customer-detail-root"
+    >
       <header className="care-demo-cdetail__page-head">
         <div className="care-demo-cdetail__page-head-nav">
           <div className="care-demo-cdetail__aside-rail care-demo-cdetail__aside-rail--left" aria-hidden />
@@ -3445,30 +3534,29 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
           </p>
           <ul className="care-demo-cdetail__systems">
             {overview.zones.map((z, zi) => (
-              <li key={`${z.system}-${zi}`} className="care-demo-cdetail__system-li">
-                <button
-                  type="button"
-                  className={`care-demo-cdetail__system-pick${zi === selectedZoneIdx ? ' care-demo-cdetail__system-pick--selected' : ''}`}
-                  onClick={() => setSelectedZoneIdx(zi)}
-                >
-                  <span className="care-demo-cdetail__system-pick-main">
-                    <span className="care-demo-cdetail__system-pick-leading">
-                      {zi === selectedZoneIdx && z.thermostatKind === 'reminder' ? (
-                        <CalendarIcon size={18} strokeWidth={2} className="care-demo-cdetail__system-pick-cal" aria-hidden />
-                      ) : (
-                        <span className="care-demo-custrm__dot care-demo-custrm__dot--green" aria-hidden />
-                      )}
+              <Fragment key={`${z.system}-${zi}`}>
+                <li className="care-demo-cdetail__system-li">
+                  <button
+                    type="button"
+                    className={`care-demo-cdetail__system-pick${zi === selectedZoneIdx ? ' care-demo-cdetail__system-pick--selected' : ''}`}
+                    onClick={() => setSelectedZoneIdx(zi)}
+                  >
+                    <span className="care-demo-cdetail__system-pick-main">
+                      <span className="care-demo-cdetail__system-pick-leading">
+                        {zi === selectedZoneIdx && z.thermostatKind === 'reminder' ? (
+                          <CalendarIcon size={18} strokeWidth={2} className="care-demo-cdetail__system-pick-cal" aria-hidden />
+                        ) : z.thermostatKind === 'alert' ? (
+                          <AlertTriangle size={18} strokeWidth={2.25} className="care-demo-cdetail__system-pick-alert-lead" aria-hidden />
+                        ) : (
+                          <span className="care-demo-custrm__dot care-demo-custrm__dot--green" aria-hidden />
+                        )}
+                      </span>
+                      <span className="care-demo-cdetail__system-pick-name">{z.system}</span>
                     </span>
-                    <span className="care-demo-cdetail__system-pick-name">{z.system}</span>
-                  </span>
-                  <span className="care-demo-cdetail__system-pick-trail">
-                    <span className="care-demo-cdetail__system-pick-check-slot">
-                      {z.thermostatKind === 'alert' ? (
-                        <CircleAlert size={16} strokeWidth={2} className="care-demo-cdetail__sys-icon care-demo-cdetail__sys-icon--bad" aria-hidden />
-                      ) : (
+                    <span className="care-demo-cdetail__system-pick-trail">
+                      <span className="care-demo-cdetail__system-pick-check-slot">
                         <CheckCircle2 size={22} strokeWidth={2} className="care-demo-cdetail__sys-icon care-demo-cdetail__sys-icon--ok" aria-hidden />
-                      )}
-                    </span>
+                      </span>
                     <span className="care-demo-cdetail__system-pick-more-slot">
                       {zi === selectedZoneIdx ? (
                         <span className="care-demo-cdetail__system-pick-more" aria-hidden>
@@ -3479,6 +3567,19 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
                   </span>
                 </button>
               </li>
+              {(overview.sidebarExtraAddresses ?? [])
+                .filter((a) => a.afterZoneIndex === zi)
+                .map((addr, ai) => (
+                  <li key={`addr-extra-${zi}-${ai}`} className="care-demo-cdetail__system-li care-demo-cdetail__system-li--extra-site">
+                    <p className="care-demo-cdetail__address-line care-demo-cdetail__address-line--between-systems">
+                      <span className="care-demo-cdetail__address-line1">{addr.line1}</span>
+                      {addr.line2 ? (
+                        <span className="care-demo-cdetail__address-line2">{addr.line2}</span>
+                      ) : null}
+                    </p>
+                  </li>
+                ))}
+              </Fragment>
             ))}
           </ul>
 
@@ -3498,16 +3599,18 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
 
         <div ref={mainElRef} className="care-demo-cdetail__main">
           {alertDetailRow ? (
-            <>
+            <div
+              className={`care-demo-cdetail__alert-detail${alertDetailRow.alertDetailUiVariant === 'product' ? ' care-demo-cdetail__alert-detail--product' : ''}`}
+            >
               <button
                 type="button"
-                className="care-demo-cdetail__back care-demo-cdetail__back--stack"
+                className={`care-demo-cdetail__back care-demo-cdetail__back--stack${alertDetailRow.alertDetailUiVariant === 'product' ? ' care-demo-cdetail__back--product-link' : ''}`}
                 onClick={() => {
                   setAlertDetailIndex(null)
-                  setDetailMainView('alert-history')
+                  setDetailMainView(alertDetailRow.alertDetailUiVariant === 'product' ? 'overview' : 'alert-history')
                 }}
               >
-                ← Alert History
+                {alertDetailRow.alertDetailUiVariant === 'product' ? '← System Overview' : '← Alert History'}
               </button>
               <div className="care-demo-cdetail__alert-detail-head">
                 <h2 className="care-demo-cdetail__alert-detail-title">Communication error</h2>
@@ -3515,17 +3618,29 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
               </div>
               <div className="care-demo-cdetail__alert-detail-rule" aria-hidden="true" />
               <div className="care-demo-cdetail__alert-detail-summary">
-                <AlertTriangle size={18} strokeWidth={2.25} className="care-demo-cdetail__alert-detail-warn" aria-hidden />
-                <span>{`Minor Error | Code ${alertDetailRow.code} | Thermostat`}</span>
+                {alertDetailRow.alertDetailUiVariant === 'product' ? (
+                  <span className="care-demo-cdetail__alert-detail-critical-badge" aria-hidden>
+                    !
+                  </span>
+                ) : (
+                  <AlertTriangle size={18} strokeWidth={2.25} className="care-demo-cdetail__alert-detail-warn" aria-hidden />
+                )}
+                <span>{`${alertDetailRow.summarySeverity ?? 'Minor'} Error | Code ${alertDetailRow.code} | ${alertDetailRow.unitType ?? 'Thermostat'}`}</span>
               </div>
               <p className="care-demo-cdetail__alert-detail-desc">{alertDetailRow.detailSubtitle ?? 'Thermostat reboot'}</p>
-              <div className="care-demo-cdetail__alert-detail-card">
+              <div
+                className={
+                  alertDetailRow.alertDetailUiVariant === 'product'
+                    ? 'care-demo-cdetail__alert-detail-product-sheet'
+                    : 'care-demo-cdetail__alert-detail-card'
+                }
+              >
                 <div className="care-demo-cdetail__alert-detail-cols">
                   <div className="care-demo-cdetail__alert-detail-col">
                     <h3 className="care-demo-cdetail__alert-detail-col-title">Possible Causes</h3>
                     <div className="care-demo-cdetail__alert-detail-col-rule" aria-hidden="true" />
                     <ol className="care-demo-cdetail__alert-detail-causes">
-                      {ALERT_COMM_DETAIL_CAUSES.map((line, i) => (
+                      {(alertDetailRow.causesList ?? ALERT_COMM_DETAIL_CAUSES).map((line, i) => (
                         <li key={i}>{line}</li>
                       ))}
                     </ol>
@@ -3533,12 +3648,54 @@ function CustomerDetailView({ customer, onBack, onEditCustomer, onExtendLicense 
                   <div className="care-demo-cdetail__alert-detail-col">
                     <h3 className="care-demo-cdetail__alert-detail-col-title">Corrective Actions</h3>
                     <div className="care-demo-cdetail__alert-detail-col-rule" aria-hidden="true" />
-                    <p className="care-demo-cdetail__alert-detail-corrective">No action needed.</p>
+                    <p className="care-demo-cdetail__alert-detail-corrective">
+                      {alertDetailRow.correctiveLine ?? 'No action needed.'}
+                    </p>
                   </div>
                 </div>
               </div>
-              <p className="care-demo-cdetail__alert-detail-triggered">{formatAlertTriggeredAt(alertDetailRow.daysAgo)}</p>
-            </>
+              <p className="care-demo-cdetail__alert-detail-triggered">
+                {alertDetailRow.triggeredDisplay ?? formatAlertTriggeredAt(alertDetailRow.daysAgo)}
+              </p>
+              {alertDetailRow.alertDetailUiVariant === 'product' ? (
+                <footer className="care-demo-cdetail__alert-detail-product-footer" aria-label="Brand footer">
+                  <div className="care-demo-cdetail__alert-detail-product-footer__marks">
+                    <img
+                      src={CARE_DEMO_FOOTER_BRANDS_SVG}
+                      alt="Daikin, Amana, Goodman"
+                      width={280}
+                      height={36}
+                      decoding="async"
+                    />
+                  </div>
+                  <p className="care-demo-cdetail__alert-detail-product-footer__copy">
+                    © 2026 Daikin Comfort Technologies North America, Inc. All rights reserved.
+                  </p>
+                  <p className="care-demo-cdetail__alert-detail-product-footer__legal">
+                    Amana® is a registered trademark of Maytag Corporation or its related companies and is used under license.
+                  </p>
+                  <nav className="care-demo-cdetail__alert-detail-product-footer__links" aria-label="Footer links">
+                    <span className="care-demo-cdetail__alert-detail-product-footer__link">What&apos;s New</span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__sep" aria-hidden>
+                      |
+                    </span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__link">Help</span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__sep" aria-hidden>
+                      |
+                    </span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__link">Privacy Policy</span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__sep" aria-hidden>
+                      |
+                    </span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__link">Terms of Use</span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__sep" aria-hidden>
+                      |
+                    </span>
+                    <span className="care-demo-cdetail__alert-detail-product-footer__link">B2B Account Terms</span>
+                  </nav>
+                </footer>
+              ) : null}
+            </div>
           ) : detailMainView === 'alert-history' ? (
             <>
               <button
@@ -6602,6 +6759,12 @@ function CustomersHubView({
   licenseTourOpenSignal = 0,
   licenseTourCloseSignal = 0,
   licenseTourStep = null,
+  /** Sold home workflow step 3: Current Customers table filtered to Home Sold only. */
+  applySoldHomesTourHomeSoldFilter = false,
+  /** Reminders overview tour step 3: highlight first three reminder rows + dim outside. */
+  applyRemindersTourStep3Highlight = false,
+  /** Alerts tour step 3: open fictional customer on communication-error detail + spotlight. */
+  alertsTourStep3Open = false,
 }) {
   const [openMenuId, setOpenMenuId] = useState(null)
   const [currentRowMenuId, setCurrentRowMenuId] = useState(null)
@@ -6624,6 +6787,9 @@ function CustomersHubView({
   const filterWrapRef = useRef(null)
   const [ccTableFilterOpen, setCcTableFilterOpen] = useState(false)
   const [ccTableFilters, setCcTableFilters] = useState(() => ({ ...CURRENT_CUSTOMER_TABLE_FILTERS_INITIAL }))
+  const prevSoldHomesTourFilterRef = useRef(false)
+  /** Tour step 3: always filter by Home Sold in the table, even if another effect cleared `ccTableFilters`. */
+  const effectiveCcTableFilters = applySoldHomesTourHomeSoldFilter ? SOLD_HOME_TOUR_CC_TABLE_FILTERS : ccTableFilters
   const ccTableFilterBtnRef = useRef(null)
   const ccTableFilterPanelRef = useRef(null)
   const [ccFilterBox, setCcFilterBox] = useState(null)
@@ -6636,6 +6802,45 @@ function CustomersHubView({
       ),
     [hub.reminderFilter, customerSearchQuery],
   )
+
+  const sortedReminderCustomersForTour = useMemo(() => {
+    const rows = [...filteredReminderCustomers]
+    if (applyRemindersTourStep3Highlight) {
+      rows.sort((a, b) => {
+        const ia = REMINDER_TOUR_STEP3_CUSTOMER_IDS_ORDER.indexOf(a.id)
+        const ib = REMINDER_TOUR_STEP3_CUSTOMER_IDS_ORDER.indexOf(b.id)
+        const rank = (i) => (i === -1 ? 999 : i)
+        return rank(ia) - rank(ib)
+      })
+    }
+    return rows
+  }, [filteredReminderCustomers, applyRemindersTourStep3Highlight])
+
+  const reminderPageRowGroups = useMemo(() => {
+    const rows = sortedReminderCustomersForTour
+    const highlight = (c) =>
+      applyRemindersTourStep3Highlight && REMINDER_TOUR_STEP3_CUSTOMER_IDS_ORDER.includes(c.id)
+    const groups = []
+    let i = 0
+    while (i < rows.length) {
+      if (highlight(rows[i])) {
+        const chunk = []
+        while (i < rows.length && highlight(rows[i])) {
+          chunk.push(rows[i])
+          i++
+        }
+        groups.push({ framed: true, rows: chunk })
+      } else {
+        const chunk = []
+        while (i < rows.length && !highlight(rows[i])) {
+          chunk.push(rows[i])
+          i++
+        }
+        groups.push({ framed: false, rows: chunk })
+      }
+    }
+    return groups
+  }, [sortedReminderCustomersForTour, applyRemindersTourStep3Highlight])
 
   const licenseStatusBoxes = hub.licenseStatusCheckboxes ?? DEFAULT_LICENSE_STATUS_CHECKBOXES
 
@@ -6653,6 +6858,21 @@ function CustomersHubView({
   )
 
   useEffect(() => {
+    if (applySoldHomesTourHomeSoldFilter) {
+      setCcTableFilters({ ...SOLD_HOME_TOUR_CC_TABLE_FILTERS })
+      setCurrentCustomersPageSize(100)
+      setCurrentCustomersPage(0)
+      prevSoldHomesTourFilterRef.current = true
+      return
+    }
+    if (prevSoldHomesTourFilterRef.current) {
+      setCcTableFilters({ ...CURRENT_CUSTOMER_TABLE_FILTERS_INITIAL })
+      setCurrentCustomersPageSize(10)
+      prevSoldHomesTourFilterRef.current = false
+    }
+  }, [applySoldHomesTourHomeSoldFilter])
+
+  useEffect(() => {
     setExpandedCurrentCustomerId(null)
     setCurrentRowMenuId(null)
     setCcTableFilterOpen(false)
@@ -6663,9 +6883,12 @@ function CustomersHubView({
     setCurrentRowMenuId(null)
     setEditCustomer(null)
     setCcTableFilterOpen(false)
-    setCcTableFilters({ ...CURRENT_CUSTOMER_TABLE_FILTERS_INITIAL })
+    /** Must not wipe Home Sold when sold-home tour step 3 is active (runs after tour filter effect on same mount). */
+    setCcTableFilters(
+      applySoldHomesTourHomeSoldFilter ? { ...SOLD_HOME_TOUR_CC_TABLE_FILTERS } : { ...CURRENT_CUSTOMER_TABLE_FILTERS_INITIAL },
+    )
     setCurrentCustomersNameSort('asc')
-  }, [hub.customerView])
+  }, [hub.customerView, applySoldHomesTourHomeSoldFilter])
 
   useEffect(() => {
     setLicenseModalRow(null)
@@ -6697,7 +6920,7 @@ function CustomersHubView({
 
   useEffect(() => {
     setCurrentCustomersPage(0)
-  }, [ccTableFilters])
+  }, [ccTableFilters, applySoldHomesTourHomeSoldFilter])
 
   useEffect(() => {
     setCurrentCustomersPage(0)
@@ -6881,20 +7104,33 @@ function CustomersHubView({
 
   const filteredCurrentCustomers = useMemo(
     () =>
-      MOCK_CURRENT_CUSTOMERS.filter((row) => currentCustomerMatchesTableFilters(ccTableFilters, row)).filter((row) =>
-        customerNameSearchMatches(row.name, customerSearchQuery),
+      MOCK_CURRENT_CUSTOMERS.filter((row) => currentCustomerMatchesTableFilters(effectiveCcTableFilters, row)).filter(
+        (row) => customerNameSearchMatches(row.name, customerSearchQuery),
       ),
-    [ccTableFilters, customerSearchQuery],
+    [effectiveCcTableFilters, customerSearchQuery],
   )
 
-  const anyCcTableFilterActive = useMemo(() => Object.values(ccTableFilters).some(Boolean), [ccTableFilters])
+  const anyCcTableFilterActive = useMemo(
+    () => Object.values(effectiveCcTableFilters).some(Boolean),
+    [effectiveCcTableFilters],
+  )
 
   const toggleCcTableFilter = (key) => {
+    if (applySoldHomesTourHomeSoldFilter) return
     setCcTableFilters((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
   const sortedCurrentCustomers = useMemo(() => {
     const rows = [...filteredCurrentCustomers]
+    if (applySoldHomesTourHomeSoldFilter) {
+      rows.sort((a, b) => {
+        const ia = SOLD_HOME_TOUR_CURRENT_CUSTOMER_IDS_ORDER.indexOf(a.id)
+        const ib = SOLD_HOME_TOUR_CURRENT_CUSTOMER_IDS_ORDER.indexOf(b.id)
+        const rank = (i) => (i === -1 ? 999 : i)
+        return rank(ia) - rank(ib)
+      })
+      return rows
+    }
     rows.sort((a, b) => {
       const an = String(a.name ?? '').toLocaleLowerCase()
       const bn = String(b.name ?? '').toLocaleLowerCase()
@@ -6902,7 +7138,7 @@ function CustomersHubView({
       return currentCustomersNameSort === 'asc' ? cmp : -cmp
     })
     return rows
-  }, [filteredCurrentCustomers, currentCustomersNameSort])
+  }, [filteredCurrentCustomers, currentCustomersNameSort, applySoldHomesTourHomeSoldFilter])
 
   const currentCustomersTotal = sortedCurrentCustomers.length
   const currentPageCount = Math.max(1, Math.ceil(currentCustomersTotal / currentCustomersPageSize))
@@ -6911,6 +7147,33 @@ function CustomersHubView({
     const start = currentCustomersPage * currentCustomersPageSize
     return sortedCurrentCustomers.slice(start, start + currentCustomersPageSize)
   }, [sortedCurrentCustomers, currentCustomersPage, currentCustomersPageSize])
+
+  /** Split page into tbodies so sold-home tour can draw one outline around contiguous highlighted rows. */
+  const currentCustomerPageRowGroups = useMemo(() => {
+    const rows = pagedCurrentCustomers
+    const highlight = (r) =>
+      applySoldHomesTourHomeSoldFilter && SOLD_HOME_TOUR_CURRENT_CUSTOMER_IDS_ORDER.includes(r.id)
+    const groups = []
+    let i = 0
+    while (i < rows.length) {
+      if (highlight(rows[i])) {
+        const chunk = []
+        while (i < rows.length && highlight(rows[i])) {
+          chunk.push(rows[i])
+          i++
+        }
+        groups.push({ framed: true, rows: chunk })
+      } else {
+        const chunk = []
+        while (i < rows.length && !highlight(rows[i])) {
+          chunk.push(rows[i])
+          i++
+        }
+        groups.push({ framed: false, rows: chunk })
+      }
+    }
+    return groups
+  }, [pagedCurrentCustomers, applySoldHomesTourHomeSoldFilter])
 
   const currentRangeLabel = useMemo(() => {
     if (currentCustomersTotal === 0) return '0 of 0'
@@ -6935,6 +7198,7 @@ function CustomersHubView({
           onBack={onCloseCustomerDetail}
           onEditCustomer={() => setEditCustomer(currentRowToEditCustomerPayload(detailCustomer))}
           onExtendLicense={() => setLicenseModalRow(licenseModalRowFromCustomer(detailCustomer))}
+          alertsTourStep3Open={alertsTourStep3Open}
         />
         <DownloadXlsxModal open={xlsxModalOpen} onClose={() => setXlsxModalOpen(false)} customers={MOCK_ACTIVE_REMINDER_CUSTOMERS} />
         <AddCustomerModal open={addCustomerOpen} onClose={() => setAddCustomerOpen(false)} />
@@ -7130,7 +7394,7 @@ function CustomersHubView({
 
       {hub.customerView === 'reminders' ? (
         <>
-          <div className="care-demo-custrm__table-scroll">
+          <div className="care-demo-custrm__table-scroll" data-care-demo-tour="customers-hub-reminders-panel">
             <table className="care-demo-custrm__table">
               <thead>
                 <tr>
@@ -7152,8 +7416,8 @@ function CustomersHubView({
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredReminderCustomers.length === 0 ? (
+              {sortedReminderCustomersForTour.length === 0 ? (
+                <tbody>
                   <tr>
                     <td colSpan={6} className="care-demo-custrm__empty">
                       {hasSearch
@@ -7161,70 +7425,78 @@ function CustomersHubView({
                         : 'No customers match this reminder filter (demo).'}
                     </td>
                   </tr>
-                ) : (
-                  filteredReminderCustomers.map((cust) => {
-                    const loc = splitStreetAndRest(cust.location)
-                    return (
-                      <tr key={cust.id}>
-                        <td>
-                          <button
-                            type="button"
-                            className="care-demo-custrm__name-link care-demo-custrm__name-btn"
-                            onClick={() => {
-                              setOpenMenuId(null)
-                              onOpenCustomerDetail(cust.linkedCustomerId)
-                            }}
-                          >
-                            {cust.name}
-                          </button>
-                        </td>
-                        <td className="care-demo-custrm__loc">
-                          <span className="care-demo-custrm__loc-line">{loc.line1}</span>
-                          {loc.line2 ? (
-                            <span className="care-demo-custrm__loc-line care-demo-custrm__loc-line--sub">{loc.line2}</span>
-                          ) : null}
-                        </td>
-                        <td>
-                          <div className="care-demo-custrm__reminders">
-                            {cust.reminders.map((r) => (
-                              <div key={`${r.kind}-${r.daysAgo}`} className="care-demo-custrm__rem-line">
-                                <span className="care-demo-custrm__rem-icon" aria-hidden />
-                                <div className="care-demo-custrm__rem-text">
-                                  <span className="care-demo-custrm__rem-main">{r.kind}</span>
-                                  <span className="care-demo-custrm__rem-sub">{r.daysAgo} days ago</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="care-demo-custrm__mono">{cust.indoor}</td>
-                        <td className="care-demo-custrm__mono">{cust.outdoor}</td>
-                        <td className="care-demo-custrm__actions">
-                          <div className="care-demo-custrm__menu-wrap">
+                </tbody>
+              ) : (
+                reminderPageRowGroups.map((group, gi) => (
+                  <tbody
+                    key={`rem-tbody-${gi}-${group.rows.map((r) => r.id).join('-')}`}
+                    className={group.framed ? 'care-demo-custrm__tbody--reminders-tour-frame' : undefined}
+                    {...(group.framed ? { 'data-care-demo-tour': 'reminders-tour-step3-highlight' } : {})}
+                  >
+                    {group.rows.map((cust) => {
+                      const loc = splitStreetAndRest(cust.location)
+                      return (
+                        <tr key={cust.id}>
+                          <td>
                             <button
                               type="button"
-                              ref={openMenuId === cust.id ? triggerRef : undefined}
-                              className={`care-demo-custrm__row-menu${openMenuId === cust.id ? ' care-demo-custrm__row-menu--open' : ''}`}
-                              aria-label="Row actions"
-                              aria-haspopup="menu"
-                              aria-expanded={openMenuId === cust.id}
-                              aria-controls={openMenuId === cust.id ? `custrm-menu-${cust.id}` : undefined}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setCcTableFilterOpen(false)
-                                setCurrentRowMenuId(null)
-                                setOpenMenuId((id) => (id === cust.id ? null : cust.id))
+                              className="care-demo-custrm__name-link care-demo-custrm__name-btn"
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                onOpenCustomerDetail(cust.linkedCustomerId)
                               }}
                             >
-                              <MoreHorizontal size={20} strokeWidth={2} />
+                              {cust.name}
                             </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
+                          </td>
+                          <td className="care-demo-custrm__loc">
+                            <span className="care-demo-custrm__loc-line">{loc.line1}</span>
+                            {loc.line2 ? (
+                              <span className="care-demo-custrm__loc-line care-demo-custrm__loc-line--sub">{loc.line2}</span>
+                            ) : null}
+                          </td>
+                          <td>
+                            <div className="care-demo-custrm__reminders">
+                              {cust.reminders.map((r) => (
+                                <div key={`${r.kind}-${r.daysAgo}`} className="care-demo-custrm__rem-line">
+                                  <span className="care-demo-custrm__rem-icon" aria-hidden />
+                                  <div className="care-demo-custrm__rem-text">
+                                    <span className="care-demo-custrm__rem-main">{r.kind}</span>
+                                    <span className="care-demo-custrm__rem-sub">{r.daysAgo} days ago</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="care-demo-custrm__mono">{cust.indoor}</td>
+                          <td className="care-demo-custrm__mono">{cust.outdoor}</td>
+                          <td className="care-demo-custrm__actions">
+                            <div className="care-demo-custrm__menu-wrap">
+                              <button
+                                type="button"
+                                ref={openMenuId === cust.id ? triggerRef : undefined}
+                                className={`care-demo-custrm__row-menu${openMenuId === cust.id ? ' care-demo-custrm__row-menu--open' : ''}`}
+                                aria-label="Row actions"
+                                aria-haspopup="menu"
+                                aria-expanded={openMenuId === cust.id}
+                                aria-controls={openMenuId === cust.id ? `custrm-menu-${cust.id}` : undefined}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setCcTableFilterOpen(false)
+                                  setCurrentRowMenuId(null)
+                                  setOpenMenuId((id) => (id === cust.id ? null : cust.id))
+                                }}
+                              >
+                                <MoreHorizontal size={20} strokeWidth={2} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                ))
+              )}
             </table>
           </div>
           <div className="care-demo-custrm__footer">
@@ -7320,8 +7592,8 @@ function CustomersHubView({
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {pagedCurrentCustomers.length === 0 ? (
+              {pagedCurrentCustomers.length === 0 ? (
+                <tbody>
                   <tr>
                     <td colSpan={7} className="care-demo-custrm__empty">
                       {hasSearch
@@ -7329,8 +7601,15 @@ function CustomersHubView({
                         : 'No customers match these filters (demo).'}
                     </td>
                   </tr>
-                ) : null}
-                {pagedCurrentCustomers.map((row) => {
+                </tbody>
+              ) : (
+                currentCustomerPageRowGroups.map((group, gi) => (
+                  <tbody
+                    key={`cc-tbody-${currentCustomersPage}-${gi}-${group.rows.map((r) => r.id).join('-')}`}
+                    className={group.framed ? 'care-demo-custrm__tbody--sold-tour-frame' : undefined}
+                    {...(group.framed ? { 'data-care-demo-tour': 'sold-home-current-customers-highlight' } : {})}
+                  >
+                    {group.rows.map((row) => {
                   const isExpanded = expandedCurrentCustomerId === row.id
                   const detail = row.expandDetail
                   return (
@@ -7398,6 +7677,12 @@ function CustomersHubView({
                               Active Reminder
                             </span>
                           ) : null}
+                          {row.status === 'noAccess' ? (
+                            <span className="care-demo-custrm__status care-demo-custrm__status--offline">
+                              <span className="care-demo-custrm__dot care-demo-custrm__dot--grey" aria-hidden />
+                              No Access
+                            </span>
+                          ) : null}
                           {row.status === 'offline' ? (
                             <span className="care-demo-custrm__status care-demo-custrm__status--offline">
                               <span className="care-demo-custrm__dot care-demo-custrm__dot--grey" aria-hidden />
@@ -7439,8 +7724,10 @@ function CustomersHubView({
                       {isExpanded && detail ? <CurrentCustomerExpandRows detail={detail} rowId={row.id} /> : null}
                     </Fragment>
                   )
-                })}
-              </tbody>
+                    })}
+                  </tbody>
+                ))
+              )}
             </table>
           </div>
           <div className="care-demo-custrm__footer care-demo-custrm__footer--pager-only">
@@ -7797,7 +8084,7 @@ function CustomersHubView({
         open={hub.customerView === 'current' && ccTableFilterOpen}
         box={ccFilterBox}
         panelRef={ccTableFilterPanelRef}
-        filters={ccTableFilters}
+        filters={effectiveCcTableFilters}
         onToggle={toggleCcTableFilter}
         onClose={() => setCcTableFilterOpen(false)}
       />
@@ -7946,7 +8233,7 @@ export default function CareDemoPage() {
       setDashboardInviteOpen(false)
       setDashboardAddMemberOpen(false)
       setSoldHomesModalOpen(false)
-      if (tourId === CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH) {
+      if (tourId === CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH || tourId === CARE_DEMO_TOUR_COMPLETE) {
         setAlertsPanelMountKey((k) => k + 1)
       }
       if (tourId === CARE_DEMO_TOUR_LICENSE_PURCHASE || tourId === CARE_DEMO_TOUR_WARRANTY_EXPRESS_LICENSE) {
@@ -7969,6 +8256,11 @@ export default function CareDemoPage() {
 
   const closeAddMemberModal = useCallback(() => {
     setDashboardAddMemberOpen(false)
+    if (guidedTourId === CARE_DEMO_TOUR_COMPLETE) {
+      if (guidedTourStep === 5) setGuidedTourStep(4)
+      else if (guidedTourStep === 4) setGuidedTourStep(3)
+      return
+    }
     if (guidedTourId !== CARE_DEMO_TOUR_ADD_TEAM_MEMBER) return
     if (guidedTourStep === 2) {
       setGuidedTourStep(1)
@@ -7979,6 +8271,10 @@ export default function CareDemoPage() {
 
   const closeDashboardInviteModal = useCallback(() => {
     setDashboardInviteOpen(false)
+    if (guidedTourId === CARE_DEMO_TOUR_COMPLETE) {
+      if (guidedTourStep === CARE_DEMO_COMPLETE_TOUR.INVITE_2) setGuidedTourStep(CARE_DEMO_COMPLETE_TOUR.INVITE_1)
+      return
+    }
     if (guidedTourId !== CARE_DEMO_TOUR_HOMEOWNER_INVITE) return
     if (guidedTourStep === 1) {
       setGuidedTourStep(0)
@@ -8005,6 +8301,8 @@ export default function CareDemoPage() {
     if (guidedTourId !== CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW) return
     if (guidedTourStep === 0) {
       setSoldHomesModalOpen(false)
+      setCareSubView('dashboard')
+      setCustomerDetailId(null)
       return
     }
     if (guidedTourStep === 1) {
@@ -8013,6 +8311,24 @@ export default function CareDemoPage() {
       setSoldHomesModalOpen(true)
       return
     }
+    if (guidedTourStep === 2) {
+      setSoldHomesModalOpen(false)
+      setCareSubView('active-reminders')
+      setCustomerDetailId(null)
+      setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'current' })
+    }
+  }, [guidedTourId, guidedTourStep])
+
+  useEffect(() => {
+    if (guidedTourId !== CARE_DEMO_TOUR_REMINDERS_OVERVIEW) return
+    if (guidedTourStep === 2) {
+      setCareSubView('active-reminders')
+      setCustomerDetailId(null)
+      setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'reminders', reminderFilter: 'active' })
+      return
+    }
+    setCustomerDetailId(null)
+    setCareSubView('dashboard')
   }, [guidedTourId, guidedTourStep])
 
   useEffect(() => {
@@ -8020,11 +8336,70 @@ export default function CareDemoPage() {
     if (guidedTourStep === 2) {
       setCareSubView('active-reminders')
       setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'current' })
-      setCustomerDetailId(null)
+      setCustomerDetailId('c-alert-tour')
       return
     }
     setCustomerDetailId(null)
     setCareSubView('dashboard')
+  }, [guidedTourId, guidedTourStep])
+
+  useEffect(() => {
+    if (guidedTourId !== CARE_DEMO_TOUR_COMPLETE) return
+    const s = guidedTourStep
+    setSidebarNavOpen(false)
+
+    setDashboardAddMemberOpen(s >= CARE_DEMO_COMPLETE_TOUR.ADD_TEAM_2 && s <= CARE_DEMO_COMPLETE_TOUR.ADD_TEAM_3)
+    setDashboardInviteOpen(s === CARE_DEMO_COMPLETE_TOUR.INVITE_2)
+    setSoldHomesModalOpen(s === CARE_DEMO_COMPLETE_TOUR.SOLD_2)
+
+    if (s <= CARE_DEMO_COMPLETE_TOUR.INVITE_1) {
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.INVITE_2) {
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.SOLD_1) {
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.SOLD_2) {
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.SOLD_3) {
+      setSoldHomesModalOpen(false)
+      setCustomerDetailId(null)
+      setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'current' })
+      setCareSubView('active-reminders')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.ALERTS_1 || s === CARE_DEMO_COMPLETE_TOUR.ALERTS_2) {
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.ALERTS_3) {
+      setCareSubView('active-reminders')
+      setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'current' })
+      setCustomerDetailId('c-alert-tour')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.REMINDERS_1 || s === CARE_DEMO_COMPLETE_TOUR.REMINDERS_2) {
+      setCustomerDetailId(null)
+      setCareSubView('dashboard')
+      return
+    }
+    if (s === CARE_DEMO_COMPLETE_TOUR.REMINDERS_3) {
+      setCustomerDetailId(null)
+      setCareSubView('active-reminders')
+      setCustomersHub({ ...DEFAULT_CUSTOMERS_HUB, customerView: 'reminders', reminderFilter: 'active' })
+    }
   }, [guidedTourId, guidedTourStep])
 
   useEffect(() => {
@@ -8318,6 +8693,21 @@ export default function CareDemoPage() {
                       ? guidedTourStep
                       : null
                   }
+                  applySoldHomesTourHomeSoldFilter={
+                    (guidedTourId === CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW && guidedTourStep === 2) ||
+                    (guidedTourId === CARE_DEMO_TOUR_COMPLETE &&
+                      guidedTourStep === CARE_DEMO_COMPLETE_TOUR.SOLD_3)
+                  }
+                  applyRemindersTourStep3Highlight={
+                    (guidedTourId === CARE_DEMO_TOUR_REMINDERS_OVERVIEW && guidedTourStep === 2) ||
+                    (guidedTourId === CARE_DEMO_TOUR_COMPLETE &&
+                      guidedTourStep === CARE_DEMO_COMPLETE_TOUR.REMINDERS_3)
+                  }
+                  alertsTourStep3Open={
+                    (guidedTourId === CARE_DEMO_TOUR_ALERTS_SYSTEM_HEALTH && guidedTourStep === 2) ||
+                    (guidedTourId === CARE_DEMO_TOUR_COMPLETE &&
+                      guidedTourStep === CARE_DEMO_COMPLETE_TOUR.ALERTS_3)
+                  }
                 />
               </>
             ) : careSubView === 'organization' ? (
@@ -8335,7 +8725,11 @@ export default function CareDemoPage() {
                   <CareDemoGuidedToursMenu variant="dashboard" onSelectTour={startGuidedTour} />
                 </div>
                 <div className="care-demo__grid">
-              <section className="care-demo__card care-demo__card--panel" aria-labelledby="care-widget-access">
+              <section
+                className="care-demo__card care-demo__card--panel"
+                aria-labelledby="care-widget-access"
+                data-care-demo-tour="dashboard-system-access-card"
+              >
                 <h2 id="care-widget-access" className="care-demo__card-title care-demo__card-title--panel">
                   System Access
                 </h2>
@@ -8425,7 +8819,11 @@ export default function CareDemoPage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="care-demo-customers__sold-block" role="status">
+                  <div
+                    className="care-demo-customers__sold-block"
+                    role="status"
+                    data-care-demo-tour="dashboard-sold-homes-notice"
+                  >
                     <div className="care-demo-sold">
                       <div className="care-demo-sold__plate" aria-hidden>
                         SOLD
@@ -8584,14 +8982,20 @@ export default function CareDemoPage() {
       <InviteCustomersModal
         open={dashboardInviteOpen}
         onClose={closeDashboardInviteModal}
-        tourPrefillInviteActive={guidedTourId === CARE_DEMO_TOUR_HOMEOWNER_INVITE && guidedTourStep === 1}
+        tourPrefillInviteActive={
+          (guidedTourId === CARE_DEMO_TOUR_HOMEOWNER_INVITE && guidedTourStep === 1) ||
+          (guidedTourId === CARE_DEMO_TOUR_COMPLETE &&
+            guidedTourStep === CARE_DEMO_COMPLETE_TOUR.INVITE_2)
+        }
       />
       <AddMemberModal
         open={dashboardAddMemberOpen}
         onClose={closeAddMemberModal}
         onInviteComplete={() => {}}
         tourPrefillForStep3={
-          guidedTourId === CARE_DEMO_TOUR_ADD_TEAM_MEMBER && guidedTourStep === 2
+          (guidedTourId === CARE_DEMO_TOUR_ADD_TEAM_MEMBER && guidedTourStep === 2) ||
+          (guidedTourId === CARE_DEMO_TOUR_COMPLETE &&
+            guidedTourStep === CARE_DEMO_COMPLETE_TOUR.ADD_TEAM_3)
         }
       />
       <CareDemoGuidedTour
@@ -8610,6 +9014,14 @@ export default function CareDemoPage() {
         onViewInCustomerList={() => {
           setSoldHomesModalOpen(false)
           goToCurrentCustomersHub()
+          if (guidedTourId === CARE_DEMO_TOUR_SOLD_HOMES_WORKFLOW && guidedTourStep === 1) {
+            setGuidedTourStep(2)
+          } else if (
+            guidedTourId === CARE_DEMO_TOUR_COMPLETE &&
+            guidedTourStep === CARE_DEMO_COMPLETE_TOUR.SOLD_2
+          ) {
+            setGuidedTourStep(CARE_DEMO_COMPLETE_TOUR.SOLD_3)
+          }
         }}
         onSelectCustomerName={(id) => {
           setSoldHomesModalOpen(false)

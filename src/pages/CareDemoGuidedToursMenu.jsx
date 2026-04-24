@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useId } from 'react'
 import { ChevronDown, PlayCircle } from 'lucide-react'
-import { CARE_DEMO_GUIDED_TOUR_OPTIONS } from '../constants/careDemoTours.js'
+import { CARE_DEMO_GUIDED_TOUR_MENU_ENTRIES } from '../constants/careDemoTours.js'
 
 /**
  * Guided Tours dropdown (topbar + dashboard). Each instance manages its own open state.
@@ -66,20 +66,47 @@ export default function CareDemoGuidedToursMenu({ variant = 'topbar', onSelectTo
       </button>
       {open ? (
         <div id={menuId} className="care-demo__guided-tours-menu" role="menu" aria-label="Guided tours">
-          {CARE_DEMO_GUIDED_TOUR_OPTIONS.map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              role="menuitem"
-              className="care-demo__guided-tours-menu-item"
-              onClick={() => {
-                setOpen(false)
-                onSelectTour(opt.id)
-              }}
-            >
-              {opt.label}
-            </button>
-          ))}
+          {CARE_DEMO_GUIDED_TOUR_MENU_ENTRIES.map((entry) =>
+            entry.kind === 'tour' ? (
+              <button
+                key={entry.id}
+                type="button"
+                role="menuitem"
+                className="care-demo__guided-tours-menu-item"
+                onClick={() => {
+                  setOpen(false)
+                  onSelectTour(entry.id)
+                }}
+              >
+                {entry.number}. {entry.label}
+              </button>
+            ) : (
+              <div
+                key={`group-${entry.number}`}
+                className="care-demo__guided-tours-menu-group"
+                role="group"
+                aria-labelledby={`${menuId}-lr-${entry.number}`}
+              >
+                <div id={`${menuId}-lr-${entry.number}`} className="care-demo__guided-tours-menu-heading">
+                  {entry.number}. {entry.title}
+                </div>
+                {entry.items.map((sub) => (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    role="menuitem"
+                    className="care-demo__guided-tours-menu-item care-demo__guided-tours-menu-item--sub"
+                    onClick={() => {
+                      setOpen(false)
+                      onSelectTour(sub.id)
+                    }}
+                  >
+                    {sub.letter}. {sub.label}
+                  </button>
+                ))}
+              </div>
+            ),
+          )}
         </div>
       ) : null}
     </div>

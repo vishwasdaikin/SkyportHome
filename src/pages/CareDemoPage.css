@@ -266,7 +266,7 @@
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  min-width: 208px;
+  min-width: 240px;
   padding: 0.35rem 0;
   background: #fff;
   border: 1px solid #e0e0e0;
@@ -299,6 +299,24 @@
 .care-demo__guided-tours-menu-item:focus-visible {
   background: #f5f5f5;
   outline: none;
+}
+
+.care-demo__guided-tours-menu-group {
+  padding: 0.15rem 0 0.2rem;
+}
+
+.care-demo__guided-tours-menu-heading {
+  padding: 0.5rem 1.35rem 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #555;
+  line-height: 1.25;
+  user-select: none;
+}
+
+.care-demo__guided-tours-menu-item--sub {
+  padding-left: 1.85rem;
+  font-size: 0.875rem;
 }
 
 .care-demo__topbar-sep {
@@ -5648,6 +5666,13 @@ button.care-demo-custrm__activate-link {
   border-bottom: 1px solid var(--custrm-rule);
 }
 
+/* Sold-home / reminders tour step 3: one orange outline around highlighted row block (dedicated tbody) */
+.care-demo-custrm__table--current tbody.care-demo-custrm__tbody--sold-tour-frame,
+.care-demo-custrm__table tbody.care-demo-custrm__tbody--reminders-tour-frame {
+  outline: 3px solid #f59e0b;
+  outline-offset: -3px;
+}
+
 .care-demo-custrm__name-link {
   color: var(--custrm-teal);
   text-decoration: none;
@@ -6555,6 +6580,12 @@ button.care-demo-sold-homes-modal__menu-item:hover {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+}
+
+/* Product-style communication error: tighter gutter between profile column and main (alerts tour) */
+.care-demo-cdetail--immersive:has(.care-demo-cdetail__alert-detail--product) {
+  --cdetail-aside-main-gap: clamp(0.5rem, 1vw, 0.85rem);
+  --cdetail-content-inset: clamp(0.6rem, 1.15vw, 0.95rem);
 }
 
 /* Top row: white nav (rails + sheet) | lifetime license; aligns with two-column layout below */
@@ -7652,6 +7683,213 @@ a.care-demo-cdetail__customer-nav-menu-item-link {
 .care-demo-cdetail__alert-hist-row--clickable:focus-visible {
   outline: 2px solid rgba(0, 114, 177, 0.45);
   outline-offset: -2px;
+}
+
+/* Communication error — product-style panel (alerts tour / reference screenshot) */
+.care-demo-cdetail--immersive .care-demo-cdetail__main:has(.care-demo-cdetail__alert-detail--product) {
+  padding-top: 0.65rem;
+  padding-bottom: 2rem;
+  background: #f5f5f5;
+}
+
+.care-demo-cdetail__alert-detail--product {
+  max-width: 56rem;
+  margin: 0;
+  padding: 0 clamp(0.5rem, 1.2vw, 0.85rem) 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.care-demo-cdetail__back--product-link {
+  margin-bottom: 0.65rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #0072b1;
+  cursor: pointer;
+  text-align: left;
+}
+
+.care-demo-cdetail__back--product-link:hover {
+  text-decoration: underline;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-title {
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: #333;
+  letter-spacing: 0.01em;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-status {
+  font-size: 0.8125rem;
+  color: #555;
+  font-weight: 400;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-rule {
+  margin: 0.5rem 0 0.75rem;
+  border-top-color: #bdbdbd;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-summary {
+  margin: 0 0 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #333;
+  gap: 0.5rem;
+}
+
+.care-demo-cdetail__alert-detail-critical-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  background: #e53935;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-desc {
+  margin: 0 0 1.15rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  font-weight: 400;
+  color: #555;
+}
+
+/* White card: headers + two columns only (reference UI) */
+.care-demo-cdetail__alert-detail-product-sheet {
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 1.1rem 1.35rem 1.35rem;
+  box-sizing: border-box;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem 2.25rem;
+  align-items: start;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-col-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.35rem;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-col-rule {
+  margin: 0 0 0.6rem;
+  border-top-color: #d0d0d0;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-causes {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  font-weight: 400;
+  color: #333;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-causes li {
+  margin-bottom: 0.4rem;
+  padding-left: 0;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-corrective {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  font-weight: 400;
+  color: #333;
+}
+
+.care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-triggered {
+  margin: 0.75rem 0 0;
+  padding: 0 0.1rem;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.care-demo-cdetail__alert-detail-product-footer {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e0e0e0;
+  max-width: 56rem;
+}
+
+.care-demo-cdetail__alert-detail-product-footer__marks {
+  margin-bottom: 0.65rem;
+}
+
+.care-demo-cdetail__alert-detail-product-footer__marks img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  opacity: 0.92;
+}
+
+.care-demo-cdetail__alert-detail-product-footer__copy,
+.care-demo-cdetail__alert-detail-product-footer__legal {
+  margin: 0 0 0.35rem;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: #666;
+}
+
+.care-demo-cdetail__alert-detail-product-footer__links {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #0072b1;
+  line-height: 1.5;
+}
+
+.care-demo-cdetail__alert-detail-product-footer__link {
+  cursor: default;
+}
+
+.care-demo-cdetail__alert-detail-product-footer__sep {
+  margin: 0 0.35rem;
+  color: #999;
+}
+
+@media (max-width: 640px) {
+  .care-demo-cdetail__alert-detail--product .care-demo-cdetail__alert-detail-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+.care-demo-cdetail__system-pick-alert-lead {
+  color: #c62828;
+  flex-shrink: 0;
+}
+
+.care-demo-cdetail__system-li--extra-site {
+  margin: 0.35rem 0 0.5rem;
+}
+
+.care-demo-cdetail__address-line--between-systems {
+  margin: 0;
+  padding: 0 0.5rem 0 1.6rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: #444;
 }
 
 /* Communication error — detail (from Alert History row) */

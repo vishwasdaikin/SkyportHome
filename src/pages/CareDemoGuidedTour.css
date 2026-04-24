@@ -147,10 +147,31 @@
   width: min(560px, calc(100vw - 1.25rem));
 }
 
+/* Complete Tour — intro: centered modal over blurred fullscreen dim */
+.care-demo-guided-tour__tooltip--intro-overview {
+  top: 50%;
+  left: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: min(78vh, 520px);
+}
+
+.care-demo-guided-tour__body--intro-overview {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
 .care-demo-guided-tour__tooltip--anchored {
   transform: none;
   left: auto;
   bottom: auto;
+}
+
+/* Sold-home step 3: no dock anchor — inline fixed top/left from JS (centered, full width cap). */
+.care-demo-guided-tour__tooltip--fixed-below-rect {
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .care-demo-guided-tour__eyebrow {

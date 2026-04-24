@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, cloneElement, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { careDemoTourCopy } from '../constants/careDemoTours'
 import './CareDemoGuidedTour.css'
@@ -173,6 +173,19 @@ export default function CareDemoGuidedTour({
   const tooltipOnly = Boolean(effectiveDef?.tooltipOnly)
   const dimFullscreen = Boolean(effectiveDef?.dimFullscreen && tooltipOnly)
   const showSpotlight = active && Boolean(effectiveDef) && !tooltipOnly
+  const primaryOrangeRing = Boolean(effectiveDef?.primaryOrangeRing)
+  const dockBelowPrimary = Boolean(effectiveDef?.dockTooltipBelowPrimary)
+  const dockTrailingPrimary = Boolean(effectiveDef?.dockTooltipTrailingPrimary)
+  const dockTooltipTrailingPreferLeft = Boolean(effectiveDef?.dockTooltipTrailingPreferLeft)
+  const tooltipLayoutFixedBelow = Boolean(effectiveDef?.tooltipLayoutFixedBelow)
+  const tooltipSpotlightHoleSelector = (effectiveDef?.tooltipSpotlightHoleSelector ?? '').trim()
+  const introOverview = Boolean(effectiveDef?.introOverview)
+  const hideStepProgress = Boolean(effectiveDef?.hideStepProgress)
+  const hideStepTitle = Boolean(effectiveDef?.hideStepTitle)
+  const widgetProgress = effectiveDef?.widgetProgress
+  /** Tooltip dock geometry (fixed-below / trailing) — optional four-panel hole when `tooltipSpotlightHoleSelector` is set. */
+  const allowTooltipDockFrame =
+    showSpotlight || (tooltipOnly && (dockBelowPrimary || dockTrailingPrimary))
 
   const referenceImageUrl = effectiveDef?.referenceImageFile
     ? `${(import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')}${effectiveDef.referenceImageFile.replace(/^\//, '')}`
@@ -190,6 +203,41 @@ export default function CareDemoGuidedTour({
       Boolean(tooltipDockSelector) &&
       tooltipDockSelector !== secondaryHighlightSelector,
   )
+  const rectTooltipSpotlightHole = useHighlightRect(
+    tooltipSpotlightHoleSelector,
+    active &&
+      tooltipOnly &&
+      Boolean(tooltipSpotlightHoleSelector) &&
+      Boolean(effectiveDef),
+  )
+
+  /** Fixed-below tours: anchor under the spotlight “hole” when set (same idea as sold-home step 3). */
+  const rectForFixedBelowTooltip =
+    tooltipLayoutFixedBelow &&
+    tooltipOnly &&
+    tooltipSpotlightHoleSelector &&
+    rectTooltipSpotlightHole &&
+    rectTooltipSpotlightHole.width >= 2 &&
+    rectTooltipSpotlightHole.height >= 2
+      ? rectTooltipSpotlightHole
+      : rect
+
+  useLayoutEffect(() => {
+    if (!active || !tooltipSpotlightHoleSelector || !tooltipLayoutFixedBelow) return
+    let cancelled = false
+    const raf = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cancelled) return
+        const el = document.querySelector(tooltipSpotlightHoleSelector)
+        if (!(el instanceof HTMLElement)) return
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      })
+    })
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(raf)
+    }
+  }, [active, tooltipSpotlightHoleSelector, tooltipLayoutFixedBelow, safeStep, tourId])
 
   useEffect(() => {
     if (!active) return
@@ -255,26 +303,19 @@ export default function CareDemoGuidedTour({
     return null
   })()
 
-  const dockBelowPrimary = Boolean(effectiveDef?.dockTooltipBelowPrimary)
-  const dockTrailingPrimary = Boolean(effectiveDef?.dockTooltipTrailingPrimary)
-
   /** Fixed frame for the tooltip: beside a CTA, below primary, or trailing the primary (modal + gap). */
   const tooltipFrameRect = (() => {
-    if (!showSpotlight) return null
-    if (
-      dockBelowPrimary &&
-      rect &&
-      rect.width >= 2 &&
-      rect.height >= 2 &&
-      rectForTooltipDock &&
-      rectForTooltipDock.width >= 2 &&
-      rectForTooltipDock.height >= 2
-    ) {
+    if (!allowTooltipDockFrame) return null
+    if (dockBelowPrimary && rect && rect.width >= 2 && rect.height >= 2) {
+      const dockRef =
+        rectForTooltipDock && rectForTooltipDock.width >= 2 && rectForTooltipDock.height >= 2
+          ? rectForTooltipDock
+          : rect
       const belowGap = Number.isFinite(Number(effectiveDef.dockTooltipBelowPrimaryGap))
         ? Number(effectiveDef.dockTooltipBelowPrimaryGap)
         : 12
       const panelW = Math.min(420, vw - 24)
-      const btnCx = rectForTooltipDock.left + rectForTooltipDock.width / 2
+      const btnCx = dockRef.left + dockRef.width / 2
       const left = Math.max(12, Math.min(btnCx - panelW / 2, vw - panelW - 12))
       return {
         top: rect.top + rect.height + belowGap,
@@ -297,7 +338,15 @@ export default function CareDemoGuidedTour({
       let panelW
       let left
 
-      if (spaceRight >= minPanel) {
+      if (dockTooltipTrailingPreferLeft && spaceLeft >= minPanel) {
+        trailSide = 'left'
+        panelW = Math.min(maxPanel, spaceLeft)
+        left = rect.left - trailGap - panelW
+        if (left < margin) {
+          left = margin
+          panelW = Math.min(maxPanel, Math.max(minPanel, rect.left - trailGap - margin))
+        }
+      } else if (spaceRight >= minPanel) {
         trailSide = 'right'
         panelW = Math.min(maxPanel, spaceRight)
         left = rect.left + rect.width + trailGap
@@ -381,14 +430,16 @@ export default function CareDemoGuidedTour({
   const dockTooltipStyle = {}
   if (dockInAnchor && tooltipFrameRectForDock) {
     if (dockTrailingPrimary) {
-      dockTooltipStyle.maxHeight = Math.max(
-        140,
-        Math.min(
-          560,
-          tooltipFrameRectForDock.height - 12,
-          vh - tooltipFrameRectForDock.top - 12,
-        ),
-      )
+      const spaceBelowViewport = vh - tooltipFrameRectForDock.top - 12
+      /** Top-aligned trailing: panel grows downward from anchor top — do not cap by anchor strip height (one table row). */
+      if (effectiveDef?.dockTooltipTrailingAlignTop) {
+        dockTooltipStyle.maxHeight = Math.max(140, Math.min(560, spaceBelowViewport))
+      } else {
+        dockTooltipStyle.maxHeight = Math.max(
+          140,
+          Math.min(560, tooltipFrameRectForDock.height - 12, spaceBelowViewport),
+        )
+      }
     } else {
       dockTooltipStyle.maxHeight = Math.max(
         140,
@@ -417,9 +468,18 @@ export default function CareDemoGuidedTour({
       !dockBelowPrimary &&
       !dockTrailingPrimary &&
       (flipBesideLeft ? 'care-demo-guided-tour__tooltip--beside-left' : 'care-demo-guided-tour__tooltip--beside-right'),
+    introOverview ? 'care-demo-guided-tour__tooltip--intro-overview' : '',
   ]
     .filter(Boolean)
     .join(' ')
+
+  const dialogAria =
+    hideStepTitle && effectiveDef.body?.trim()
+      ? {
+          'aria-label': def.title?.trim() || 'Tour overview',
+          'aria-describedby': 'care-demo-guided-tour-body',
+        }
+      : { 'aria-labelledby': 'care-demo-guided-tour-title' }
 
   const tooltipPanel = (
     <div
@@ -427,17 +487,26 @@ export default function CareDemoGuidedTour({
       style={Object.keys(dockTooltipStyle).length ? dockTooltipStyle : undefined}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="care-demo-guided-tour-title"
+      {...dialogAria}
     >
-        {def.title?.trim() ? <p className="care-demo-guided-tour__eyebrow">{def.title}</p> : null}
-        <h2
-          id="care-demo-guided-tour-title"
-          className={`care-demo-guided-tour__title${effectiveStepIndex === 0 ? ' care-demo-guided-tour__title--plain' : ''}`}
-        >
-          {effectiveDef.title}
-        </h2>
+        {def.title?.trim() && (!hideStepTitle || introOverview) ? (
+          <p className="care-demo-guided-tour__eyebrow">{def.title}</p>
+        ) : null}
+        {hideStepTitle ? null : (
+          <h2
+            id="care-demo-guided-tour-title"
+            className={`care-demo-guided-tour__title${effectiveStepIndex === 0 ? ' care-demo-guided-tour__title--plain' : ''}`}
+          >
+            {effectiveDef.title}
+          </h2>
+        )}
         {effectiveDef.body?.trim() ? (
-          <p className="care-demo-guided-tour__body">{effectiveDef.body}</p>
+          <p
+            id={hideStepTitle ? 'care-demo-guided-tour-body' : undefined}
+            className={`care-demo-guided-tour__body${introOverview ? ' care-demo-guided-tour__body--intro-overview' : ''}`}
+          >
+            {effectiveDef.body}
+          </p>
         ) : null}
         {referenceImageUrl ? (
           <figure className="care-demo-guided-tour__reference">
@@ -512,9 +581,13 @@ export default function CareDemoGuidedTour({
           </div>
         ) : null}
         <div className="care-demo-guided-tour__actions">
-          <span className="care-demo-guided-tour__progress">
-            {effectiveStepIndex + 1} / {total}
-          </span>
+          {hideStepProgress ? null : (
+            <span className="care-demo-guided-tour__progress">
+              {widgetProgress && typeof widgetProgress.index === 'number' && typeof widgetProgress.total === 'number'
+                ? `${widgetProgress.index} / ${widgetProgress.total}`
+                : `${effectiveStepIndex + 1} / ${total}`}
+            </span>
+          )}
           <button type="button" className="care-demo-guided-tour__btn" onClick={onExit}>
             Skip tour
           </button>
@@ -534,18 +607,96 @@ export default function CareDemoGuidedTour({
     </div>
   )
 
+  /** No dock anchor — avoids trailing/side placement clipping the panel on the right. */
+  const canFixedBelowTooltip =
+    tooltipLayoutFixedBelow &&
+    rectForFixedBelowTooltip &&
+    rectForFixedBelowTooltip.width >= 2 &&
+    rectForFixedBelowTooltip.height >= 2
+  const fixedBelowGap = Number.isFinite(Number(effectiveDef?.dockTooltipBelowPrimaryGap))
+    ? Number(effectiveDef.dockTooltipBelowPrimaryGap)
+    : 14
+  const fixedPanelW = Math.min(420, vw - 24)
+  const fixedBelowTooltipStyle = canFixedBelowTooltip
+    ? {
+        position: 'fixed',
+        top: rectForFixedBelowTooltip.top + rectForFixedBelowTooltip.height + fixedBelowGap,
+        left: Math.max(12, Math.min((vw - fixedPanelW) / 2, vw - fixedPanelW - 12)),
+        width: fixedPanelW,
+        bottom: 'auto',
+        transform: 'none',
+        maxHeight: Math.min(
+          560,
+          Math.max(
+            140,
+            vh - (rectForFixedBelowTooltip.top + rectForFixedBelowTooltip.height + fixedBelowGap) - 16,
+          ),
+        ),
+        zIndex: 4600,
+      }
+    : undefined
+  const fixedBelowClassName = [
+    'care-demo-guided-tour__tooltip',
+    'care-demo-guided-tour__tooltip--fixed-below-rect',
+    effectiveDef.roleMatrix ? 'care-demo-guided-tour__tooltip--wide' : '',
+    referenceImageUrl ? 'care-demo-guided-tour__tooltip--reference' : '',
+    referenceImageUrl && effectiveDef?.referenceImageHalfSize ? 'care-demo-guided-tour__tooltip--reference-half' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const renderedTooltip = canFixedBelowTooltip
+    ? cloneElement(tooltipPanel, {
+        className: fixedBelowClassName,
+        style: fixedBelowTooltipStyle,
+      })
+    : dockInAnchor && tooltipFrameRectForDock ? (
+        <div
+          className="care-demo-guided-tour__anchor"
+          style={{
+            top: tooltipFrameRectForDock.top,
+            left: tooltipFrameRectForDock.left,
+            width: tooltipFrameRectForDock.width,
+            height: tooltipFrameRectForDock.height,
+          }}
+        >
+          {tooltipPanel}
+        </div>
+      ) : (
+        tooltipPanel
+      )
+
   const ui = (
     <>
       {showSpotlight ? (
         <SpotlightShades rect={rect} />
       ) : dimFullscreen ? (
         <div className="care-demo-guided-tour__shade care-demo-guided-tour__shade--fullscreen" aria-hidden />
-      ) : (
+      ) : tooltipOnly &&
+        tooltipSpotlightHoleSelector &&
+        rectTooltipSpotlightHole &&
+        rectTooltipSpotlightHole.width >= 2 &&
+        rectTooltipSpotlightHole.height >= 2 ? (
+        <SpotlightShades rect={rectTooltipSpotlightHole} />
+      ) : tooltipOnly ? null : (
         <div
           className="care-demo-guided-tour__shade care-demo-guided-tour__shade--fullscreen care-demo-guided-tour__shade--hidden"
           aria-hidden
         />
       )}
+      {primaryOrangeRing && rect && rect.width >= 2 && rect.height >= 2 ? (
+        <div
+          className="care-demo-guided-tour__accent-ring"
+          style={{
+            top: rect.top - 5,
+            left: rect.left - 5,
+            width: rect.width + 10,
+            height: rect.height + 10,
+            zIndex: 5000,
+          }}
+          aria-hidden
+        />
+      ) : null}
       {showSpotlight &&
       rectSecondary &&
       secondaryHighlightSelector &&
@@ -562,21 +713,7 @@ export default function CareDemoGuidedTour({
           aria-hidden
         />
       ) : null}
-      {dockInAnchor && tooltipFrameRectForDock ? (
-        <div
-          className="care-demo-guided-tour__anchor"
-          style={{
-            top: tooltipFrameRectForDock.top,
-            left: tooltipFrameRectForDock.left,
-            width: tooltipFrameRectForDock.width,
-            height: tooltipFrameRectForDock.height,
-          }}
-        >
-          {tooltipPanel}
-        </div>
-      ) : (
-        tooltipPanel
-      )}
+      {renderedTooltip}
     </>
   )
 
