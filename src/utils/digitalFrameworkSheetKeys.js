@@ -10,6 +10,11 @@ export function trimDigitalFrameworkHeaderKey(k) {
     .trim()
 }
 
+/** xlsx `sheet_to_json` uses `__EMPTY`, `__EMPTY_1`, … when the header row has blank / merged cells. */
+function isXlsxEmptyHeaderPlaceholderKey(k) {
+  return /^__EMPTY/i.test(String(k ?? '').trim())
+}
+
 /**
  * @param {unknown[]} rows
  * @returns {unknown[]}
@@ -20,6 +25,7 @@ export function sanitizeDigitalFrameworkSheetRows(rows) {
     if (!row || typeof row !== 'object' || Array.isArray(row)) return row
     const out = {}
     for (const [k, v] of Object.entries(row)) {
+      if (isXlsxEmptyHeaderPlaceholderKey(k)) continue
       const sk = trimDigitalFrameworkHeaderKey(k)
       if (!sk) continue
       if (Object.prototype.hasOwnProperty.call(out, sk)) {

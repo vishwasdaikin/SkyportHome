@@ -13,4 +13,10 @@ describe('sanitizeDigitalFrameworkSheetRows', () => {
     const out = sanitizeDigitalFrameworkSheetRows(rows)
     expect(out[0]).toEqual({ Source: 'VOC', Feature: 'x' })
   })
+
+  it('drops xlsx __EMPTY header placeholder columns', () => {
+    const rows = [{ Feature: 'a', __EMPTY: '', __EMPTY_1: 'noise' }]
+    const out = sanitizeDigitalFrameworkSheetRows(rows)
+    expect(out[0]).toEqual({ Feature: 'a' })
+  })
 })
