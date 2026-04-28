@@ -1,6 +1,6 @@
 /**
  * Writes public/generated-roadmaps/*.json from workbook files (production static files).
- * Dev still uses /local-data/*.json from the Vite plugin (live xlsx) so we avoid shadowing that with public/.
+ * Dev loads Digital_Framework via `/local-data/digital-framework.xlsx` (Vite serves OneDrive file); public holds a copy for production builds.
  * Run: npm run export-roadmaps
  *
  * Paths: optional env LOCAL_XLSX_FILE, LOCAL_SKYPORTCARE_XLSX_FILE, LOCAL_DIGITAL_PLATFORMS_XLSX_FILE
@@ -114,10 +114,13 @@ if (supportGantt) {
 const digitalFramework = resolveDigitalFrameworkWorkbook(cwd)
 if (digitalFramework) {
   console.log(`[export-roadmaps] Digital Framework (Product Board): ${digitalFramework.absPath}`)
-  writeJson('digital-framework.json', workbookToPayload(digitalFramework.absPath, digitalFramework.fileName))
+  const destDf = path.join(OUT_DIR, 'Digital_Framework.xlsx')
+  fs.mkdirSync(path.dirname(destDf), { recursive: true })
+  fs.copyFileSync(digitalFramework.absPath, destDf)
+  console.log(`[export-roadmaps] Copied ${path.relative(process.cwd(), destDf)}`)
 } else {
   console.warn(
-    '[export-roadmaps] Skipped digital-framework.json (add Digital_Framework.xlsx under OneDrive …/Skyport-Web-Shared-Test/).',
+    '[export-roadmaps] Skipped Digital_Framework.xlsx (add Digital_Framework.xlsx under OneDrive …/Skyport-Web-Shared-Test/).',
   )
 }
 

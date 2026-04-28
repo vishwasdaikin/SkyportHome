@@ -4,7 +4,7 @@
  * `POST /local-data/digital-framework-save` — writes table values via ExcelJS so fonts/fills/widths survive (Product Board edit; dev server only).
  *
  * `/local-data/support-gantt-test-sheet.json` → only OneDrive `…/Skyport-Web-Shared-Test/Test.xlsx` or `Test.xls`.
- * `/local-data/digital-framework.json` → only OneDrive `…/Skyport-Web-Shared-Test/Digital_Framework.xlsx`.
+ * `/local-data/digital-framework.xlsx` → raw OneDrive `…/Skyport-Web-Shared-Test/Digital_Framework.xlsx` (Product Board parses in browser).
  * `/local-data/test-sheet.json` → `LOCAL_XLSX_FILE`, `SkyportHome_Roadmap.xlsx`, `Test.xls`, `Test.xlsx`.
  * `viteEnv` is Vite `loadEnv()` so `.env.local` paths apply without exporting in the shell.
  */
@@ -253,7 +253,7 @@ export default function localTestXlsx(viteEnv = {}, basePath = '/') {
           return
         }
 
-        if (url === '/local-data/digital-framework.json') {
+        if (url === '/local-data/digital-framework.xlsx') {
           try {
             const df = resolveDigitalFrameworkWorkbook(cwd, env)
             if (!df) {
@@ -268,7 +268,14 @@ export default function localTestXlsx(viteEnv = {}, basePath = '/') {
               )
               return
             }
-            sendWorkbookJson(res, df.absPath, df.fileName)
+            const buf = fs.readFileSync(df.absPath)
+            res.statusCode = 200
+            res.setHeader(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            res.end(buf)
           } catch (err) {
             res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')

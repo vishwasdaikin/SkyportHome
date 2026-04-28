@@ -1,17 +1,46 @@
 import { useState, useEffect, useCallback } from 'react'
 import { sanitizeDigitalFrameworkSheets } from '../utils/digitalFrameworkSheetKeys'
 import { viteLocalDataUrl } from '../utils/viteLocalDataUrl'
+import { parseDigitalFrameworkFromArrayBuffer } from '../utils/parseDigitalFrameworkXlsx'
 
-/** Dev: live XLSX via Vite plugin. Prod (and dev fallback): exported JSON in `public/`. */
-const DIGITAL_FRAMEWORK_LIVE_DEV_URL = viteLocalDataUrl('local-data/digital-framework.json')
-const DIGITAL_FRAMEWORK_STATIC_URL = viteLocalDataUrl('generated-roadmaps/digital-framework.json')
+/** Dev: raw workbook via Vite middleware from OneDrive `Digital_Framework.xlsx`. */
+const DIGITAL_FRAMEWORK_LIVE_DEV_URL = viteLocalDataUrl('local-data/digital-framework.xlsx')
+/** Production / preview: same workbook committed under `public/generated-roadmaps/`. */
+const DIGITAL_FRAMEWORK_STATIC_URL = viteLocalDataUrl('generated-roadmaps/Digital_Framework.xlsx')
+/** Optional runtime override — see `public/digital-framework-config.example.json`. */
+const DIGITAL_FRAMEWORK_RUNTIME_CONFIG_URL = viteLocalDataUrl('digital-framework-config.json')
 
-const DIGITAL_FRAMEWORK_JSON_URL = import.meta.env.DEV
-  ? DIGITAL_FRAMEWORK_LIVE_DEV_URL
-  : DIGITAL_FRAMEWORK_STATIC_URL
+const REMOTE_DIGITAL_FRAMEWORK_XLSX_URL =
+  typeof import.meta.env.VITE_DIGITAL_FRAMEWORK_XLSX_URL === 'string'
+    ? import.meta.env.VITE_DIGITAL_FRAMEWORK_XLSX_URL.trim()
+    : ''
+
+/** Dev only: load committed `public/…/Digital_Framework.xlsx` instead of OneDrive (parity with prod build). */
+const DEV_USE_STATIC_DIGITAL_FRAMEWORK =
+  import.meta.env.VITE_DIGITAL_FRAMEWORK_DEV_STATIC === '1' ||
+  import.meta.env.VITE_DIGITAL_FRAMEWORK_DEV_STATIC === 'true'
+
+function withCacheBust(url, bustQuery) {
+  const u = String(url)
+  const sep = u.includes('?') ? '&' : '?'
+  return `${u}${sep}${bustQuery}`
+}
+
+function shouldPollDigitalFramework(pollMs, runtimeXlsxUrl) {
+  return (
+    pollMs > 0 &&
+    (Boolean(REMOTE_DIGITAL_FRAMEWORK_XLSX_URL) ||
+      Boolean(runtimeXlsxUrl) ||
+      (import.meta.env.DEV && !DEV_USE_STATIC_DIGITAL_FRAMEWORK))
+  )
+}
 
 /**
- * Workbook for Product Board (`Digital_Framework.xlsx` in shared OneDrive folder).
+ * Product Board workbook: always loaded from **Excel** (`.xlsx` bytes), parsed in the browser.
+ *
+ * **Dev:** `/local-data/digital-framework.xlsx` → OneDrive file.
+ * **Production / preview:** fetch **same-origin** `generated-roadmaps/Digital_Framework.xlsx` **first** (matches git deploy).
+ * Only if that fails, fall back to `VITE_DIGITAL_FRAMEWORK_XLSX_URL` / `xlsxUrl` — so a stale remote URL cannot override a fresh deploy.
  */
 export function useDigitalFrameworkData({ pollMs = 4000 } = {}) {
   const [sheetNames, setSheetNames] = useState([])
@@ -20,29 +49,71 @@ export function useDigitalFrameworkData({ pollMs = 4000 } = {}) {
   const [workbook, setWorkbook] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [runtimeXlsxUrl, setRuntimeXlsxUrl] = useState('')
 
-  const load = useCallback(async () => {
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const r = await fetch(
+          withCacheBust(DIGITAL_FRAMEWORK_RUNTIME_CONFIG_URL, `t=${Date.now()}`),
+          { cache: 'no-store' },
+        )
+        if (!r.ok || cancelled) return
+        const j = await r.json().catch(() => ({}))
+        const u = typeof j.xlsxUrl === 'string' ? j.xlsxUrl.trim() : ''
+        if (u && !cancelled) setRuntimeXlsxUrl(u)
+      } catch {
+        /* missing config is fine */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const load = useCallback(async (opts = {}) => {
+    const showSpinner = opts.showSpinner === true
+    if (showSpinner) setLoading(true)
     try {
       const bust = `t=${Date.now()}`
-      let res = await fetch(`${DIGITAL_FRAMEWORK_JSON_URL}?${bust}`, { cache: 'no-store' })
-      let json = await res.json().catch(() => ({}))
-      /** OneDrive `/local-data/…` is 404 without the shared folder — use bundled export so Product Board still works. */
-      if (!res.ok && import.meta.env.DEV) {
-        const res2 = await fetch(`${DIGITAL_FRAMEWORK_STATIC_URL}?${bust}`, { cache: 'no-store' })
-        const json2 = await res2.json().catch(() => ({}))
-        if (res2.ok) {
-          res = res2
-          json = json2
+
+      /** @type {string[]} */
+      const candidates = (() => {
+        if (import.meta.env.DEV && !DEV_USE_STATIC_DIGITAL_FRAMEWORK) {
+          return [DIGITAL_FRAMEWORK_LIVE_DEV_URL]
         }
+        const out = [DIGITAL_FRAMEWORK_STATIC_URL]
+        if (REMOTE_DIGITAL_FRAMEWORK_XLSX_URL) out.push(REMOTE_DIGITAL_FRAMEWORK_XLSX_URL)
+        if (runtimeXlsxUrl) out.push(runtimeXlsxUrl)
+        return out
+      })()
+
+      let res = null
+      for (const url of candidates) {
+        const r = await fetch(withCacheBust(url, bust), { cache: 'no-store' })
+        if (r.ok) {
+          res = r
+          break
+        }
+        res = r
       }
-      if (!res.ok) {
-        throw new Error(json.error || json.hint || res.statusText || 'Failed to load Digital Framework workbook')
+
+      if (!res || !res.ok) {
+        const hint =
+          res?.status === 404
+            ? ' Add Digital_Framework.xlsx under public/generated-roadmaps/ (run npm run export-digital-framework), or set VITE_DIGITAL_FRAMEWORK_XLSX_URL / xlsxUrl.'
+            : ''
+        throw new Error(`Failed to load Digital_Framework.xlsx (${res?.status ?? '?'})${hint}`)
       }
+
+      const buf = await res.arrayBuffer()
+      const json = parseDigitalFrameworkFromArrayBuffer(buf)
+
       const namesFromJson = Array.isArray(json.sheetNames) ? json.sheetNames : []
       const rawSheets = json.sheets && typeof json.sheets === 'object' ? json.sheets : {}
       const byName = sanitizeDigitalFrameworkSheets(rawSheets)
       const keysFromSheets = Object.keys(byName)
-      /** Prefer `sheetNames` order; append any sheet keys missing from the array (fixes rare parse drift). */
       const mergedNames = []
       const seen = new Set()
       for (const n of [...namesFromJson, ...keysFromSheets]) {
@@ -50,7 +121,7 @@ export function useDigitalFrameworkData({ pollMs = 4000 } = {}) {
         const s = String(n)
         if (seen.has(s)) continue
         seen.add(s)
-        mergedNames.push(s)
+        mergedNames.push(n)
       }
       setSheetNames(mergedNames)
       setSheets(byName)
@@ -64,14 +135,16 @@ export function useDigitalFrameworkData({ pollMs = 4000 } = {}) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [runtimeXlsxUrl])
+
+  const refetch = useCallback(() => load({ showSpinner: true }), [load])
 
   useEffect(() => {
     load()
-    if (!import.meta.env.DEV || pollMs <= 0) return undefined
+    if (!shouldPollDigitalFramework(pollMs, runtimeXlsxUrl)) return undefined
     const id = setInterval(load, pollMs)
     return () => clearInterval(id)
-  }, [load, pollMs])
+  }, [load, pollMs, runtimeXlsxUrl])
 
   const getRows = useCallback(
     (name) => {
@@ -89,7 +162,7 @@ export function useDigitalFrameworkData({ pollMs = 4000 } = {}) {
     getRows,
     loading,
     error,
-    refetch: load,
+    refetch,
     defaultSheetName: sheetNames[0] ?? null,
   }
 }
