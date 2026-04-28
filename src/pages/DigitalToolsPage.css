@@ -3,7 +3,8 @@
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 2rem 1.5rem;
+  /* Horizontal margin from `.app-main--digital-tools` */
+  padding: 2rem 0;
   box-sizing: border-box;
   background: var(--bg-page);
   color: var(--text-primary);
@@ -11,7 +12,7 @@
 
 @media (min-width: 640px) {
   .digital-tools-page {
-    padding: 2.5rem 2rem;
+    padding: 2.5rem 0;
   }
 }
 

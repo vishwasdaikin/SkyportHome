@@ -16,6 +16,7 @@ import {
 const APPS_BASE = '/apps'
 const SUPPORT_SKYPORTCARE_DEALER = '/support/skyportcare-dealer'
 const SUPPORT_TEST_PAGE = '/support/test-page'
+const INTERNAL_SUPPORT_DESK = '/internal/support-desk'
 const PRODUCT_BOARD = '/product-board'
 const STRATEGY_OPERATING_BASE = '/strategy/operating'
 
@@ -39,6 +40,7 @@ export default function Layout({ children }) {
   const isPlaybookSubNav = isOperatingPlaybook || (isFy26Playbook && !isFy26HcmPage)
   const isSkyportHomeApp = location.pathname === '/demos/skyport-home-concept'
   const isCareDemoPage = location.pathname.startsWith('/test-page/care-demo')
+  const isInternalSupportDesk = location.pathname.startsWith(INTERNAL_SUPPORT_DESK)
   const showFullMainNav = !DIGITAL_TOOLS_PUBLIC_SITE
 
   useEffect(() => {
@@ -227,7 +229,7 @@ export default function Layout({ children }) {
                 <div className="app-nav-dropdown" ref={supportRef}>
                   <button
                     type="button"
-                    className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/support') ? 'active' : ''}`}
+                    className={`app-nav-link app-nav-dropdown-trigger ${location.pathname.startsWith('/support') || isInternalSupportDesk ? 'active' : ''}`}
                     onClick={() => setSupportOpen((o) => !o)}
                     aria-expanded={supportOpen}
                     aria-haspopup="true"
@@ -249,6 +251,13 @@ export default function Layout({ children }) {
                         onClick={() => setSupportOpen(false)}
                       >
                         Test page · timeline
+                      </NavLink>
+                      <NavLink
+                        to={`${INTERNAL_SUPPORT_DESK}/login`}
+                        className="app-nav-dropdown-item"
+                        onClick={() => setSupportOpen(false)}
+                      >
+                        Internal · Support desk
                       </NavLink>
                     </div>
                   )}
@@ -348,7 +357,9 @@ export default function Layout({ children }) {
                 ? 'app-main--fy26-hcm'
                 : location.pathname === '/demos' || location.pathname === '/demos/care'
                   ? 'app-main--full-bleed'
-                  : ''
+                  : isDigitalToolsBranchActive
+                    ? 'app-main--digital-tools'
+                    : ''
         }`}
       >
         {children}

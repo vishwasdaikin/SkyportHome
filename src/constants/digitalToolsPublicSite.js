@@ -12,5 +12,7 @@ export const DIGITAL_TOOLS_PUBLIC_SITE =
 export function isPathAllowedOnDigitalToolsPublicSite(pathname) {
   if (pathname === '/' || pathname === '/digital-tools') return true
   if (pathname === '/product-board' || pathname.startsWith('/product-board/')) return true
+  /** Public customer ticket intake — no login; same site password gate as the rest of the app. */
+  if (pathname === '/support/request') return true
   return false
 }

@@ -1,7 +1,8 @@
 .product-board-page {
-  max-width: 1400px;
+  max-width: none;
   margin: 0 auto;
-  padding: 1.25rem 1.5rem 2.5rem;
+  /* Horizontal gutter lives on `.app-main--digital-tools`; keep vertical rhythm only here */
+  padding: 1.25rem 0 2.5rem;
   box-sizing: border-box;
   /* Shared horizontal cell inset = half the visual gap between adjacent columns */
   --product-board-col-pad-x: 0.3rem;
@@ -921,14 +922,42 @@
 
 .product-board-page__sheet-overview-table-wrap {
   margin-top: 0.25rem;
-  max-width: min(100%, 88rem);
-  /* Match table cell horizontal rhythm so first column isn’t flush to the scroll box border */
-  padding-left: var(--product-board-col-pad-x);
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
   box-sizing: border-box;
 }
 
 .product-board-page__sheet-overview-table-wrap .product-board-table--sheet-overview {
-  table-layout: auto;
+  table-layout: fixed;
+}
+
+/*
+ * Roadmap (HVAC / Daikin City / TechHub): column min-widths elsewhere sum wider than the viewport.
+ * Inside the overview strip, let table-layout:fixed shrink columns — text wraps via existing td rules.
+ */
+.product-board-page__sheet-overview .product-board-table-wrap,
+.product-board-page__sheet-overview .product-board-page__full-table-wrap {
+  overflow-x: visible;
+}
+
+.product-board-page__sheet-overview .product-board-page__full-table-wrap {
+  padding-left: 0.15rem;
+  padding-right: 0.15rem;
+}
+
+.product-board-page__sheet-overview .product-board-table--sheet-overview {
+  width: 100%;
+  min-width: 0;
+}
+
+.product-board-page__sheet-overview .product-board-table--sheet-overview th[class*='product-board-table__col'],
+.product-board-page__sheet-overview .product-board-table--sheet-overview td[class*='product-board-table__col'] {
+  min-width: 0 !important;
+}
+
+.product-board-page__sheet-overview .product-board-table--sheet-overview {
+  font-size: 0.78rem;
 }
 
 /* Roadmap overview: cap KPI column width so it does not dominate when many columns are visible */
