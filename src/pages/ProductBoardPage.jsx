@@ -129,7 +129,8 @@ export default function ProductBoardPage() {
   }, [searchParams])
 
   const [search, setSearch] = useState('')
-  const [viewMode, setViewMode] = useState('grouped')
+  /** Default to full table so all rows (e.g. last columns) are visible without expanding accordions. */
+  const [viewMode, setViewMode] = useState('table')
   const [openGroups, setOpenGroups] = useState(() => new Set())
 
   const activeProduct = useMemo(
@@ -173,7 +174,7 @@ export default function ProductBoardPage() {
   useEffect(() => {
     setSearch('')
     setOpenGroups(new Set())
-    setViewMode(groupColumnKey ? 'grouped' : 'table')
+    setViewMode('table')
   }, [resolvedSheetName, groupColumnKey])
 
   const dataRows = useMemo(
