@@ -327,6 +327,11 @@ export default function ProductBoardPage() {
               className="product-board-page__sheet-overview"
               aria-label={`${activeProduct.label} — Roadmap (Digital Framework)`}
             >
+              <header className="product-board-page__current-tool-head">
+                <h2 className="product-board-page__current-tool-title" id="product-board-current-tool-heading">
+                  {activeProduct.profile?.productName?.trim() || activeProduct.label}
+                </h2>
+              </header>
               <div className="features-toolbar product-board-page__roadmap-toolbar product-board-page__roadmap-toolbar--in-overview">
                 <div className="features-search-wrap">
                   <label htmlFor="product-board-roadmap-search" className="features-search-label">
@@ -372,9 +377,9 @@ export default function ProductBoardPage() {
                 ) : null}
               </div>
               <div className="product-board-page__sheet-overview-heading">
-                <h2 className="product-board-page__sheet-overview-title" id="product-board-roadmap-strip-heading">
+                <h3 className="product-board-page__sheet-overview-title" id="product-board-roadmap-strip-heading">
                   Roadmap
-                </h2>
+                </h3>
               </div>
               <div id="product-board-roadmap-strip-table">
                 {hasGroupColumn && viewMode === 'grouped' ? (
