@@ -8,8 +8,10 @@
  *
  * SKIP_ROADMAP_EXPORT=1 — exit 0 without writing (use when JSON is already committed and xlsx absent in CI).
  */
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import * as XLSX from 'xlsx'
 import {
   loadEnvFiles,
@@ -21,6 +23,7 @@ import {
 } from './workbook-paths.mjs'
 
 const OUT_DIR = path.resolve(process.cwd(), 'public/generated-roadmaps')
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 
 loadEnvFiles(process.cwd())
 
@@ -129,4 +132,13 @@ writeJson(
   'digital-platforms-business-model.json',
   workbookToGridPayload(bm.absPath, bm.fileName),
 )
+
+const fyRev = spawnSync(process.execPath, [path.join(scriptDir, 'export-fy25-review-thermostat-charts.mjs')], {
+  cwd,
+  encoding: 'utf8',
+})
+if (fyRev.status !== 0) {
+  console.warn('[export-roadmaps] FY25 review charts:', fyRev.stderr || fyRev.stdout || `exit ${fyRev.status}`)
+}
+
 console.log('[export-roadmaps] Done.')

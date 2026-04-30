@@ -2285,7 +2285,8 @@ h1.fy26-playbook-heading.fy26-playbook-heading--plain {
   align-content: center;
 }
 
-@media (max-width: 639px) {
+/* Stack FY + All-Time (and SkyportCare dual charts) before phone widths — desktop window resize feels responsive */
+@media (max-width: 900px) {
   .fy25-monthly-chart-wrap .fy25-skyportcare-dual-grid,
   .fy25-monthly-chart-wrap .fy25-thermostat-sales-dual-grid {
     grid-template-columns: 1fr;
@@ -2349,7 +2350,7 @@ h1.fy26-playbook-heading.fy26-playbook-heading--plain {
   margin-left: -0.25rem;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 900px) {
   .fy25-chart-split-panel--alltime {
     border-left: none;
     border-top: 1px solid var(--border, #e2e8f0);

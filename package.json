@@ -7,6 +7,7 @@
     "dev": "vite",
     "dev:host": "vite --host",
     "export-roadmaps": "node scripts/export-roadmap-xlsx-to-public.mjs",
+    "export-fy25-review-charts": "node scripts/export-fy25-review-thermostat-charts.mjs",
     "export-digital-framework": "node scripts/export-digital-framework-only.mjs",
     "watch:digital-framework:auto-commit": "node scripts/watch-digital-framework-auto-commit.mjs",
     "verify:digital-framework:auto-commit": "node scripts/verify-digital-framework-auto-commit.mjs",

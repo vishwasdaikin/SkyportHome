@@ -37,6 +37,7 @@ import FY26PageNav from '../components/FY26PageNav'
 import { Fy26DigitalAppsRoadmapEmbeds } from '../components/Fy26DigitalAppsRoadmapEmbeds'
 import { Fy26GoalsBusinessModelTracking } from '../components/Fy26GoalsBusinessModelTracking'
 import { useDigitalPlatformsBusinessModelData } from '../hooks/useDigitalPlatformsBusinessModelData'
+import { useFy25ReviewThermostatChartsData } from '../hooks/useFy25ReviewThermostatChartsData'
 import { BUSINESS_MODEL_DEFAULT_SHEET } from '../utils/digitalPlatformsBusinessModelGrid'
 import { getInstalledBaseAllTimeSnapshotFromGrid } from '../content/businessModelToForecastBridge'
 import { FUNNEL_ACTIVE_LICENSE_PENETRATION_FY_DISPLAY } from '../content/funnelActiveLicensePenetrationFYDisplay'
@@ -3049,8 +3050,8 @@ function AllTimeChartTooltip({
 }
 
 /** HTML legend above monthly thermostat chart (same pattern as SkyportCare — swatch row outside Recharts). */
-function ThermostatMonthlyLegendRow({ fyId, showActiveLicensesLine = true }) {
-  const fyRows = THERMOSTAT_SALES_CHART_DATA[fyId]
+function ThermostatMonthlyLegendRow({ fyId, showActiveLicensesLine = true, fyChartData }) {
+  const fyRows = fyChartData?.[fyId] ?? THERMOSTAT_SALES_CHART_DATA[fyId]
   const avgSold = averageMonthlyUnitsSold(fyRows)
   const showAvg = avgSold != null
   const showActive = showActiveLicensesLine && thermostatChartHasLicenseSeries(fyRows)
@@ -3556,8 +3557,8 @@ function SkyportHomeForecastUsersCumulativeLineChart() {
  * Left: monthly units sold (bars) + optional active licenses (line) + average sold (ref line).
  * `showActiveLicensesLine` is false for the top FY25 dual row only (keep line on the cloned row below).
  */
-function ThermostatFyMonthlyChart({ fyId, showActiveLicensesLine = true }) {
-  const fyRows = THERMOSTAT_SALES_CHART_DATA[fyId]
+function ThermostatFyMonthlyChart({ fyId, showActiveLicensesLine = true, fyChartData }) {
+  const fyRows = fyChartData?.[fyId] ?? THERMOSTAT_SALES_CHART_DATA[fyId]
   const avgSold = averageMonthlyUnitsSold(fyRows)
   return (
     <ComposedChart
@@ -3762,10 +3763,11 @@ function AllTimeSkyportHomeBetweenQ3Q4Overlay() {
  * `simplified` (FY25 card top row only): omit red active-license line and purple SkyportHome overlay;
  * the duplicate row below keeps the full chart.
  */
-function ThermostatRightAllTimeQuarterlyChart({ simplified = false }) {
+function ThermostatRightAllTimeQuarterlyChart({ simplified = false, quarterlyData }) {
+  const chartPoints = quarterlyData ?? ALL_TIME_RIGHT_QUARTERLY_SPAN
   return (
     <LineChart
-      data={ALL_TIME_RIGHT_QUARTERLY_SPAN}
+      data={chartPoints}
       margin={{
         top: 8,
         right: 20,
@@ -3946,7 +3948,10 @@ function Fy25ThermostatSalesDualChartsRow({
   tablistAriaLabel,
   monthlyShowActiveLicenses = true,
   allTimeChartSimplified = false,
+  fyChartData: fyChartDataProp,
+  allTimeQuarterlyData: allTimeQuarterlyDataProp,
 }) {
+  const chartData = fyChartDataProp ?? THERMOSTAT_SALES_CHART_DATA
   const monthlyHeadingId = `thermostat-monthly-heading${idSuffix}`
   const fyPanelId = `thermostat-fy-chart-panel${idSuffix}`
   const alltimeHeadingId = `thermostat-alltime-heading${idSuffix}`
@@ -3998,7 +4003,7 @@ function Fy25ThermostatSalesDualChartsRow({
           className="fy25-thermostat-chart-panel"
           aria-labelledby={`thermostat-tab-${chartTabId}${idSuffix}`}
         >
-          {isThermostatChartPlaceholder(THERMOSTAT_SALES_CHART_DATA[chartTabId]) && (
+          {isThermostatChartPlaceholder(chartData[chartTabId]) && (
             <p className="fy25-chart-data-pending" role="status">
               Monthly data for {chartTabId} will be provided.
             </p>
@@ -4007,10 +4012,15 @@ function Fy25ThermostatSalesDualChartsRow({
             <ThermostatMonthlyLegendRow
               fyId={chartTabId}
               showActiveLicensesLine={monthlyShowActiveLicenses}
+              fyChartData={chartData}
             />
             <div className="fy25-thermostat-recharts-root fy25-skyportcare-monthly-recharts">
               <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
-                <ThermostatFyMonthlyChart fyId={chartTabId} showActiveLicensesLine={monthlyShowActiveLicenses} />
+                <ThermostatFyMonthlyChart
+                  fyId={chartTabId}
+                  showActiveLicensesLine={monthlyShowActiveLicenses}
+                  fyChartData={chartData}
+                />
               </Fy26RechartsHost>
             </div>
           </div>
@@ -4022,7 +4032,10 @@ function Fy25ThermostatSalesDualChartsRow({
             <ThermostatAllTimeLegendRow simplified={allTimeChartSimplified} />
             <div className="fy25-thermostat-recharts-root fy25-skyportcare-monthly-recharts">
               <Fy26RechartsHost height={THERMOSTAT_FY_CHART_HEIGHT}>
-                <ThermostatRightAllTimeQuarterlyChart simplified={allTimeChartSimplified} />
+                <ThermostatRightAllTimeQuarterlyChart
+                  simplified={allTimeChartSimplified}
+                  quarterlyData={allTimeQuarterlyDataProp}
+                />
               </Fy26RechartsHost>
             </div>
           </div>
@@ -4536,6 +4549,10 @@ export default function FY26() {
     enabled: isDigitalAppsPlaybook,
     pollMs: 4000,
   })
+  const fy25ReviewThermostatCharts = useFy25ReviewThermostatChartsData({
+    enabled: isDigitalAppsPlaybook,
+    pollMs: 4000,
+  })
   const forecastMetrics = useMemo(() => {
     if (!isDigitalAppsPlaybook) return FY26_STATIC_FORECAST_METRICS
     const grid = bmData.grids[BUSINESS_MODEL_DEFAULT_SHEET]
@@ -4756,6 +4773,8 @@ export default function FY26() {
                     tablistAriaLabel="Fiscal year"
                     monthlyShowActiveLicenses={false}
                     allTimeChartSimplified
+                    fyChartData={fy25ReviewThermostatCharts.payload?.thermostatSalesChartData}
+                    allTimeQuarterlyData={fy25ReviewThermostatCharts.payload?.allTimeRightQuarterlySpan}
                   />
                   {sectionId !== 'hcm' && (
                   <div

@@ -5,10 +5,12 @@
  *
  * `/local-data/support-gantt-test-sheet.json` → only OneDrive `…/Skyport-Web-Shared-Test/Test.xlsx` or `Test.xls`.
  * `/local-data/digital-framework.xlsx` → raw OneDrive `…/Skyport-Web-Shared-Test/Digital_Framework.xlsx` (Product Board parses in browser).
+ * `/local-data/fy25-review-thermostat-charts.json` → FY23–FY25 thermostat charts from project `Test.xlsx` or shared-folder Test workbook.
  * `/local-data/test-sheet.json` → `LOCAL_XLSX_FILE`, `SkyportHome_Roadmap.xlsx`, `Test.xls`, `Test.xlsx`.
  * `viteEnv` is Vite `loadEnv()` so `.env.local` paths apply without exporting in the shell.
  */
 import fs from 'node:fs'
+import path from 'node:path'
 import * as XLSX from 'xlsx'
 import {
   resolveSkyportHomeWorkbook,
@@ -281,6 +283,59 @@ export default function localTestXlsx(viteEnv = {}, basePath = '/') {
             res.setHeader('Content-Type', 'application/json')
             res.end(JSON.stringify({ error: err?.message || String(err) }))
           }
+          return
+        }
+
+        if (url === '/local-data/fy25-review-thermostat-charts.json') {
+          const sendErr = (code, obj) => {
+            res.statusCode = code
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(obj))
+          }
+          if (req.method !== 'GET') {
+            return next()
+          }
+          void (async () => {
+            try {
+              const testRoot = path.join(cwd, 'Test.xlsx')
+              let testAbs = fs.existsSync(testRoot) ? testRoot : null
+              if (!testAbs) {
+                const sg = resolveSupportGanttTestWorkbook(cwd, env)
+                if (sg?.absPath && fs.existsSync(sg.absPath)) testAbs = sg.absPath
+              }
+              if (!testAbs) {
+                sendErr(404, {
+                  error: 'Test.xlsx not found',
+                  hint: 'Place Test.xlsx in project root or …/Skyport-Web-Shared-Test/ for FY25 review charts.',
+                })
+                return
+              }
+              const buf = fs.readFileSync(testAbs)
+              const wb = XLSX.read(buf, { type: 'buffer' })
+              const grids = {}
+              for (const name of ['FY23', 'FY24', 'FY25']) {
+                if (!wb.Sheets[name]) {
+                  sendErr(404, { error: 'Missing sheet', sheet: name })
+                  return
+                }
+                grids[name] = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '', raw: false })
+              }
+              const { buildFy25ReviewThermostatChartsPayload } = await import(
+                './src/utils/buildFy25ReviewThermostatChartsPayload.js'
+              )
+              const payload = buildFy25ReviewThermostatChartsPayload(grids)
+              if (!payload) {
+                sendErr(500, { error: 'Failed to build FY25 review thermostat payload' })
+                return
+              }
+              res.statusCode = 200
+              res.setHeader('Content-Type', 'application/json')
+              res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+              res.end(JSON.stringify(payload))
+            } catch (err) {
+              sendErr(500, { error: err?.message || String(err) })
+            }
+          })()
           return
         }
 

@@ -205,6 +205,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* Grid column default min-width:auto prevents shrinking below wide children; charts then stay “stuck” wide. */
+  min-width: 0;
 }
 
 .ds-section {
@@ -217,6 +219,7 @@
   padding-left: 1.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   border-left: 4px solid var(--daikin-blue);
+  min-width: 0;
 }
 
 .ds-section-header {
