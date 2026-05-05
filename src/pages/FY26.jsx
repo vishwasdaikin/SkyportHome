@@ -36,6 +36,7 @@ import { DigitalPlatformsBusinessModelTableFromExcel } from '../components/Digit
 import FY26PageNav from '../components/FY26PageNav'
 import { Fy26DigitalAppsRoadmapEmbeds } from '../components/Fy26DigitalAppsRoadmapEmbeds'
 import { Fy26GoalsBusinessModelTracking } from '../components/Fy26GoalsBusinessModelTracking'
+import Fy26PresenterMode, { Fy26PresentButton } from '../components/Fy26PresenterMode'
 import { useDigitalPlatformsBusinessModelData } from '../hooks/useDigitalPlatformsBusinessModelData'
 import { useFy25ReviewThermostatChartsData } from '../hooks/useFy25ReviewThermostatChartsData'
 import { BUSINESS_MODEL_DEFAULT_SHEET } from '../utils/digitalPlatformsBusinessModelGrid'
@@ -101,7 +102,7 @@ const THERMOSTAT_FY_CHART_HEIGHT = 400
  * Bumped on `beforeprint` / Download PDF so hosts re-measure width after print styles expand/collapse layout.
  * (Recharts 3 no longer relies on remounting `ResponsiveContainer` — numeric size comes from measurement.)
  */
-const Fy26PrintLayoutNonceContext = createContext(0)
+export const Fy26PrintLayoutNonceContext = createContext(0)
 
 /**
  * Recharts 3: `ResponsiveContainer` with width/height both as `%` waits on ResizeObserver; initial size is
@@ -225,7 +226,7 @@ const FY25_ACTIVE_LICENSES_CUMULATIVE_MONTHLY = [
 const FY_FISCAL_QUARTER_END_MONTH_INDEX = [2, 5, 8, 11]
 
 /** SkyportHome users count (dot between Q3 and Q4 FY25; value also on Q4 row for tooltip). */
-const SKYPORTHOME_ALL_TIME_VALUE = 317_130
+export const SKYPORTHOME_ALL_TIME_VALUE = 317_130
 
 /**
  * Quarter-end points FY23 → FY24 → FY25. If fiscal Q4 (Mar) is missing but Jan/Feb exist,
@@ -325,7 +326,7 @@ const THERMOSTAT_SALES_CHART_DATA = {
   FY23: FY23_THERMOSTAT_MONTHLY_DATA,
 }
 
-const THERMOSTAT_FY_TABS = [
+export const THERMOSTAT_FY_TABS = [
   { id: 'FY23', label: 'FY23' },
   { id: 'FY24', label: 'FY24' },
   { id: 'FY25', label: 'FY25' },
@@ -338,7 +339,7 @@ const FY25_REVIEW_LICENSE_BREAKDOWN_HIGHLIGHT_COL_IDS = new Set([
 ])
 
 /** Default FY tab for Thermostats + SkyportCare monthly chart tablists (FY25 Review). */
-const FY25_REVIEW_DEFAULT_FY_TAB = 'FY25'
+export const FY25_REVIEW_DEFAULT_FY_TAB = 'FY25'
 
 /**
  * Monthly SkyportCare active license counts by type (Apr'22–Mar'26 calendar months).
@@ -1235,7 +1236,7 @@ function InstalledBaseFunnelThead({ allTimeColumnLabel = 'All‑Time' }) {
 }
 
 /** Thermostats Sold + Wi-Fi Connected Thermostats (counts) + Wi-Fi Connected Thermostat Penetration (%): by fiscal year and ALL‑TIME cumulative. */
-function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
+export function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
   const fyCols = THERMOSTAT_FY_TABS.map((tab) => ({
     ...tab,
     m: getFyActivationFunnelMetrics(tab.id),
@@ -1302,7 +1303,7 @@ function ThermostatFunnelHardwareTable({ allTimeFunnel }) {
   )
 }
 
-function SkyportCareFunnelActivationTable({ allTimeFunnel, licenseBreakdownOpen, onLicenseBreakdownOpenChange }) {
+export function SkyportCareFunnelActivationTable({ allTimeFunnel, licenseBreakdownOpen, onLicenseBreakdownOpenChange }) {
   const activeLicensesTipId = useId()
   const activeLicensePenetrationTipId = useId()
   const paidAnnualLicensePenetrationTipId = useId()
@@ -2720,7 +2721,7 @@ function SkyportHomeReviewTablesBlock() {
   )
 }
 
-function SkyportHomeUserFeedbackCard({ expandDetailsOpen, omitTakeaway }) {
+export function SkyportHomeUserFeedbackCard({ expandDetailsOpen, omitTakeaway }) {
   const expandPanelId = 'skyport-home-feedback-expand-panel'
 
   return (
@@ -3941,7 +3942,7 @@ function SkyportCareRightQuarterlyLineChart() {
 }
 
 /** Side-by-side FY monthly bars + cumulative all-time line chart (FY25 Review card). */
-function Fy25ThermostatSalesDualChartsRow({
+export function Fy25ThermostatSalesDualChartsRow({
   chartTabId,
   setChartTabId,
   idSuffix,
@@ -4046,7 +4047,7 @@ function Fy25ThermostatSalesDualChartsRow({
 }
 
 /** SkyportCare FY25 Review card: Monthly Active Licenses (bars) + quarterly license trends (3 lines, FY23–FY25). */
-function Fy25SkyportCareDualChartsRow({
+export function Fy25SkyportCareDualChartsRow({
   chartTabId,
   setChartTabId,
   idSuffix,
@@ -4580,6 +4581,7 @@ export default function FY26() {
   const prePrintSnapshotRef = useRef(null)
   const [printLayoutNonce, setPrintLayoutNonce] = useState(0)
   const [printPrepOpen, setPrintPrepOpen] = useState(false)
+  const [presenterOpen, setPresenterOpen] = useState(false)
   const [installedFunnelLicenseBreakdownOpen, setInstalledFunnelLicenseBreakdownOpen] = useState(false)
   const [skyportHomeFeedbackExpanded, setSkyportHomeFeedbackExpanded] = useState(false)
   useLayoutEffect(() => {
@@ -4707,6 +4709,11 @@ export default function FY26() {
           <div className="fy26-header-title-cluster">
             <Fy26PlaybookTitleDropdown sectionId={sectionId} />
           </div>
+          {sectionId === 'digital-platform' && (
+            <div className="fy26-header-actions">
+              <Fy26PresentButton onClick={() => setPresenterOpen(true)} />
+            </div>
+          )}
         </div>
       </header>
       )}
@@ -5672,6 +5679,14 @@ export default function FY26() {
             </div>
           )}
         </div>
+        {sectionId === 'digital-platform' && (
+          <Fy26PresenterMode
+            open={presenterOpen}
+            onClose={() => setPresenterOpen(false)}
+            payload={fy25ReviewThermostatCharts.payload}
+            allTimeFunnel={allTimeFunnel}
+          />
+        )}
         </Fy26ForecastMetricsContext.Provider>
       </div>
       </div>

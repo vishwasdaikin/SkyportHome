@@ -70,6 +70,19 @@
   width: 100%;
 }
 
+/* Right-aligned action slot in the page header (Present button on Digital Apps & Services). */
+.fy26-header-title-row:has(.fy26-header-actions) .fy26-header-title-cluster {
+  width: auto;
+}
+
+.fy26-header-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .fy26-header-title-cluster h1,
 .fy26-header-title-row h1 {
   flex: 0 1 auto;
@@ -5466,6 +5479,10 @@ ul.fy25-feature-desc li {
   margin-top: 1rem;
   padding-top: 0.35rem;
   margin-bottom: 0.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .fy26-print-pdf-btn {
