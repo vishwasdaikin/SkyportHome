@@ -20,6 +20,13 @@ describe('Layout top nav', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
   })
 
+  it('shows site language toggle (EN / 日本語)', () => {
+    renderNav()
+    expect(screen.getByRole('group', { name: 'Site language' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'EN' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '日本語' })).toBeInTheDocument()
+  })
+
   it('includes App Suite menu and main links', () => {
     renderNav()
     const nav = screen.getByRole('navigation', { name: 'Main' })

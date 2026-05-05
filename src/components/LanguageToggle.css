@@ -1,0 +1,93 @@
+/* ------------------------------------------------------------------ */
+/* Our header control                                                 */
+/* ------------------------------------------------------------------ */
+
+.lang-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  margin-right: 0.5rem;
+  border: 1px solid var(--nav-border, #d1d5db);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-card, #fff);
+}
+
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0.35rem 0.55rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, #4a4a4a);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lang-toggle-btn + .lang-toggle-btn {
+  border-left: 1px solid var(--nav-border, #d1d5db);
+}
+
+.lang-toggle-btn:hover {
+  background: rgba(0, 151, 224, 0.08);
+  color: var(--daikin-blue, #0097e0);
+}
+
+.lang-toggle-btn:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.lang-toggle-btn--active {
+  background: rgba(0, 151, 224, 0.12);
+  color: var(--daikin-blue, #0097e0);
+}
+
+/* ------------------------------------------------------------------ */
+/* Google Website Translator — off-screen host (NOT display:none /   */
+/* 1×1 clip — those prevent the widget from injecting `.goog-te-combo`) */
+/* ------------------------------------------------------------------ */
+
+.lang-toggle-widget-host {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  min-height: 40px;
+  max-height: 120px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+  transform: translate(-4000px, 0);
+}
+
+/* Top iframe banner Google injects — hide and reset body offset */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+body {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Floating "Show original" / gear UI — keep out of the way */
+#goog-gt-tt,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+  visibility: hidden !important;
+}

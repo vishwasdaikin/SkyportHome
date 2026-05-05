@@ -5,6 +5,7 @@ import { TEST_PAGE_VISIBLE, SUPPORT_NAV_VISIBLE } from '../constants/devOnlyNav'
 import { DIGITAL_TOOLS_PUBLIC_SITE } from '../constants/digitalToolsPublicSite'
 import AuthNav from '../auth/AuthNav'
 import AuthNavBackend from '../auth/AuthNavBackend'
+import LanguageToggle from './LanguageToggle'
 import './Layout.css'
 import { FY26_BASE, FY26_HCM_VISIBLE, FY26_NAV_ITEMS } from '../constants/fy26Nav'
 import {
@@ -309,12 +310,11 @@ export default function Layout({ children }) {
 
           </div>
         </nav>
-        {!isAuthSkipped() && (
-          <div className="app-header-auth">
-            {isBackendAuthEnabled() && <AuthNavBackend />}
-            {!isBackendAuthEnabled() && isAzureAuthEnabled && <AuthNav />}
-          </div>
-        )}
+        <div className="app-header-auth">
+          <LanguageToggle />
+          {!isAuthSkipped() && isBackendAuthEnabled() && <AuthNavBackend />}
+          {!isAuthSkipped() && !isBackendAuthEnabled() && isAzureAuthEnabled && <AuthNav />}
+        </div>
       </header>
       )}
       {isOperatingPlaybook && (
