@@ -33,6 +33,7 @@ export const PRODUCT_BOARD_PRODUCTS = [
     id: 'techhub',
     label: 'TechHub',
     sheetName: 'TechHub',
+    sheetAliases: ['Tech Hub', 'Tech hub'],
     profile: {
       productName: 'TechHub',
       mission:
