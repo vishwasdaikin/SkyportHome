@@ -6,6 +6,7 @@ import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from './authC
 import { loginRequest } from './authConfig'
 import { parseOAuthErrorFromUrl, stripOAuthErrorFromBrowserUrl, isAssignmentRequiredError } from './oauthErrorUtils'
 import RequireAuthBackend from './RequireAuthBackend'
+import { hasValidSsoHandoffSession } from './ssoHandoff'
 import './RequireAuth.css'
 
 const RETURN_KEY = 'skyport_auth_return_path'
@@ -24,6 +25,14 @@ export default function RequireAuth({ children }) {
     return <RequireAuthBackend>{children}</RequireAuthBackend>
   }
   if (!isAzureAuthEnabled) {
+    return children
+  }
+  return <RequireAuthMsalOrSso>{children}</RequireAuthMsalOrSso>
+}
+
+/** Microsoft login via NextAuth handoff (sso-app) — skip MSAL redirect when session is valid. */
+function RequireAuthMsalOrSso({ children }) {
+  if (typeof window !== 'undefined' && hasValidSsoHandoffSession()) {
     return children
   }
   return <RequireAuthMsal>{children}</RequireAuthMsal>

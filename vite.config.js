@@ -52,6 +52,14 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_SITE_PASSWORD': JSON.stringify(
         env.VITE_SITE_PASSWORD ?? process.env.VITE_SITE_PASSWORD ?? ''
       ),
+      /** Same value as sso-app AUTH_SECRET — verifies ?sso= JWT after Microsoft login via NextAuth */
+      'import.meta.env.VITE_SSO_HANDOFF_SECRET': JSON.stringify(
+        env.VITE_SSO_HANDOFF_SECRET ?? process.env.VITE_SSO_HANDOFF_SECRET ?? ''
+      ),
+      /** NextAuth SSO app origin (sign-out); dev default http://localhost:3000 */
+      'import.meta.env.VITE_SSO_APP_ORIGIN': JSON.stringify(
+        env.VITE_SSO_APP_ORIGIN ?? process.env.VITE_SSO_APP_ORIGIN ?? ''
+      ),
     },
     test: {
       environment: 'jsdom',

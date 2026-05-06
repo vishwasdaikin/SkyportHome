@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ErrorBoundary } from './ErrorBoundary'
 import AuthProvider from './auth/AuthProvider'
+import SsoBootstrap from './components/SsoBootstrap'
 import App from './App'
 import './index.css'
 /* Load with the app shell so customer-detail (early return, no #care-demo-root) always gets these rules */
@@ -22,7 +23,9 @@ try {
       <ErrorBoundary>
         <AuthProvider>
           <BrowserRouter basename={routerBasename()}>
-            <App />
+            <SsoBootstrap>
+              <App />
+            </SsoBootstrap>
           </BrowserRouter>
         </AuthProvider>
       </ErrorBoundary>

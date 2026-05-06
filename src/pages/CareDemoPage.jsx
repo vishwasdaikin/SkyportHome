@@ -38,8 +38,10 @@ import {
   Info,
   FileCheck,
   Thermometer,
+  Table2,
 } from 'lucide-react'
 import CareDemoLocationsMap from './CareDemoLocationsMap.jsx'
+import CareDemoSmartsheetMatrix from './CareDemoSmartsheetMatrix.jsx'
 import CareDemoHelpContent from './CareDemoHelpContent.jsx'
 import CareDemoGuidedTour from './CareDemoGuidedTour.jsx'
 import CareDemoGuidedToursMenu from './CareDemoGuidedToursMenu.jsx'
@@ -8425,7 +8427,9 @@ export default function CareDemoPage() {
       !isHelpPage &&
       !accountMenuOpen &&
       careSubView !== 'profile' &&
-      careSubView !== 'organization'
+      careSubView !== 'organization' &&
+      careSubView !== 'smartsheet-matrix' &&
+      careSubView !== 'locations-map'
     )
       return
     const onKey = (e) => {
@@ -8447,6 +8451,10 @@ export default function CareDemoPage() {
         return
       }
       if (careSubView === 'profile' || careSubView === 'organization') {
+        setCareSubView('dashboard')
+        return
+      }
+      if (careSubView === 'smartsheet-matrix' || careSubView === 'locations-map') {
         setCareSubView('dashboard')
         return
       }
@@ -8633,6 +8641,20 @@ export default function CareDemoPage() {
             </button>
             <button
               type="button"
+              className={`care-demo__nav-icon ${careSubView === 'smartsheet-matrix' ? 'care-demo__nav-icon--active' : ''}`}
+              aria-current={careSubView === 'smartsheet-matrix' ? 'page' : undefined}
+              aria-label="Tools matrix (Smartsheet)"
+              onClick={() => {
+                leaveHelpIfOnHelp()
+                setCareSubView('smartsheet-matrix')
+                setSidebarNavOpen(false)
+              }}
+            >
+              <Table2 size={22} strokeWidth={2} className="care-demo__nav-icon-svg" aria-hidden />
+              <span className="care-demo__nav-label">Tools matrix</span>
+            </button>
+            <button
+              type="button"
               className={`care-demo__nav-icon ${careSubView === 'active-reminders' ? 'care-demo__nav-icon--active' : ''}`}
               aria-current={careSubView === 'active-reminders' ? 'page' : undefined}
               aria-label="Customers"
@@ -8664,10 +8686,12 @@ export default function CareDemoPage() {
           </aside>
 
           <main
-            className={`care-demo__main${!isHelpPage && (careSubView === 'active-reminders' || careSubView === 'profile' || careSubView === 'organization') ? ' care-demo__main--subview' : ''}${!isHelpPage && (careSubView === 'profile' || careSubView === 'organization') ? ' care-demo__main--profile' : ''}${!isHelpPage && careSubView === 'locations-map' ? ' care-demo__main--map' : ''}`}
+            className={`care-demo__main${!isHelpPage && (careSubView === 'active-reminders' || careSubView === 'profile' || careSubView === 'organization') ? ' care-demo__main--subview' : ''}${!isHelpPage && (careSubView === 'profile' || careSubView === 'organization') ? ' care-demo__main--profile' : ''}${!isHelpPage && careSubView === 'locations-map' ? ' care-demo__main--map' : ''}${!isHelpPage && careSubView === 'smartsheet-matrix' ? ' care-demo__main--sheet' : ''}`}
           >
             {isHelpPage ? (
               <CareDemoHelpContent variant="page" />
+            ) : careSubView === 'smartsheet-matrix' ? (
+              <CareDemoSmartsheetMatrix />
             ) : careSubView === 'locations-map' ? (
               <CareDemoLocationsMap />
             ) : careSubView === 'active-reminders' ? (

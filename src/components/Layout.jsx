@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { isAzureAuthEnabled, isBackendAuthEnabled, isAuthSkipped } from '../auth/authConfig'
+import {
+  isAzureAuthEnabled,
+  isBackendAuthEnabled,
+  isAuthSkipped,
+  isSsoHandoffAuthNavEnabled,
+} from '../auth/authConfig'
 import { TEST_PAGE_VISIBLE, SUPPORT_NAV_VISIBLE } from '../constants/devOnlyNav'
 import { DIGITAL_TOOLS_PUBLIC_SITE } from '../constants/digitalToolsPublicSite'
 import AuthNav from '../auth/AuthNav'
+import SsoAuthNav from '../auth/SsoAuthNav'
 import AuthNavBackend from '../auth/AuthNavBackend'
 import LanguageToggle from './LanguageToggle'
 import './Layout.css'
@@ -314,6 +320,10 @@ export default function Layout({ children }) {
           <LanguageToggle />
           {!isAuthSkipped() && isBackendAuthEnabled() && <AuthNavBackend />}
           {!isAuthSkipped() && !isBackendAuthEnabled() && isAzureAuthEnabled && <AuthNav />}
+          {!isAuthSkipped() &&
+            !isBackendAuthEnabled() &&
+            !isAzureAuthEnabled &&
+            isSsoHandoffAuthNavEnabled() && <SsoAuthNav />}
         </div>
       </header>
       )}

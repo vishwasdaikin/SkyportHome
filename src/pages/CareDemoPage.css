@@ -557,6 +557,15 @@
   background: #e8eef2;
 }
 
+.care-demo__main--sheet {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #fff;
+}
+
 .care-demo__dashboard {
   max-width: min(1680px, 100%);
   margin-left: auto;

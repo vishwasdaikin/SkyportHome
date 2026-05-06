@@ -47,6 +47,14 @@ const safariFriendlyCache = msalUseSafariFriendlyCache()
 
 export const isAzureAuthEnabled = Boolean(entraId)
 
+/**
+ * Show header sign-in / sign-out for NextAuth handoff (no MSAL in Skyport). Requires VITE_SSO_APP_ORIGIN.
+ */
+export const isSsoHandoffAuthNavEnabled = () => {
+  const o = import.meta.env.VITE_SSO_APP_ORIGIN
+  return typeof o === 'string' && o.trim() !== ''
+}
+
 /** When set (e.g. VITE_SKIP_AUTH=1), no login gate and no auth nav. Dev/demo only. */
 export const isAuthSkipped = () =>
   import.meta.env.VITE_SKIP_AUTH === '1' || import.meta.env.VITE_SKIP_AUTH === 'true'
