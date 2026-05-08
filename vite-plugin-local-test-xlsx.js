@@ -6,6 +6,7 @@
  * `/local-data/support-gantt-test-sheet.json` → only OneDrive `…/Skyport-Web-Shared-Test/Test.xlsx` or `Test.xls`.
  * `/local-data/digital-framework.xlsx` → raw OneDrive `…/Skyport-Web-Shared-Test/Digital_Framework.xlsx` (Product Board parses in browser).
  * `/local-data/fy25-review-thermostat-charts.json` → FY23–FY25 thermostat charts from project `Test.xlsx` or shared-folder Test workbook.
+ * `/local-data/dealer-research.json` → `…/Skyport-Web-Shared-Test/Dealer_Research.xlsx` (optional `LOCAL_DEALER_RESEARCH_XLSX_FILE`).
  * `/local-data/test-sheet.json` → `LOCAL_XLSX_FILE`, `SkyportHome_Roadmap.xlsx`, `Test.xls`, `Test.xlsx`.
  * `viteEnv` is Vite `loadEnv()` so `.env.local` paths apply without exporting in the shell.
  */
@@ -18,6 +19,8 @@ import {
   resolveDigitalPlatformsWorkbook,
   resolveSupportGanttTestWorkbook,
   resolveDigitalFrameworkWorkbook,
+  resolveDealerResearchWorkbook,
+  filterDealerResearchSheetNamesForWeb,
 } from './scripts/workbook-paths.mjs'
 function mergedEnv(viteEnv) {
   return { ...process.env, ...viteEnv }
@@ -184,6 +187,49 @@ export default function localTestXlsx(viteEnv = {}, basePath = '/') {
               return
             }
             sendWorkbookJson(res, care.absPath, care.fileName)
+          } catch (err) {
+            res.statusCode = 500
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: err?.message || String(err) }))
+          }
+          return
+        }
+
+        if (url === '/local-data/dealer-research.json') {
+          try {
+            const dr = resolveDealerResearchWorkbook(cwd, env)
+            if (!dr) {
+              res.statusCode = 404
+              res.setHeader('Content-Type', 'application/json')
+              res.end(
+                JSON.stringify({
+                  error: 'Dealer research workbook not found',
+                  hint:
+                    'Add Dealer_Research.xlsx under OneDrive …/Skyport-Web-Shared-Test/ or set LOCAL_DEALER_RESEARCH_XLSX_FILE.',
+                }),
+              )
+              return
+            }
+            const buf = fs.readFileSync(dr.absPath)
+            const wb = XLSX.read(buf, { type: 'buffer' })
+            const sheetNames = filterDealerResearchSheetNamesForWeb(wb.SheetNames)
+            const sheets = {}
+            const grids = {}
+            for (const name of sheetNames) {
+              const sh = wb.Sheets[name]
+              sheets[name] = XLSX.utils.sheet_to_json(sh, { defval: null, raw: false })
+              grids[name] = XLSX.utils.sheet_to_json(sh, { header: 1, defval: '', raw: false })
+            }
+            res.setHeader('Content-Type', 'application/json')
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            res.end(
+              JSON.stringify({
+                sheetNames,
+                sheets,
+                grids,
+                workbook: dr.fileName,
+              }),
+            )
           } catch (err) {
             res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')

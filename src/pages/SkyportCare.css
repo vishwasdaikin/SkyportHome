@@ -50,7 +50,8 @@
 
 .skyport-care-section {
   margin-top: 2.5rem;
-  scroll-margin-top: 2rem;
+  /* Clear fixed app header (~60px) when jumping to #roadmap, #demo, etc. */
+  scroll-margin-top: calc(var(--app-header-height, 60px) + 0.85rem);
 }
 
 .skyport-care-section-title {

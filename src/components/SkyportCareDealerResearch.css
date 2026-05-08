@@ -1,0 +1,554 @@
+.dealer-research-root {
+  margin-top: 0.5rem;
+  max-width: 100%;
+}
+
+/* Collapsible definitions — blue link only (no panel); lives under Insights */
+.dealer-research-definitions-details {
+  margin: 0 0 0.85rem 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.dealer-research-definitions-summary {
+  display: inline-block;
+  list-style: none;
+  cursor: pointer;
+  color: var(--daikin-blue, #0097e0);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.dealer-research-definitions-summary:hover {
+  color: var(--daikin-blue-dark, #0077b6);
+}
+
+.dealer-research-definitions-summary::-webkit-details-marker {
+  display: none;
+}
+
+.dealer-research-definitions-summary:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.dealer-research-definitions-details[open] .dealer-research-definitions-summary {
+  margin-bottom: 0.65rem;
+}
+
+.dealer-research-definitions-prose {
+  margin-top: 0;
+  max-height: min(70vh, 36rem);
+  overflow-y: auto;
+  padding-right: 0.35rem;
+}
+
+.dealer-research-definitions-section {
+  margin-bottom: 1.25rem;
+}
+
+.dealer-research-definitions-section:last-of-type {
+  margin-bottom: 0.75rem;
+}
+
+.dealer-research-definitions-h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dealer-research-definitions-lead {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.dealer-research-definitions-list {
+  margin: 0;
+  /* Tailwind preflight removes list markers; restore for definition bullets */
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-left: 1.35rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.dealer-research-definitions-list > li {
+  margin-bottom: 0.65rem;
+}
+
+.dealer-research-subheading {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dealer-research-loading,
+.dealer-research-error {
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 151, 224, 0.25);
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.dealer-research-error-title {
+  margin: 0 0 0.35rem 0;
+  font-weight: 600;
+}
+
+.dealer-research-error-detail {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.dealer-research-error-hint {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dealer-research-retry {
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--daikin-blue, #0097e0);
+  background: #fff;
+  color: var(--daikin-blue, #0097e0);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dealer-research-charts {
+  margin-bottom: 2rem;
+}
+
+/* Insights: always three cards — equal columns, full row width (no dead space on the right) */
+.dealer-research-chart-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 68rem) {
+  .dealer-research-chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 44rem) {
+  .dealer-research-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dealer-research-chart-card {
+  min-width: 0;
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #fff;
+}
+
+.dealer-research-chart-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dealer-research-chart-wrap {
+  width: 100%;
+  min-height: 280px;
+}
+
+.dealer-research-insights-meta {
+  margin: 0 0 0.85rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dealer-research-insights-meta-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dealer-research-insights-card .dealer-research-chart-title {
+  margin-bottom: 0.5rem;
+}
+
+.dealer-research-insights-subsection {
+  margin-top: 1rem;
+}
+
+.dealer-research-insights-subsection:first-of-type {
+  margin-top: 0.35rem;
+}
+
+.dealer-research-insights-subheading {
+  margin: 0 0 0.45rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dealer-research-insights-table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.dealer-research-insights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.dealer-research-insights-table th,
+.dealer-research-insights-table td {
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.dealer-research-insights-table th {
+  background: #f1f5f9;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.dealer-research-insights-table td {
+  font-variant-numeric: tabular-nums;
+}
+
+.dealer-research-insights-table tbody tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.dealer-research-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.dealer-research-search-label {
+  display: block;
+  flex: 1 1 12rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.dealer-research-search-input {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  font-size: 0.9375rem;
+}
+
+.dealer-research-clear-filters {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--daikin-blue, #0097e0);
+  background: #fff;
+  border: 1px solid rgba(0, 151, 224, 0.45);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.dealer-research-clear-filters:hover {
+  background: rgba(0, 151, 224, 0.08);
+}
+
+.dealer-research-clear-filters:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+}
+
+.dealer-research-summary-count {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dealer-research-summary-table-shell {
+  max-width: 100%;
+}
+
+/* Dealer Summary: table + Amazon-style facet rail */
+.dealer-research-summary-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  max-width: 100%;
+}
+
+.dealer-research-facets {
+  flex: 0 0 min(16rem, 34vw);
+  max-width: 18rem;
+  min-width: 0;
+  padding: 0.75rem 0.85rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: #f8fafc;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  position: sticky;
+  top: 0.5rem;
+}
+
+.dealer-research-facets-heading {
+  margin: 0 0 0.65rem 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.dealer-research-facet-section {
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.dealer-research-facet-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.dealer-research-facet-title {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dealer-research-facet-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dealer-research-facet-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem 0.5rem;
+  margin: 0;
+  padding: 0.2rem 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.dealer-research-facet-option input {
+  flex-shrink: 0;
+  margin: 0.15rem 0 0 0;
+  accent-color: var(--daikin-blue, #0097e0);
+}
+
+.dealer-research-facet-option-label {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.dealer-research-facet-count {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.dealer-research-summary-main {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 52rem) {
+  .dealer-research-summary-layout {
+    flex-direction: column;
+  }
+
+  .dealer-research-facets {
+    flex: none;
+    max-width: none;
+    width: 100%;
+    max-height: min(40vh, 320px);
+    position: static;
+  }
+}
+
+.dealer-research-summary-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+
+.dealer-research-summary-pager--above-table {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+  justify-content: flex-end;
+}
+
+.dealer-research-show-prev,
+.dealer-research-show-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--daikin-blue, #0097e0);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.dealer-research-show-prev-label,
+.dealer-research-show-next-label {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dealer-research-show-prev:hover,
+.dealer-research-show-prev:hover .dealer-research-show-prev-label,
+.dealer-research-show-next:hover,
+.dealer-research-show-next:hover .dealer-research-show-next-label {
+  color: var(--daikin-blue-dark, #0077b6);
+}
+
+.dealer-research-show-prev:focus-visible,
+.dealer-research-show-next:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.dealer-research-show-prev-arrow,
+.dealer-research-show-next-arrow {
+  text-decoration: none;
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+.dealer-research-table-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: min(70vh, 520px);
+  max-width: 100%;
+  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+.dealer-research-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.dealer-research-table th,
+.dealer-research-table td {
+  padding: 0.4rem 0.45rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  min-width: 0;
+}
+
+.dealer-research-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f1f5f9;
+  font-weight: 600;
+  z-index: 2;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  white-space: normal;
+  vertical-align: top;
+}
+
+.dealer-research-sort-btn {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  text-align: left;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dealer-research-sort-btn:hover {
+  color: var(--daikin-blue, #0097e0);
+}
+
+.dealer-research-sort-btn:focus-visible {
+  outline: 2px solid var(--daikin-blue, #0097e0);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+.dealer-research-sort-btn-label {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.dealer-research-sort-indicator {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+}
+
+.dealer-research-sort-btn--header-only {
+  padding: 0.15rem 0;
+  min-height: 2.25rem;
+}
+
+/* Identity columns: a bit more width; still wrap long dealer names */
+.dealer-research-table th:nth-child(1),
+.dealer-research-table td:nth-child(1) {
+  width: 12%;
+}
+
+.dealer-research-table th:nth-child(2),
+.dealer-research-table td:nth-child(2),
+.dealer-research-table th:nth-child(3),
+.dealer-research-table td:nth-child(3) {
+  width: 6%;
+}
+
+.dealer-research-table tbody tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.9);
+}

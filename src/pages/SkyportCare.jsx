@@ -16,6 +16,7 @@ import {
   SKYPORT_CARE_FOCUS_ROW,
 } from '../content/skyportCareCompetitorComparison'
 import { CompetitorComparisonCell } from '../components/CompetitorComparisonCell'
+import SkyportCareDealerResearch from '../components/SkyportCareDealerResearch'
 import './SkyportCare.css'
 import './Features.css'
 import './SkyportHome.css'
@@ -118,8 +119,29 @@ export default function SkyportCare({
 }) {
   const location = useLocation()
   useLayoutEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-  }, [location.key])
+    const id = location.hash?.replace(/^#/, '')
+    if (!id) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      return
+    }
+    const el = document.getElementById(decodeURIComponent(id))
+    if (!el) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      return
+    }
+
+    /** Align hash target just below the fixed app header (no extra nudge — avoids over-scrolling past the title). */
+    function scrollToHashTarget() {
+      const header = document.querySelector('.app-header')
+      const headerH = header ? Math.ceil(header.getBoundingClientRect().height) : 60
+      const gap = 12
+      const y = el.getBoundingClientRect().top + window.scrollY - headerH - gap
+      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' })
+    }
+
+    scrollToHashTarget()
+    requestAnimationFrame(scrollToHashTarget)
+  }, [location.key, location.hash])
 
   const [search, setSearch] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: 'priority', dir: 'asc' })
@@ -180,6 +202,7 @@ export default function SkyportCare({
           <a href="#demo">Concept Demo</a>
           <a href="#current-demo">Current Demo</a>
           <a href="#competitor-comparison">Competitive Analysis</a>
+          <a href="#dealer-research">Dealer Research</a>
         </nav>
       </header>
 
@@ -526,6 +549,16 @@ export default function SkyportCare({
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section
+        className="skyport-care-section skyport-care-section-dealer-research"
+        aria-labelledby="dealer-research"
+      >
+        <h2 id="dealer-research" className="skyport-care-section-title">
+          Dealer Research
+        </h2>
+        <SkyportCareDealerResearch />
       </section>
     </article>
   )

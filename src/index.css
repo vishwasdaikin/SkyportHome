@@ -23,6 +23,14 @@
   --heading-1: 2rem;     /* 32px */
   --heading-2: 1.5rem;   /* 24px */
   --heading-3: 1.25rem;  /* 20px */
+
+  /* Fixed app header (see Layout.css); used for in-page #hash scroll with scroll-padding */
+  --app-header-height: 60px;
+}
+
+/* Hash / anchor scroll: offset matches fixed header without stacking with per-section scroll-margin */
+html {
+  scroll-padding-top: calc(var(--app-header-height) + 0.5rem);
 }
 
 * {

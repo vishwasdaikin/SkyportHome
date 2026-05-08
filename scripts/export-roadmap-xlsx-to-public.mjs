@@ -20,6 +20,8 @@ import {
   resolveDigitalPlatformsWorkbook,
   resolveSupportGanttTestWorkbook,
   resolveDigitalFrameworkWorkbook,
+  resolveDealerResearchWorkbook,
+  filterDealerResearchSheetNamesForWeb,
 } from './workbook-paths.mjs'
 
 const OUT_DIR = path.resolve(process.cwd(), 'public/generated-roadmaps')
@@ -58,6 +60,29 @@ function workbookToGridPayload(absPath, fileName) {
     workbook: fileName,
     sheetNames: wb.SheetNames,
     grids,
+  }
+}
+
+/** Object rows + 2D grids per sheet (for Dealer Research insights layout). Omits huge raw sheets. */
+function workbookToDealerResearchWebPayload(absPath, fileName) {
+  const buf = fs.readFileSync(absPath)
+  const wb = XLSX.read(buf, { type: 'buffer' })
+  const sheetNames = filterDealerResearchSheetNamesForWeb(wb.SheetNames)
+  const sheets = {}
+  const grids = {}
+  for (const name of sheetNames) {
+    const sh = wb.Sheets[name]
+    sheets[name] = XLSX.utils.sheet_to_json(sh, { defval: null, raw: false })
+    grids[name] = XLSX.utils.sheet_to_json(sh, { header: 1, defval: '', raw: false })
+  }
+  const firstName = sheetNames[0] ?? null
+  return {
+    sheetNames,
+    sheets,
+    grids,
+    workbook: fileName,
+    sheetName: firstName,
+    rows: firstName ? sheets[firstName] : [],
   }
 }
 
@@ -139,6 +164,16 @@ const fyRev = spawnSync(process.execPath, [path.join(scriptDir, 'export-fy25-rev
 })
 if (fyRev.status !== 0) {
   console.warn('[export-roadmaps] FY25 review charts:', fyRev.stderr || fyRev.stdout || `exit ${fyRev.status}`)
+}
+
+const dealerResearch = resolveDealerResearchWorkbook(cwd)
+if (dealerResearch) {
+  console.log(`[export-roadmaps] Dealer research: ${dealerResearch.absPath}`)
+  writeJson('dealer-research.json', workbookToDealerResearchWebPayload(dealerResearch.absPath, dealerResearch.fileName))
+} else {
+  console.warn(
+    '[export-roadmaps] Skipped dealer-research.json (add Dealer_Research.xlsx under OneDrive …/Skyport-Web-Shared-Test/ or set LOCAL_DEALER_RESEARCH_XLSX_FILE).',
+  )
 }
 
 console.log('[export-roadmaps] Done.')

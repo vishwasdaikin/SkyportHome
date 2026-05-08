@@ -107,6 +107,19 @@ export function collectSkyportWebSharedCareRoadmapPaths() {
 }
 
 /**
+ * `Dealer_Research.xlsx` under `…/Skyport-Web-Shared-Test/` (App Suite SkyportCare · Dealer Research tab).
+ * @returns {string[]}
+ */
+export function collectSkyportWebSharedDealerResearchPaths() {
+  /** @type {string[]} */
+  const files = []
+  for (const root of listSortedOneDriveSyncRootDirs()) {
+    files.push(path.join(root, SKYPORT_WEB_SHARED_TEST, 'Dealer_Research.xlsx'))
+  }
+  return files
+}
+
+/**
  * Product Board — **only** `…/Skyport-Web-Shared-Test/Digital_Framework.xlsx`.
  */
 export function resolveDigitalFrameworkWorkbook(cwd, _env = process.env) {
@@ -192,4 +205,24 @@ export function resolveDigitalPlatformsWorkbook(cwd, env = process.env) {
     env.LOCAL_DIGITAL_PLATFORMS_XLSX_FILE,
     'Digital_Platforms_Business_Model.xlsx',
   ])
+}
+
+/** Dealer research workbook — optional env `LOCAL_DEALER_RESEARCH_XLSX_FILE`. */
+export function resolveDealerResearchWorkbook(cwd, env = process.env) {
+  return resolveFirstExisting(cwd, [
+    env.LOCAL_DEALER_RESEARCH_XLSX_FILE,
+    ...collectSkyportWebSharedDealerResearchPaths(),
+    'Dealer_Research.xlsx',
+  ])
+}
+
+/** Sheets shipped to the web UI (excludes large raw extracts like `Dealers_Raw`). */
+export function filterDealerResearchSheetNamesForWeb(sheetNames) {
+  if (!Array.isArray(sheetNames)) return []
+  const keep = sheetNames.filter(
+    (n) =>
+      /^dealer\s*summary$/i.test(String(n).trim()) ||
+      /dealer\s*insights/i.test(String(n)),
+  )
+  return keep.length ? keep : sheetNames
 }
