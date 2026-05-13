@@ -1,0 +1,4 @@
+{
+  "_comment": "Optional. Copy to digital-framework-config.json on the deployed site. xlsxUrl = HTTPS URL of Digital_Framework.xlsx (CORS for your app origin). Overrides built-in public/generated-roadmaps/Digital_Framework.xlsx when set.",
+  "xlsxUrl": ""
+}

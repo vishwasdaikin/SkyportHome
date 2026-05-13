@@ -1,0 +1,147 @@
+.csr {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 1.75rem 1.25rem 3rem;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #f0f7fc 0%, #f8fafc 40%, #ffffff 100%);
+  color: #0f172a;
+}
+
+.csr__header {
+  max-width: 36rem;
+  margin: 0 auto 1.5rem;
+}
+
+.csr__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.csr__lede {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.csr__main {
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.csr__card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.35rem 1.4rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  margin-bottom: 1rem;
+}
+
+.csr__card--success {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.csr__h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.csr__p {
+  margin: 0 0 0.65rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.csr__ticket-id {
+  font-family: ui-monospace, monospace;
+  font-size: 1rem;
+}
+
+.csr__muted {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.csr__field {
+  margin-bottom: 1rem;
+}
+
+.csr__label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.35rem;
+}
+
+.csr__req {
+  color: #dc2626;
+}
+
+.csr__input,
+.csr__textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.csr__textarea {
+  resize: vertical;
+  min-height: 7rem;
+}
+
+.csr__file {
+  font-size: 0.875rem;
+}
+
+.csr__hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.csr__submit {
+  margin-top: 0.25rem;
+  padding: 0.55rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: #0b6bcb;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.csr__submit:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.csr__submit:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.csr__err {
+  color: #b91c1c;
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+}
+
+.csr__footer-note {
+  margin: 1.5rem 0 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}

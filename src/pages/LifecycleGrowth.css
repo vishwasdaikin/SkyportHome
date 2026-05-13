@@ -1,0 +1,35 @@
+.lifecycle-growth-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .lifecycle-growth-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+.ds-section-single {
+  margin-top: 0;
+}
+
+.lifecycle-growth-page .ds-section-title-single {
+  margin: 0 0 1rem 0;
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lifecycle-growth-page .ds-content p.ds-key-principle-line {
+  margin-top: 1.25rem;
+}
+
+.lifecycle-growth-page .ds-content p.ds-future-line {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.lifecycle-growth-page .ds-content p.ds-bullet-indent {
+  margin-left: 2.5rem;
+  padding-left: 1rem;
+}

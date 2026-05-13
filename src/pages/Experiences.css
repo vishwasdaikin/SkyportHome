@@ -1,0 +1,84 @@
+.experiences-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .experiences-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* Experiences: all section content black; only label (before ":") bold */
+.experiences-page .ds-content p {
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.experiences-page .ds-content p.ds-subheading {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Purpose line: only "Purpose:" bold; rest unbold (override ds-subheading) */
+.experiences-page .ds-content p.ds-purpose-line {
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+
+/* Label: rest lines (e.g. What the E‑Platform enables: ...): only label bold; rest unbold */
+.experiences-page .ds-content p.ds-label-rest-line {
+  font-weight: 400;
+}
+
+/* From As‑Is to To‑Be: tight space before As‑Is, then As‑Is and To‑Be indented */
+.experiences-page .ds-content p.ds-from-as-is-to-be {
+  margin-bottom: 0.25rem;
+}
+
+.experiences-page .ds-content p.ds-as-is-to-be-item,
+.experiences-page .ds-content p.ds-edu-insp-trust-item {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 1.5rem;
+}
+
+.experiences-page .ds-content p.ds-from-as-is-to-be + p.ds-as-is-to-be-item {
+  margin-top: 0;
+}
+
+/* Every point under As‑Is and To‑Be: indented; same bullet-to-text gap as normal bullets */
+.experiences-page .ds-content p.ds-bullet-indent {
+  margin-left: 2.5rem;
+  padding-left: 1rem;
+}
+
+.experiences-page .experiences-appendix-line {
+  margin: 1.5rem 0 0 0;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: 1.4;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.experiences-page .experiences-appendix-inline {
+  color: var(--daikin-blue);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.experiences-page .experiences-appendix-inline:hover {
+  text-decoration: underline;
+}
+
+.ds-section-single {
+  margin-top: 0;
+}
+
+.ds-section-title-single {
+  margin: 0 0 1rem 0;
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+}

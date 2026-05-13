@@ -1,0 +1,510 @@
+.skyport-care-login {
+  --scl-link: #0072a6;
+  --scl-cta: #007096;
+  --scl-header: #3a3a3a;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #fff;
+}
+
+.skyport-care-login .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skyport-care-login__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.85rem 1.35rem;
+  background: var(--scl-header);
+  color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Same tri-brand strip as Care Demo footer asset; invert gray artwork → white on dark bar */
+.skyport-care-login__header-brands {
+  display: block;
+  height: clamp(1.55rem, 1.1rem + 1.35vw, 2.35rem);
+  width: auto;
+  max-width: min(100%, 26rem);
+  object-fit: contain;
+  object-position: left center;
+  filter: brightness(0) invert(1);
+}
+
+.skyport-care-login__hero {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /* ~10% viewport lower than top + base inset */
+  padding: calc(10vh + clamp(0.65rem, 0.2rem + 1.75vh, 1.75rem)) clamp(1rem, 0.5rem + 2vw, 1.75rem)
+    clamp(2rem, 1.25rem + 2.5vw, 3rem);
+  overflow: auto;
+}
+
+.skyport-care-login__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    #5eb8d4 0%,
+    #3a9ec4 22%,
+    #2a8ab0 45%,
+    #4a7aa8 72%,
+    #8fa8c8 100%
+  );
+  filter: blur(56px);
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.skyport-care-login__hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 44rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.25rem;
+}
+
+.skyport-care-login__hero-inner--welcome {
+  max-width: min(52rem, 100%);
+  width: 100%;
+  flex: 0 0 auto;
+  gap: clamp(1.5rem, 1rem + 1.25vw, 2rem);
+  text-align: center;
+}
+
+.skyport-care-login__welcome-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.skyport-care-login__welcome-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem 0.75rem;
+  margin: 0;
+  padding-top: clamp(0.35rem, 0.15rem + 1vw, 1.1rem);
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
+  overflow: visible;
+}
+
+/* “Welcome to” + SkyportCare; butterfly anchored NE of “Care” (45° up-right) */
+.skyport-care-login__welcome-to,
+.skyport-care-login__welcome-name {
+  font-size: clamp(2.35rem, 1.35rem + 4.5vw, 4.25rem);
+  font-weight: 200;
+  letter-spacing: 0.035em;
+  color: #fff;
+}
+
+.skyport-care-login__welcome-name {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.skyport-care-login__welcome-care-mark {
+  position: relative;
+  display: inline-block;
+}
+
+.skyport-care-login__welcome-butterfly {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  display: block;
+  height: clamp(2.55rem, 1.75rem + 3.6vw, 4.65rem);
+  width: auto;
+  aspect-ratio: 16 / 13;
+  object-fit: contain;
+  pointer-events: none;
+  /* Equal +x / −y → 45° northeast from top-right of “Care” */
+  --scl-bfly-n: clamp(0.42rem, 0.22rem + 0.75vw, 1.05rem);
+  transform: translate(var(--scl-bfly-n), calc(-1 * var(--scl-bfly-n)));
+  filter: drop-shadow(0 1px 10px rgba(0, 0, 0, 0.18));
+}
+
+.skyport-care-login__welcome-lead {
+  margin: 0;
+  max-width: min(42rem, 100%);
+  font-size: clamp(1.0625rem, 0.95rem + 0.65vw, 1.3125rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.97);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.12);
+}
+
+.skyport-care-login__welcome-more {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.skyport-care-login__welcome-more:hover {
+  opacity: 0.92;
+}
+
+.skyport-care-login__welcome-more:active {
+  opacity: 0.85;
+}
+
+.skyport-care-login__welcome-more:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Email / password steps — full white canvas, centered card (product-style SSO). */
+.skyport-care-login.skyport-care-login--auth-flow {
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex: 1 1 auto;
+  background: #fff;
+}
+
+.skyport-care-login__auth-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem 3rem;
+  box-sizing: border-box;
+}
+
+.skyport-care-login__auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  padding: 2.75rem 1.75rem 1.5rem;
+  background: #fff;
+  border: 1px solid #c8c8c8;
+  border-radius: 2px;
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.08);
+}
+
+.skyport-care-login__auth-help {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #0078c8;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.skyport-care-login__auth-help:hover {
+  color: #005a96;
+  text-decoration: underline;
+}
+
+.skyport-care-login__auth-help:focus-visible {
+  outline: 2px solid #0078c8;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skyport-care-login__auth-title {
+  margin: 0 0 1.35rem;
+  text-align: center;
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: #0078c8;
+  letter-spacing: 0.02em;
+}
+
+.skyport-care-login__auth-title + .skyport-care-login__auth-email {
+  margin: -0.55rem 0 1rem;
+}
+
+.skyport-care-login__auth-email {
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #0078c8;
+}
+
+.skyport-care-login__field-box {
+  margin-bottom: 1.1rem;
+  padding: 0.28rem 0.65rem 0.32rem;
+  border: 1px solid #c8c8c8;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.skyport-care-login__field-label {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #555;
+  line-height: 1.25;
+}
+
+.skyport-care-login__req {
+  color: #c00;
+  font-weight: 600;
+}
+
+.skyport-care-login__field-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.05rem 0;
+  min-height: 0;
+  line-height: 1.35;
+  border: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: #222;
+  background: transparent;
+  outline: none;
+  appearance: none;
+}
+
+.skyport-care-login__field-input:is([type='email'], [type='password']) {
+  /* Match compact height on both steps (some UAs enlarge password fields) */
+  min-height: 0;
+}
+
+.skyport-care-login__next-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background: #6ec4e8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.skyport-care-login__next-btn:hover {
+  filter: brightness(1.04);
+}
+
+.skyport-care-login__next-btn:focus-visible {
+  outline: 2px solid #0078c8;
+  outline-offset: 2px;
+}
+
+.skyport-care-login__auth-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.skyport-care-login__text-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #0078c8;
+  cursor: pointer;
+  text-align: left;
+}
+
+.skyport-care-login__text-link:hover {
+  text-decoration: underline;
+}
+
+.skyport-care-login__back-login {
+  display: block;
+  width: 100%;
+  margin-top: 1.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #0078c8;
+  cursor: pointer;
+  text-align: center;
+}
+
+.skyport-care-login__back-login:hover {
+  text-decoration: underline;
+}
+
+.skyport-care-login__auth-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 2.5rem;
+  padding-top: 0.25rem;
+}
+
+.skyport-care-login__powered {
+  font-size: 0.65rem;
+  color: #9a9a9a;
+}
+
+.skyport-care-login__auth-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+}
+
+.skyport-care-login__auth-legal a {
+  font-size: 0.65rem;
+  color: #888;
+  text-decoration: underline;
+}
+
+.skyport-care-login__auth-legal a:hover {
+  color: #555;
+}
+
+.skyport-care-login__card {
+  width: 100%;
+  max-width: min(32rem, 100%);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.14);
+  padding: clamp(1.95rem, 1.5rem + 1.5vw, 2.35rem) clamp(1.75rem, 1.25rem + 1.5vw, 2.15rem);
+  text-align: center;
+}
+
+.skyport-care-login__card-text {
+  margin: 0 0 clamp(1.25rem, 1rem + 0.8vw, 1.5rem);
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.1875rem);
+  line-height: 1.6;
+  color: #1a1a1a;
+}
+
+.skyport-care-login__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(12rem, 10rem + 8vw, 14rem);
+  padding: 0.78rem 1.85rem;
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);
+  font-weight: 600;
+  color: #fff;
+  background: var(--scl-cta);
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.skyport-care-login__cta:hover {
+  filter: brightness(1.06);
+}
+
+.skyport-care-login__cta:focus-visible {
+  outline: 2px solid var(--scl-cta);
+  outline-offset: 3px;
+}
+
+.skyport-care-login__footer {
+  flex-shrink: 0;
+  padding: 1rem 1.35rem 1.35rem;
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.skyport-care-login__footer-copy {
+  margin: 0 0 0.4rem;
+  max-width: 52rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #666;
+  text-align: left;
+}
+
+.skyport-care-login__footer-disclaimer {
+  margin: 0 0 0.65rem;
+  max-width: 52rem;
+  text-align: left;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #666;
+}
+
+.skyport-care-login__footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem 0.25rem;
+  font-size: 0.8125rem;
+}
+
+.skyport-care-login__footer-links a {
+  color: var(--scl-link);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.skyport-care-login__footer-links a:hover {
+  text-decoration: underline;
+}
+
+.skyport-care-login__footer-sep {
+  color: #bbb;
+  user-select: none;
+}
+
+.skyport-care-login__footer-link-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--scl-link);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.skyport-care-login__footer-link-btn:hover {
+  text-decoration: underline;
+}

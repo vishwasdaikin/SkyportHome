@@ -1,0 +1,245 @@
+.features-page {
+  width: 100%;
+}
+
+.features-header {
+  margin-bottom: 1.5rem;
+}
+
+.features-header h1 {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.features-tagline {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.features-table-wrap {
+  overflow-x: visible;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.features-table {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.features-table th {
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--daikin-blue-light);
+  border-bottom: 2px solid var(--daikin-blue);
+  white-space: normal;
+  line-height: 1.2;
+  vertical-align: bottom;
+  hyphens: auto;
+}
+
+.features-sort-header-btn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  vertical-align: bottom;
+}
+
+.features-sort-header-btn:hover {
+  color: var(--daikin-blue);
+}
+
+.features-sort-header-btn:focus-visible {
+  outline: 2px solid var(--daikin-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.features-sort-header-label {
+  text-align: inherit;
+  line-height: inherit;
+}
+
+.features-sort-indicator {
+  font-size: 0.7em;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.features-panel-table .features-sort-header-btn {
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.features-table th:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.features-table th:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+.features-cell-priority {
+  text-align: center;
+  white-space: nowrap;
+  width: 4.5%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.features-cell-development {
+  width: 18%;
+  min-width: 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  white-space: normal;
+  max-width: none;
+}
+
+/* Shared with SkyportHome roadmap (formatFeatureCellContent) */
+.features-cell-highlight-green {
+  color: #1a6b1a;
+  font-weight: 600;
+}
+
+.features-cell-feature-block {
+  display: block;
+}
+
+.features-cell-feature-lead {
+  display: block;
+  margin-bottom: 0.35em;
+  line-height: 1.45;
+}
+
+.features-cell-feature-block .features-cell-list-item {
+  margin-top: 0.3em;
+  padding-left: 0.45em;
+  line-height: 1.45;
+  border-left: 2px solid rgba(0, 151, 224, 0.35);
+}
+
+.features-cell-feature-block > .features-cell-list-item:first-of-type {
+  margin-top: 0.15em;
+}
+
+.features-table td {
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: top;
+}
+
+/* After .features-table td — nudge Development right vs Priority; tight right edge */
+.features-table th.features-cell-development,
+.features-table td.features-cell-development {
+  padding-left: 0.85rem;
+  padding-right: 0.35rem;
+}
+
+/* Space Target column from Monetization */
+.features-table th.features-cell-timeframe,
+.features-table td.features-cell-timeframe {
+  padding-left: 0.85rem;
+}
+
+.features-table tbody tr:hover {
+  background: rgba(0, 151, 224, 0.04);
+}
+
+.features-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.features-cell-group {
+  font-weight: 600;
+  color: var(--daikin-blue);
+  width: 8%;
+  min-width: 0;
+}
+
+.features-cell-feature {
+  width: 33%;
+  min-width: 0;
+  max-width: none;
+  line-height: 1.3;
+}
+
+.features-cell-type {
+  width: 9.5%;
+  min-width: 0;
+  font-size: 0.8125rem;
+}
+
+.features-cell-category {
+  width: 12%;
+  min-width: 0;
+  font-size: 0.8125rem;
+}
+
+.features-cell-timeframe {
+  width: 10%;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+}
+
+.features-cell-monetization {
+  width: 5%;
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.features-cell-monetization:not(:empty) {
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .features-table {
+    font-size: var(--text-xs);
+  }
+  .features-table th,
+  .features-table td {
+    padding: 0.35rem 0.45rem;
+  }
+  .features-table th.features-cell-development,
+  .features-table td.features-cell-development {
+    padding-left: 0.75rem;
+    padding-right: 0.3rem;
+  }
+  .features-table th.features-cell-timeframe,
+  .features-table td.features-cell-timeframe {
+    padding-left: 0.75rem;
+  }
+  .features-table-wrap {
+    overflow-x: auto;
+  }
+}

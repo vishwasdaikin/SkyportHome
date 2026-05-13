@@ -1,0 +1,104 @@
+.skyport-energy-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.skyport-energy-header h1 {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.skyport-energy-tagline {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.skyport-energy-hero {
+  margin: 1.5rem 0 0 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(0, 151, 224, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.skyport-energy-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: min(26.25vh, 200px);
+  object-position: center 45%;
+}
+
+@media (min-width: 768px) {
+  .skyport-energy-hero img {
+    max-height: min(30vh, 238px);
+  }
+}
+
+.skyport-energy-links-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 1.75rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--daikin-blue);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.skyport-energy-links-card-title {
+  margin: 0 0 0.9rem 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.skyport-energy-doc-links {
+  margin: 0;
+  padding-left: 1.35rem;
+  width: 100%;
+  list-style-type: disc;
+  color: var(--text-secondary);
+}
+
+.skyport-energy-doc-links li {
+  margin-bottom: 0.45rem;
+  padding-left: 0.25rem;
+}
+
+.skyport-energy-doc-links li:last-child {
+  margin-bottom: 0;
+}
+
+.skyport-energy-doc-link {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--daikin-blue);
+  text-decoration: none;
+}
+
+.skyport-energy-doc-link:hover {
+  color: var(--daikin-blue-dark, #0066a8);
+  text-decoration: none;
+}
+
+@media (min-width: 640px) {
+  .skyport-energy-page {
+    padding: 2.5rem 2rem;
+  }
+}

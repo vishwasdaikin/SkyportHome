@@ -1,0 +1,182 @@
+.support-gantt-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 3rem;
+}
+
+.support-gantt-page__header {
+  margin-bottom: 1.75rem;
+}
+
+.support-gantt-page__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.support-gantt-page__lede {
+  margin: 0;
+  max-width: 52rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.support-gantt-page__meta {
+  margin: 0.65rem 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.support-gantt-page__error {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.85rem;
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.support-gantt-page__code {
+  font-size: 0.82em;
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #0c4a6e;
+}
+
+.support-gantt-page__chart {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 0 0.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.support-gantt-page__axis {
+  position: relative;
+  height: 1.5rem;
+  margin: 0 0 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.support-gantt-page__tick {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.support-gantt-page__gridlines {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2.25rem;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.support-gantt-page__gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #f1f5f9;
+  transform: translateX(-50%);
+}
+
+.support-gantt-page__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0 0;
+}
+
+.support-gantt-page__row {
+  display: grid;
+  grid-template-columns: minmax(200px, 34%) 1fr;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+@media (max-width: 720px) {
+  .support-gantt-page__row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+}
+
+.support-gantt-page__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.support-gantt-page__feature {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.support-gantt-page__lane {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0369a1;
+  width: fit-content;
+}
+
+.support-gantt-page__dates {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.support-gantt-page__track {
+  position: relative;
+  height: 28px;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.support-gantt-page__bar {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  box-shadow: 0 1px 2px rgba(2, 132, 199, 0.35);
+  min-width: 4px;
+}
+
+.support-gantt-page__bar:hover {
+  filter: brightness(1.06);
+}
+
+.support-gantt-page__unscheduled {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: repeating-linear-gradient(
+    -45deg,
+    #f8fafc,
+    #f8fafc 6px,
+    #f1f5f9 6px,
+    #f1f5f9 12px
+  );
+  border-radius: 6px;
+}

@@ -1,0 +1,228 @@
+.dealer-research-root {
+  margin-top: 0.5rem;
+  max-width: 100%;
+}
+
+.dealer-research-definitions-details {
+  margin: 0 0 0.85rem 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.dealer-research-definitions-summary {
+  display: inline-block;
+  list-style: none;
+  cursor: pointer;
+  color: var(--daikin-blue, #0097e0);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.dealer-research-definitions-summary::-webkit-details-marker {
+  display: none;
+}
+
+.dealer-research-definitions-prose {
+  margin-top: 0.5rem;
+  max-height: min(70vh, 36rem);
+  overflow-y: auto;
+}
+
+.dealer-research-definitions-lead {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dealer-research-loading,
+.dealer-research-error {
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 151, 224, 0.25);
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.dealer-research-retry {
+  margin-top: 0.75rem;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--daikin-blue, #0097e0);
+  background: #fff;
+  color: var(--daikin-blue, #0097e0);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dealer-research-charts {
+  margin-bottom: 1.5rem;
+}
+
+.dealer-research-chart-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 68rem) {
+  .dealer-research-chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 44rem) {
+  .dealer-research-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dealer-research-chart-card {
+  min-width: 0;
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #fff;
+}
+
+.dealer-research-chart-title {
+  margin: 0 0 0.65rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dealer-research-insights-meta {
+  margin: 0 0 0.85rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dealer-research-insights-meta-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dealer-research-insights-subsection {
+  margin-top: 1rem;
+}
+
+.dealer-research-insights-subsection:first-of-type {
+  margin-top: 0.35rem;
+}
+
+.dealer-research-insights-subheading {
+  margin: 0 0 0.45rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dealer-research-insights-table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.dealer-research-insights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.dealer-research-insights-table th,
+.dealer-research-insights-table td {
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.dealer-research-insights-table th {
+  background: #f1f5f9;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.dealer-research-subheading {
+  margin: 0 0 0.65rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.dealer-research-search-row {
+  margin-bottom: 0.65rem;
+}
+
+.dealer-research-search-input {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  font-size: 0.9375rem;
+}
+
+.dealer-research-summary-count {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dealer-research-summary-table-shell {
+  max-width: 100%;
+}
+
+.dealer-research-summary-pager {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.45rem;
+}
+
+.dealer-research-show-prev,
+.dealer-research-show-next {
+  background: none;
+  border: none;
+  color: var(--daikin-blue, #0097e0);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  text-decoration: underline;
+}
+
+.dealer-research-table-scroll {
+  overflow: auto;
+  max-height: min(70vh, 520px);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: var(--radius);
+}
+
+.dealer-research-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.dealer-research-table th,
+.dealer-research-table td {
+  padding: 0.4rem 0.45rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.dealer-research-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f1f5f9;
+  z-index: 1;
+}
+
+.dealer-research-sort-btn {
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}

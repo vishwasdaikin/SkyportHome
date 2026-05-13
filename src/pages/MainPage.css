@@ -1,0 +1,78 @@
+.main-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.main-hero {
+  text-align: center;
+  max-width: 36rem;
+}
+
+.main-title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--daikin-blue);
+  letter-spacing: -0.02em;
+}
+
+.main-subtitle {
+  margin: 0.75rem 0 0 0;
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.main-playbook-cta {
+  margin-top: 2.5rem;
+}
+
+.main-playbook-label {
+  margin: 0 0 0.75rem 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.main-playbook-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.main-playbook-link {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.main-playbook-link:hover {
+  color: var(--daikin-blue);
+  border-color: var(--daikin-blue);
+  background: var(--daikin-blue-light);
+}
+
+.main-playbook-link-primary {
+  color: #fff;
+  background: var(--daikin-blue);
+  border-color: var(--daikin-blue);
+}
+
+.main-playbook-link-primary:hover {
+  color: #fff;
+  background: var(--daikin-blue-dark);
+  border-color: var(--daikin-blue-dark);
+}

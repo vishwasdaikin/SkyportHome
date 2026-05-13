@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules
+
+# Build
+dist
+.next
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env (Azure SSO secrets)
+.env
+.env.local

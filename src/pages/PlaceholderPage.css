@@ -1,0 +1,22 @@
+.placeholder-page {
+  width: 100%;
+  max-width: 48rem;
+}
+
+.placeholder-header {
+  margin-bottom: 1.5rem;
+}
+
+.placeholder-header h1 {
+  margin: 0;
+  font-size: var(--heading-1);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.placeholder-lead {
+  margin: 0.5rem 0 0 0;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}

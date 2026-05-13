@@ -1,0 +1,60 @@
+{
+  "stepImagesByArticleId": {
+    "sso-account-setup": {
+      "0": ["image1.png"],
+      "1": ["image2.png"],
+      "2": ["image3.png"],
+      "3": ["image4.png"],
+      "4": ["image5.png", "image5.png"],
+      "5": ["image6.png"],
+      "6": ["image7.png"],
+      "7": ["image8.png"],
+      "8": ["image9.png"],
+      "9": ["image10.png", "image11.png", "image10.png"],
+      "10": ["image14.png", "image10.png"]
+    },
+    "sso-account-activation": {
+      "0": ["image16.png"],
+      "1": ["image17.png"],
+      "2": ["image18.png", "image19.png"],
+      "3": ["image20.png"],
+      "4": ["image21.png"],
+      "5": ["image22.png"],
+      "6": ["image23.png"],
+      "7": ["image24.png"],
+      "8": ["image25.png"]
+    },
+    "team-member-invite": {
+      "0": ["image26.png"],
+      "1": ["image27.png", "image28.png"]
+    },
+    "homeowner-invitation": {
+      "0": ["image26.png"],
+      "1": ["image29.png"]
+    },
+    "license-purchase-renewal": {
+      "0": ["image30.png"],
+      "1": ["image31.png", "image32.png"],
+      "2": ["image33.png"]
+    },
+    "warranty-express-license-purchase": {
+      "0": ["image34.png"],
+      "1": ["image35.jpg"],
+      "2": ["image36.png"],
+      "3": ["image37.png"],
+      "4": ["image38.png"]
+    }
+  },
+  "faqImagesByArticleId": {
+    "faq-free-lifetime-licenses": ["image39.png"],
+    "faq-license-association": ["image40.png"],
+    "faq-change-installer": ["image41.png"],
+    "faq-change-business-email": ["image42.png"],
+    "faq-support-emails": ["image43.emf", "image44.emf"],
+    "faq-invite-customers": ["image45.png"],
+    "faq-system-not-showing": ["image46.png"],
+    "faq-skyport-home-setup": ["image47.png"],
+    "faq-give-dealer-access": ["image48.png"],
+    "faq-getting-started-videos": ["image49.png"]
+  }
+}

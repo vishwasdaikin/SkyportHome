@@ -1,0 +1,66 @@
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+import localTestXlsx from './vite-plugin-local-test-xlsx.js'
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const coreApiOrigin =
+    env.SKYPORT_CORE_URL || process.env.SKYPORT_CORE_URL || 'http://localhost:3001'
+
+  /**
+   * Asset base URL. Default `/` for Vercel, Netlify, and root domains.
+   * For GitHub Pages at https://user.github.io/RepoName/ either:
+   * - set VITE_BASE_PATH=/RepoName/ on the build, or
+   * - set VITE_GITHUB_PAGES=1 in CI (uses GITHUB_REPOSITORY → /RepoName/).
+   * Without this, index.html loads but /assets/*.js 404s → blank page.
+   */
+  const basePathRaw = env.VITE_BASE_PATH ?? process.env.VITE_BASE_PATH
+  const ghPagesFlag = String(
+    env.VITE_GITHUB_PAGES ?? process.env.VITE_GITHUB_PAGES ?? '',
+  ).trim()
+  let base = '/'
+  if (basePathRaw != null && String(basePathRaw).trim() !== '') {
+    const p = String(basePathRaw).trim()
+    base = p.endsWith('/') ? p : `${p}/`
+  } else if (ghPagesFlag === '1' || ghPagesFlag.toLowerCase() === 'true') {
+    const repoFull = env.GITHUB_REPOSITORY ?? process.env.GITHUB_REPOSITORY ?? ''
+    const repoName = repoFull.includes('/') ? repoFull.split('/')[1] : ''
+    if (repoName) {
+      base = `/${repoName}/`
+    }
+  }
+
+  return {
+    base,
+    plugins: [react(), localTestXlsx(env, base)],
+    define: {
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
+        env.VITE_API_BASE_URL ?? process.env.VITE_API_BASE_URL ?? ''
+      ),
+      'import.meta.env.VITE_SKIP_AUTH': JSON.stringify(
+        env.VITE_SKIP_AUTH ?? process.env.VITE_SKIP_AUTH ?? ''
+      ),
+    },
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: ['./src/test/setup.js'],
+      include: ['src/**/*.{test,spec}.{js,jsx}'],
+    },
+    server: {
+      strictPort: true,
+      /** Avoid stale CSS/JS when switching branches or after many edits (dev only). */
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+      proxy: {
+        '/api': {
+          target: coreApiOrigin,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, '') || '/',
+        },
+      },
+    },
+  }
+})

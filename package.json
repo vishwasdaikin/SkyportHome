@@ -1,0 +1,52 @@
+{
+  "name": "skyport-playbook",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:host": "vite --host",
+    "export-roadmaps": "node scripts/export-roadmap-xlsx-to-public.mjs",
+    "export-fy25-review-charts": "node scripts/export-fy25-review-thermostat-charts.mjs",
+    "export-digital-framework": "node scripts/export-digital-framework-only.mjs",
+    "watch:digital-framework:auto-commit": "node scripts/watch-digital-framework-auto-commit.mjs",
+    "verify:digital-framework:auto-commit": "node scripts/verify-digital-framework-auto-commit.mjs",
+    "daily:digital-framework": "node scripts/daily-digital-framework-sync.mjs",
+    "save-commit-sync": "node scripts/daily-digital-framework-sync.mjs",
+    "build:city-state-data": "node scripts/build-city-counts-by-us-state.cjs",
+    "build:city-hotspots": "node scripts/build-city-hotspots.cjs",
+    "build": "npm run export-roadmaps && npm run build:city-state-data && npm run build:city-hotspots && vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
+    "preview": "vite preview",
+    "pdf:fy26": "node scripts/print-fy26-pdf.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.60.3",
+    "lucide-react": "^0.460.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-is": "^18.3.1",
+    "react-router-dom": "^6.22.0",
+    "react-simple-maps": "^3.0.0",
+    "recharts": "^3.8.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.27",
+    "country-state-city": "^3.2.1",
+    "d3-geo": "^2.0.2",
+    "exceljs": "^4.4.0",
+    "jsdom": "^29.0.0",
+    "postcss": "^8.5.8",
+    "puppeteer-core": "^24.15.0",
+    "tailwindcss": "^4.2.1",
+    "vite": "^5.1.0",
+    "vitest": "^4.1.0"
+  }
+}

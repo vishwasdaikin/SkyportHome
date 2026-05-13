@@ -1,0 +1,110 @@
+.platform-page {
+  width: 100%;
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .platform-page {
+    padding: 2.5rem 2rem;
+  }
+}
+
+.ds-section-single {
+  margin-top: 0;
+}
+
+.platform-page .ds-section-title-single {
+  margin: 0 0 1rem 0;
+  font-size: var(--heading-2);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.platform-page .ds-content p.ds-what-we-see-today-line {
+  margin-top: 1.25rem;
+}
+
+.platform-page .ds-content p.ds-foundational-principle-line {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.platform-page .ds-content p.ds-tool-orchestration-line {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.platform-page .ds-content p.ds-operating-principle-line {
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.platform-mini-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.platform-mini-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--nav-border);
+}
+
+.platform-mini-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.platform-mini-card-badge {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--daikin-blue);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  border-radius: 50%;
+  font-variant-numeric: tabular-nums;
+}
+
+.platform-mini-card-title {
+  margin: 0;
+  font-size: var(--heading-3);
+  font-weight: 600;
+  color: var(--daikin-blue);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--daikin-blue-light);
+  flex: 1;
+}
+
+.platform-mini-card .ds-content p.ds-purpose-line {
+  margin-bottom: 1.25rem;
+}
+
+.platform-page .platform-appendix-line {
+  margin: 1.5rem 0 0 0;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: 1.4;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.platform-page .platform-appendix-inline {
+  color: var(--daikin-blue);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.platform-page .platform-appendix-inline:hover {
+  text-decoration: underline;
+}
