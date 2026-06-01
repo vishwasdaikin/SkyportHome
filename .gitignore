@@ -15,3 +15,6 @@ npm-debug.log*
 # Env (Azure SSO secrets)
 .env
 .env.local
+
+# Office temp/lock files
+~$*
