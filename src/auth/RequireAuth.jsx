@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { apiUrl } from '../lib/api'
+import { apiFetch, AuthRedirect, redirectToLogin } from '../lib/apiClient'
 import { isAuthSkipped } from './authConfig'
 import './RequireAuth.css'
 
@@ -27,6 +28,18 @@ function setSignedOutFlag(on) {
   }
 }
 
+/**
+ * Core returns generic `auth_error` codes (no upstream internals leaked). Map them to friendly copy.
+ * `access_denied` is the only code that carries a human-readable `detail` worth surfacing.
+ */
+const AUTH_ERROR_MESSAGES = {
+  access_denied: 'Your account is not allowed to sign in.',
+  invalid_oauth_state: 'Your sign-in session expired. Please try again.',
+  invalid_id_token: 'Sign-in could not be verified. Please try again.',
+  token_exchange: 'Sign-in failed. Please try again.',
+  server_error: 'Something went wrong during sign-in. Please try again.',
+}
+
 function readUrlError() {
   const params = new URLSearchParams(window.location.search)
   if (params.get('skyport_core_setup') === '1') {
@@ -36,10 +49,13 @@ function readUrlError() {
   const authErr = params.get('auth_error')
   if (authErr) {
     const detail = params.get('detail') || ''
-    return {
-      type: 'oauth',
-      message: `${authErr}${detail ? `: ${decodeURIComponent(detail).slice(0, 500)}` : ''}`,
-    }
+    const message =
+      authErr === 'access_denied'
+        ? detail
+          ? decodeURIComponent(detail).slice(0, 500)
+          : AUTH_ERROR_MESSAGES.access_denied
+        : AUTH_ERROR_MESSAGES[authErr] || 'Sign-in failed. Please try again.'
+    return { type: 'oauth', message }
   }
   return null
 }
@@ -97,7 +113,8 @@ export default function RequireAuth({ children }) {
     const ctrl = new AbortController()
     const t = setTimeout(() => ctrl.abort(), 12000)
 
-    fetch(apiUrl('/auth/me'), { credentials: 'include', signal: ctrl.signal })
+    // `apiFetch` redirects to `/auth/login` and throws `AuthRedirect` on 401 (handled in .catch).
+    apiFetch('/auth/me', { signal: ctrl.signal })
       .then(async (r) => {
         clearTimeout(t)
         const text = await r.text()
@@ -115,16 +132,19 @@ export default function RequireAuth({ children }) {
           setStatus('ok')
           return
         }
-        if (r.status === 401 || data.authenticated === false) {
-          const returnTo =
-            window.location.pathname + (window.location.search || '') || '/'
-          window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent(returnTo)}`
+        if (data.authenticated === false) {
+          // 200 with no active session — 401 is already redirected centrally by apiFetch.
+          redirectToLogin()
           return
         }
         throw new Error(`Auth check failed (${r.status}).`)
       })
       .catch((e) => {
         clearTimeout(t)
+        if (e instanceof AuthRedirect) {
+          // Central 401 redirect is in progress; keep showing the "Signing in…" spinner.
+          return
+        }
         if (e.name === 'AbortError') {
           setLoadError(
             import.meta.env.VITE_API_BASE_URL

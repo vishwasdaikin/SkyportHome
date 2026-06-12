@@ -229,6 +229,11 @@
   white-space: nowrap;
 }
 
+.app-auth-logout-form {
+  display: inline-flex;
+  margin: 0;
+}
+
 .app-auth-btn {
   padding: 0.35rem 0.7rem;
   font-size: 0.8125rem;

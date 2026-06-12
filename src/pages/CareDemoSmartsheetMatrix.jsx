@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { apiUrl } from '../lib/api.js'
+import { apiFetch, AuthRedirect } from '../lib/apiClient.js'
 import './CareDemoSmartsheetMatrix.css'
 
 /** Best-effort text for a Smartsheet cell (GET sheet). */
@@ -58,7 +58,9 @@ export default function CareDemoSmartsheetMatrix() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(apiUrl('/smartsheet/sheet'))
+        // `/smartsheet/sheet` now requires auth; apiFetch redirects on 401. Other errors
+        // (503 not configured, 502/4xx { error, status, message }) are handled below.
+        const res = await apiFetch('/smartsheet/sheet')
         const data = await res.json().catch(() => ({}))
         if (cancelled) return
         if (!res.ok) {
@@ -68,6 +70,7 @@ export default function CareDemoSmartsheetMatrix() {
         }
         setSheet(data)
       } catch (e) {
+        if (e instanceof AuthRedirect) return // navigating to login; stop quietly
         if (!cancelled) {
           setSheet(null)
           setError(e instanceof Error ? e.message : 'Network error')
