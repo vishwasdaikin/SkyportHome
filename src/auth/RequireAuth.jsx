@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { apiUrl } from '../lib/api'
 import { apiFetch, AuthRedirect, redirectToLogin } from '../lib/apiClient'
+import { messageForAuthError } from './authErrors'
 import { isAuthSkipped } from './authConfig'
 import './RequireAuth.css'
 
 /**
  * Survives React StrictMode's double-effect and same-tab reloads so the user is not
- * silently bounced through `/auth/login` (Microsoft SSO would re-auth them instantly).
+ * silently bounced through `/auth/login` right after signing out.
  * Cleared when /auth/me returns authenticated:true or when the user clicks a sign-in button.
  */
 const SIGNED_OUT_FLAG = 'skyport_just_signed_out'
@@ -28,18 +29,6 @@ function setSignedOutFlag(on) {
   }
 }
 
-/**
- * Core returns generic `auth_error` codes (no upstream internals leaked). Map them to friendly copy.
- * `access_denied` is the only code that carries a human-readable `detail` worth surfacing.
- */
-const AUTH_ERROR_MESSAGES = {
-  access_denied: 'Your account is not allowed to sign in.',
-  invalid_oauth_state: 'Your sign-in session expired. Please try again.',
-  invalid_id_token: 'Sign-in could not be verified. Please try again.',
-  token_exchange: 'Sign-in failed. Please try again.',
-  server_error: 'Something went wrong during sign-in. Please try again.',
-}
-
 function readUrlError() {
   const params = new URLSearchParams(window.location.search)
   if (params.get('skyport_core_setup') === '1') {
@@ -48,21 +37,17 @@ function readUrlError() {
   }
   const authErr = params.get('auth_error')
   if (authErr) {
-    const detail = params.get('detail') || ''
-    const message =
-      authErr === 'access_denied'
-        ? detail
-          ? decodeURIComponent(detail).slice(0, 500)
-          : AUTH_ERROR_MESSAGES.access_denied
-        : AUTH_ERROR_MESSAGES[authErr] || 'Sign-in failed. Please try again.'
-    return { type: 'oauth', message }
+    const detail = params.get('detail') ? decodeURIComponent(params.get('detail')) : ''
+    return { type: 'oauth', message: messageForAuthError(authErr, detail) }
   }
   return null
 }
 
 /**
- * Microsoft Entra via Skyport-Core: Web OAuth + httpOnly session cookie on the same origin
- * as the app (Vite dev proxies `/api` → Core). Set VITE_SKIP_AUTH=1 only for local demos.
+ * Auth gate via Skyport-Core: passwordless magic-link sign-in + httpOnly session cookie on the
+ * same origin as the app (Vite dev proxies `/api` → Core). An unauthenticated /auth/me sends the
+ * browser to `/api/auth/login`, which Core 302s to the SPA `/login` page. Set VITE_SKIP_AUTH=1
+ * only for local demos.
  */
 export default function RequireAuth({ children }) {
   if (isAuthSkipped()) {
@@ -83,7 +68,7 @@ export default function RequireAuth({ children }) {
     /**
      * StrictMode runs this effect twice in dev — without the persisted flag the second pass
      * would not see `signed_out=1` (we just stripped it), fall into the unauthenticated branch,
-     * and redirect to `/api/auth/login`, where Microsoft's SSO would silently re-auth the user.
+     * and redirect to `/api/auth/login`, sending the just-signed-out user back into sign-in.
      */
     if (readSignedOutFlag()) {
       setStatus('checking_signed_out')
@@ -177,9 +162,7 @@ export default function RequireAuth({ children }) {
         <div className="require-auth-card require-auth-card-wide">
           <p className="require-auth-title">You’re signed out</p>
           <p className="require-auth-sub">
-            Your Skyport session was cleared. Sign in again when you’re ready. If Microsoft shows an error while
-            you still look &quot;signed in&quot; there, use <strong>Sign in (fresh)</strong> so it asks for your
-            password again.
+            Your Skyport session was cleared. Sign in again when you’re ready.
           </p>
           <button
             type="button"
@@ -190,18 +173,7 @@ export default function RequireAuth({ children }) {
               window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent('/')}`
             }}
           >
-            Sign in with Microsoft
-          </button>
-          <button
-            type="button"
-            className="require-auth-retry require-auth-retry-secondary"
-            style={{ marginTop: '0.75rem' }}
-            onClick={() => {
-              setSignedOutFlag(false)
-              window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent('/')}&prompt=login`
-            }}
-          >
-            Sign in (fresh)
+            Sign in
           </button>
         </div>
       </div>
@@ -260,7 +232,7 @@ export default function RequireAuth({ children }) {
                 window.location.href = `${apiUrl('/auth/login')}?returnTo=${encodeURIComponent('/')}`
               }}
             >
-              Try Microsoft sign-in
+              Try signing in
             </button>
           )}
         </div>

@@ -18,3 +18,4 @@ npm-debug.log*
 
 # Office temp/lock files
 ~$*
+.vercel
